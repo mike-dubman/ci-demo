@@ -62,6 +62,23 @@ steps:
   - name: step4
     run: rm aaa
 
+  - name: Blackduck source
+    shell: ngci
+    run: |
+      library identifier: 'ngci@ci_version-3.1',
+          retriever: modernSCM(
+              [$class: 'GitSCMSource',
+              remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']
+          )
+
+        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
+
+        NGCIBlackDuckScan (projectName: "ci-demo",
+                        projectVersion: "1.0",
+                        projectSrcPath: "${env.WORKSPACE}/src",
+                        attachArtifact: true ,
+                        reportName: "BlackDuck report",
+                        scanMode: "source")        
 
 steps_disabled:
 
@@ -89,23 +106,6 @@ steps_disabled:
       env > myenv.log
       exit 1
 
-  - name: Blackduck source
-    shell: ngci
-    run: |
-      library identifier: 'ngci@ci_version-3.1',
-          retriever: modernSCM(
-              [$class: 'GitSCMSource',
-              remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']
-          )
-
-        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
-
-        NGCIBlackDuckScan (projectName: "ci-demo",
-                        projectVersion: "1.0",
-                        projectSrcPath: "${env.WORKSPACE}/src",
-                        attachArtifact: true ,
-                        reportName: "BlackDuck report",
-                        scanMode: "source")        
 
       onfail: env > onfail_myenv.log
     always: env > always_myenv.log
