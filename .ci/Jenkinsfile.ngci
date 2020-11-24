@@ -1,0 +1,23 @@
+#!/usr/bin/groovy
+
+// load pipeline functions
+// Requires pipeline-github-lib plugin to load library from github
+//@Library('github.com/mike-dubman/ci-demo@master')
+//def matrix = new com.mellanox.cicd.Matrix()
+
+//matrix.main()
+
+library identifier: 'ngci@ci_version-3.1',
+    retriever: modernSCM(
+        [$class: 'GitSCMSource',
+        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']
+    )
+
+env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/", "blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
+
+NGCIBlackDuckScan (projectName: "ci-demo",
+                   projectVersion: "1.0",
+                   projectSrcPath: "src",
+                   attachArtifact: true ,
+                   reportName: "BlackDuck report",
+                   scanMode: "source")
