@@ -253,7 +253,7 @@ def run_step(config, script, title, shell) {
                             retriever: modernSCM([$class: 'GitSCMSource', 
                                         remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
-        def vars = env.getEnvironment()
+        def vars = [:]
         vars['ngci'] = ngci
         GroovyShell gShell = new GroovyShell(new Binding(vars))
         return gShell.evaluate(script)
