@@ -241,8 +241,17 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
     return ret
 }
 
-def run_step(cmd,title) {
+def run_step(script, title, shell) {
+
     run_shell("echo Starting step: ${title}", title)
+    if (shell == "ngci") {
+        GroovyShell shell = new GroovyShell(new Binding(varsMap))
+        return shell.evaluate(script)
+    }
+
+    def cmd = """${shell}
+    ${one.run}
+    """
     run_shell(cmd, title)
 }
 
@@ -256,14 +265,12 @@ def runSteps(image, config, branchName) {
     config.steps.eachWithIndex { one, i ->
 
         def shell = getDefaultShell(config, one)
-        def cmd = """${shell}
-        ${one.run}
-        """
         def par = one.get("parallel")
+        def script = one.run
         // collect parallel steps (if any) and run it when non-parallel step discovered or last element.
         if ( par != null && par == true) {
             def stepName = branchName + "->" + one.name
-            parallelNestedSteps[stepName] = {run_step(cmd, stepName)}
+            parallelNestedSteps[stepName] = {run_step(script, stepName, shell)}
             // last element - run and flush
             if (i == config.steps.size() -1) {
                 parallel(parallelNestedSteps)
@@ -279,7 +286,7 @@ def runSteps(image, config, branchName) {
             parallelNestedSteps = [:]
         }
         try {
-            run_step(cmd, one.name)
+            run_step(script, one.name, shell)
         } catch (e) {
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")
