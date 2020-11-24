@@ -249,7 +249,7 @@ def run_step(config, script, title, shell) {
     run_shell("echo Starting step: ${title}", title)
     if (shell == "ngci") {
         config.logger.debug("xxx Running ngci step with shell="+script)
-        GroovyShell gShell = new GroovyShell(new Binding(env))
+        GroovyShell gShell = new GroovyShell(new Binding(env.getEnvironment()))
         return gShell.evaluate(script)
     }
 
