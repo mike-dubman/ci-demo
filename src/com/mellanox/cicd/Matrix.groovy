@@ -252,7 +252,7 @@ def run_step(script, title, shell) {
     }
 
     def cmd = """${shell}
-    ${one.run}
+    ${script}
     """
     run_shell(cmd, title)
 }
