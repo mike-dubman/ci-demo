@@ -255,6 +255,7 @@ def run_step(config, script, title, shell) {
 
         def vars = [:]
         vars['ngci'] = ngci
+        vars['env'] = env
         GroovyShell gShell = new GroovyShell(new Binding(vars))
         return gShell.evaluate(script)
     }
