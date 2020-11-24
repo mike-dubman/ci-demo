@@ -245,8 +245,8 @@ def run_step(script, title, shell) {
 
     run_shell("echo Starting step: ${title}", title)
     if (shell == "ngci") {
-        GroovyShell shell = new GroovyShell(new Binding(env))
-        return shell.evaluate(script)
+        GroovyShell gShell = new GroovyShell(new Binding(env))
+        return gShell.evaluate(script)
     }
 
     def cmd = """${shell}
