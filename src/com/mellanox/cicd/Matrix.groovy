@@ -249,7 +249,13 @@ def run_step(config, script, title, shell) {
     run_shell("echo Starting step: ${title}", title)
     if (shell == "ngci") {
         config.logger.debug("xxx Running ngci step with shell="+script)
-        GroovyShell gShell = new GroovyShell(new Binding(env.getEnvironment()))
+        def ngci = library(identifier: 'ngci@ci_version-3.1',
+                            retriever: modernSCM([$class: 'GitSCMSource', 
+                                        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
+
+        def vars = env.getEnvironment()
+        vars['ngci'] = ngci
+        GroovyShell gShell = new GroovyShell(new Binding(vars))
         return gShell.evaluate(script)
     }
 
