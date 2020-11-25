@@ -243,9 +243,12 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
     return ret
 }
 
-def run_step(config, script, title, shell) {
+def run_step(config, title, oneStep) {
 
-    config.logger.debug("Running step with shell="+shell)
+    def shell = getDefaultShell(config, oneStep)
+    def script = oneStep.run
+
+    config.logger.debug("Running step with shell=" + shell)
     run_shell("echo Starting step: ${title}", title)
     if (shell == "action") {
         config.logger.debug("xxx Running action step with script="+script)
@@ -258,6 +261,13 @@ def run_step(config, script, title, shell) {
  //       vars['env'] = env
  //       GroovyShell gShell = new GroovyShell(new Binding(vars))
  //       return gShell.evaluate(script)
+
+         config.logger.debug("xxx args=" + oneStep.args)
+
+          for (arg in oneStep.args) {
+              config.logger.debug("xxx arg="+arg)
+          }
+
           def args="'koko', 'momo'"
           this."${script}"(args)
           return
@@ -287,13 +297,12 @@ def runSteps(image, config, branchName) {
     def parallelNestedSteps = [:]
     config.steps.eachWithIndex { one, i ->
 
-        def shell = getDefaultShell(config, one)
         def par = one.get("parallel")
-        def script = one.run
+        def oneStep = one
         // collect parallel steps (if any) and run it when non-parallel step discovered or last element.
         if ( par != null && par == true) {
             def stepName = branchName + "->" + one.name
-            parallelNestedSteps[stepName] = {run_step(config, script, stepName, shell)}
+            parallelNestedSteps[stepName] = {run_step(config, stepName, oneStep)}
             // last element - run and flush
             if (i == config.steps.size() -1) {
                 parallel(parallelNestedSteps)
@@ -309,7 +318,7 @@ def runSteps(image, config, branchName) {
             parallelNestedSteps = [:]
         }
         try {
-            run_step(config, script, one.name, shell)
+            run_step(config, one.name, oneStep)
         } catch (e) {
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")

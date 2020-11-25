@@ -55,6 +55,13 @@ steps:
   - name: Blackduck source
     shell: action
     run: sayHello
+    args: 
+      - projectName: "ci-demo"
+      - projectVersion: "1.0"
+      - projectSrcPath: "${env.WORKSPACE}/src"
+      - attachArtifact: true
+      - reportName: "BlackDuck report"
+      - scanMode: "source"
 
 steps_disabled:
 
