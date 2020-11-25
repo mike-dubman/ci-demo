@@ -265,7 +265,7 @@ def run_step(config, title, oneStep) {
             argList.add(arg)
         }
 
-        if (oneStep.env)
+        if (oneStep.env) {}
             env += oneStep.env
         }
 
