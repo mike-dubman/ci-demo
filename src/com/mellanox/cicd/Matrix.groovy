@@ -256,22 +256,19 @@ def run_step(config, title, oneStep) {
 //                            retriever: modernSCM([$class: 'GitSCMSource', 
 //                                        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
- //       def vars = [:]
- //       vars['ngci'] = ngci
- //       vars['env'] = env
- //       GroovyShell gShell = new GroovyShell(new Binding(vars))
- //       return gShell.evaluate(script)
 
-        config.logger.debug("xxx args=" + oneStep.args)
-
-        def vars = [:]
-        vars['env'] = env
+        def vars['env'] = env
+        def argList = []
         for (arg in oneStep.args) {
             arg = resolveTemplate(vars, arg)
-            config.logger.debug("xxx arg="+arg)
+            argList.add(arg)
         }
 
-        this."${script}"(oneStep.args)
+        if (oneStep.env)
+            env += oneStep.env
+        }
+
+        this."${script}"(argList)
         return
 //        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 
