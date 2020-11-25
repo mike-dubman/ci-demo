@@ -250,16 +250,14 @@ def run_step(config, title, oneStep) {
 
     config.logger.debug("Running step with shell=" + shell)
     run_shell("echo Starting step: ${title}", title)
-    if (shell == "action") {
-        config.logger.debug("xxx Running action step with script="+script)
-//        def ngci = library(identifier: 'ngci@ci_version-3.1',
-//                            retriever: modernSCM([$class: 'GitSCMSource', 
-//                                        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
+    if (shell == "action") {
+        config.logger.debug("Running action="+script)
 
         def vars = [:]
         vars['env'] = env
         def argList = []
+
         for (arg in oneStep.args) {
             arg = resolveTemplate(vars, arg)
             argList.add(arg)
@@ -273,15 +271,6 @@ def run_step(config, title, oneStep) {
         
         this."${script}"(argList)
         return
-//        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
-
- //       NGCIBlackDuckScan (projectName: "ci-demo",
- //                       projectVersion: "1.0",
- //                       projectSrcPath: "${env.WORKSPACE}/src",
- //                       attachArtifact: true ,
- //                       reportName: "BlackDuck report",
-  //                      scanMode: "source")        
-  //      return;
     }
 
     def cmd = """${shell}
