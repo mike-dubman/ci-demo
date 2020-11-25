@@ -251,22 +251,21 @@ def run_step(config, title, oneStep) {
     config.logger.debug("Running step with shell=" + shell)
     run_shell("echo Starting step: ${title}", title)
 
-    if (shell == "action") {
-        config.logger.debug("Running action="+script)
+    if (oneStep.env) {
+        oneStep.env.each {k,v ->
+            env[k] = v
+        }
+    }
 
+    if (shell == "action") {
+        config.logger.debug("Running step action="+script)
+
+        def argList = []
         def vars = [:]
         vars['env'] = env
-        def argList = []
-
         for (arg in oneStep.args) {
             arg = resolveTemplate(vars, arg)
             argList.add(arg)
-        }
-
-        if (oneStep.env) {
-            oneStep.env.each {k,v ->
-                env[k] = v
-            }
         }
         
         this."${script}"(argList)
