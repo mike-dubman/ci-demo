@@ -258,8 +258,7 @@ def run_step(config, script, title, shell) {
  //       vars['env'] = env
  //       GroovyShell gShell = new GroovyShell(new Binding(vars))
  //       return gShell.evaluate(script)
-          def args = ['momomo']
-          this."${script}"(*args)
+          this."${script}"('helllllllllo')
           return
 //        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 
