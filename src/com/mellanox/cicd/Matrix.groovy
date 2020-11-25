@@ -256,8 +256,8 @@ def run_step(config, script, title, shell) {
         def vars = [:]
         vars['ngci'] = ngci
         vars['env'] = env
-/       GroovyShell gShell = new GroovyShell(new Binding(vars))
-/       return gShell.evaluate(script)
+        GroovyShell gShell = new GroovyShell(new Binding(vars))
+        return gShell.evaluate(script)
 //        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 
  //       NGCIBlackDuckScan (projectName: "ci-demo",
