@@ -248,7 +248,7 @@ def run_step(config, script, title, shell) {
     config.logger.debug("Running step with shell="+shell)
     run_shell("echo Starting step: ${title}", title)
     if (shell == "action") {
-        config.logger.debug("xxx Running action step with shell="+script)
+        config.logger.debug("xxx Running action step with script="+script)
 //        def ngci = library(identifier: 'ngci@ci_version-3.1',
 //                            retriever: modernSCM([$class: 'GitSCMSource', 
 //                                        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
@@ -258,7 +258,8 @@ def run_step(config, script, title, shell) {
  //       vars['env'] = env
  //       GroovyShell gShell = new GroovyShell(new Binding(vars))
  //       return gShell.evaluate(script)
-          "${script}"
+          def args = ['momomo']
+          this."${script}"(*args)
           return
 //        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 
