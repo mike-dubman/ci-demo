@@ -257,7 +257,8 @@ def run_step(config, title, oneStep) {
 //                                        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
 
-        def vars['env'] = env
+        def vars = [:]
+        vars['env'] = env
         def argList = []
         for (arg in oneStep.args) {
             arg = resolveTemplate(vars, arg)
