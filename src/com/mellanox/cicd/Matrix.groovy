@@ -247,17 +247,19 @@ def run_step(config, script, title, shell) {
 
     config.logger.debug("Running step with shell="+shell)
     run_shell("echo Starting step: ${title}", title)
-    if (shell == "ngci") {
-        config.logger.debug("xxx Running ngci step with shell="+script)
-        def ngci = library(identifier: 'ngci@ci_version-3.1',
-                            retriever: modernSCM([$class: 'GitSCMSource', 
-                                        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
+    if (shell == "action") {
+        config.logger.debug("xxx Running action step with shell="+script)
+//        def ngci = library(identifier: 'ngci@ci_version-3.1',
+//                            retriever: modernSCM([$class: 'GitSCMSource', 
+//                                        remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
-        def vars = [:]
-        vars['ngci'] = ngci
-        vars['env'] = env
-        GroovyShell gShell = new GroovyShell(new Binding(vars))
-        return gShell.evaluate(script)
+ //       def vars = [:]
+ //       vars['ngci'] = ngci
+ //       vars['env'] = env
+ //       GroovyShell gShell = new GroovyShell(new Binding(vars))
+ //       return gShell.evaluate(script)
+          sayHello('XXXXXXXXXXXXXXXXXXX MikeD')
+          return
 //        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 
  //       NGCIBlackDuckScan (projectName: "ci-demo",
