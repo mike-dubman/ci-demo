@@ -56,13 +56,6 @@ steps:
     shell: action
     run: blackduck.groovy
 
-        ngci.NGCIBlackDuckScan (projectName: "ci-demo",
-                        projectVersion: "1.0",
-                        projectSrcPath: "${env.WORKSPACE}/src",
-                        attachArtifact: true ,
-                        reportName: "BlackDuck report",
-                        scanMode: "source")        
-
 steps_disabled:
 
   - name: Test failure
