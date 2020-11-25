@@ -266,9 +266,11 @@ def run_step(config, title, oneStep) {
         }
 
         if (oneStep.env) {
-            env += oneStep.env
+            oneStep.env.each {k,v ->
+                env[k] = v
+            }
         }
-
+        
         this."${script}"(argList)
         return
 //        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
