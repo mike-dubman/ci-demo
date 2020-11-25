@@ -54,7 +54,7 @@ steps:
 
   - name: Blackduck source
     shell: action
-    run: sayHello
+    run: sayHello('momo')
 
 steps_disabled:
 
