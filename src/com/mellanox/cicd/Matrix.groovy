@@ -262,15 +262,17 @@ def run_step(config, title, oneStep) {
  //       GroovyShell gShell = new GroovyShell(new Binding(vars))
  //       return gShell.evaluate(script)
 
-         config.logger.debug("xxx args=" + oneStep.args)
+        config.logger.debug("xxx args=" + oneStep.args)
 
-          for (arg in oneStep.args) {
-              config.logger.debug("xxx arg="+arg)
-          }
+        def vars = [:]
+        vars['env'] = env
+        for (arg in oneStep.args) {
+            arg = resolveTemplate(vars, arg)
+            config.logger.debug("xxx arg="+arg)
+        }
 
-          def args="'koko', 'momo'"
-          this."${script}"(oneStep.args)
-          return
+        this."${script}"(oneStep.args)
+        return
 //        env.SPRING_APPLICATION_JSON = '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 
  //       NGCIBlackDuckScan (projectName: "ci-demo",
