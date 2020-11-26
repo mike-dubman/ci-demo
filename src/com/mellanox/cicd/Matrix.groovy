@@ -580,6 +580,8 @@ def buildDocker(image, config) {
 
 def build_docker_on_k8(image, config) {
 
+    config.logger.debug("build_docker_on_k8() -->")
+    
     def myVols = config.volumes.collect()
     myVols.add([mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'])
 
