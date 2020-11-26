@@ -71,7 +71,8 @@ def getArchConf(config, arch) {
     
     k8sArchConfTable['x86_64']  = [
         nodeSelector: 'kubernetes.io/arch=amd64',
-        jnlpImage: 'jenkins/inbound-agent:latest'
+        jnlpImage: 'jenkins/inbound-agent:latest',
+        dockerImage: 'docker:19.03'
     ]
 
     if (!config.registry_jnlp_path) {
@@ -81,7 +82,14 @@ def getArchConf(config, arch) {
 
     k8sArchConfTable['aarch64'] = [
         nodeSelector: 'kubernetes.io/arch=arm64',
-        jnlpImage: "${config.registry_host}/${config.registry_jnlp_path}/jenkins-arm-agent-jnlp:latest"
+        jnlpImage: "${config.registry_host}/${config.registry_jnlp_path}/jenkins-arm-agent-jnlp:latest",
+        dockerImage: 'docker:19.03'
+    ]
+
+    k8sArchConfTable['ppc64le'] = [
+        nodeSelector: 'kubernetes.io/arch=ppc64le',
+        jnlpImage: "${config.registry_host}/${config.registry_jnlp_path}/jenkins-ppc64le-agent-jnlp:latest",
+        dockerImage: 'ppc64le/docker'
     ]
 
     def aTable = getConfigVal(config, ['kubernetes', 'arch_table'], null)
@@ -98,6 +106,7 @@ def getArchConf(config, arch) {
     k8sArchConfTable.each { key, val ->
         config.logger.debug("getArchConf: resolving template for key=" + key + " val=" + val)
         val.jnlpImage = resolveTemplate(varsMap, val.get("jnlpImage"))
+        val.dockerImage = resolveTemplate(varsMap, val.get("dockerImage"))
     }
 
     config.logger.debug("k8sArchConfTable: " + k8sArchConfTable)
@@ -369,21 +378,43 @@ def runK8(image, branchName, config, axis) {
         str += "$key = $val\n"
     }
 
-    run_shell('printf "%s"' +  '"' + str + '"', "Matrix axis parameters")
-    
-
+    config.logger.debug("runK8 | str: ${str}")
 
     def listV = parseListV(config.volumes)
     def cname = image.get("name").replaceAll("[\\.:/_]","")
-    def nodeSelector = getConfigVal(config, ['kubernetes', 'nodeSelector'], "")
 
-    podTemplate(cloud: cloudName, runAsUser: "0", runAsGroup: "0",
-                nodeSelector: nodeSelector,
-                containers: [
-                    containerTemplate(name: cname, image: image.url, ttyEnabled: true, alwaysPullImage: true, command: 'cat')
-                ],
-                volumes: listV
-                )
+    config.logger.debug("runK8 | arch: ${axis.arch}")
+
+    def k8sArchConf = getArchConf(config, axis.arch)
+    def nodeSelector = ''
+
+    if (!k8sArchConf) {
+        config.logger.error("runK8 | arch conf is not defined for ${axis.arch}")
+        return
+    }
+
+    nodeSelector = k8sArchConf.nodeSelector
+    config.logger.info("runK8 | nodeSelector: ${nodeSelector}")
+
+    if (axis.nodeSelector) {
+        if (nodeSelector) {
+            nodeSelector = nodeSelector + ',' + axis.nodeSelector
+        } else {
+            nodeSelector = axis.nodeSelector
+        }
+    }
+
+    podTemplate(
+        cloud: cloudName,
+        runAsUser: "0",
+        runAsGroup: "0",
+        nodeSelector: nodeSelector,
+        containers: [
+            containerTemplate(name: 'jnlp', image: k8sArchConf.jnlpImage, args: '${computer.jnlpmac} ${computer.name}'),
+            containerTemplate(name: cname, image: image.url, ttyEnabled: true, alwaysPullImage: true, command: 'cat')
+        ],
+        volumes: listV
+    )
     {
         node(POD_LABEL) {
             stage (branchName) {
@@ -440,7 +471,7 @@ Map getTasks(axes, image, config, include, exclude) {
 
     def val = getConfigVal(config, ['failFast'], true)
 
-    config.logger.debug("getTasks() --> ")
+    config.logger.debug("getTasks() -->")
 
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
@@ -450,10 +481,10 @@ Map getTasks(axes, image, config, include, exclude) {
         axis.put("variant", i + 1)
         axis.put("axis_index", i + 1)
 
-        if (exclude.size() && matchMapEntry(config, exclude, axis)) {
+        if (exclude.size() && matchMapEntry(exclude, axis)) {
             config.logger.debug("Excluding by 'exclude' rule, axis " + axis.toMapString())
             continue
-        } else if (include.size() && ! matchMapEntry(config, include, axis)) {
+        } else if (include.size() && ! matchMapEntry(include, axis)) {
             config.logger.debug("Excluding by 'include' rule, axis " + axis.toMapString())
             continue
         }
@@ -491,7 +522,7 @@ Map getTasks(axes, image, config, include, exclude) {
 }
 
 Map getMatrixTasks(image, config) {
-    
+
     def include = [], exclude = [], axes = []
     config.logger.debug("getMatrixTasks() -->")
 
@@ -600,12 +631,36 @@ def build_docker_on_k8(image, config) {
 
     config.logger.debug("Checking docker image availability")
 
-    podTemplate(cloud: cloudName, runAsUser: "0", runAsGroup: "0",
-                containers: [
-                    containerTemplate(name: 'docker', image: 'docker:19.03', ttyEnabled: true, alwaysPullImage: true, command: 'cat')
-                ],
-                volumes: listV
-                )
+    def k8sArchConf = getArchConf(config, image.arch)
+    def nodeSelector = ''
+
+    if (!k8sArchConf) {
+        config.logger.error("build_docker_on_k8 | arch conf is not defined for ${image.arch}")
+        return
+    }
+
+    nodeSelector = k8sArchConf.nodeSelector
+    config.logger.info("build_docker_on_k8 | nodeSelector: ${nodeSelector}")
+
+    if (image.nodeSelector) {
+        if (nodeSelector) {
+            nodeSelector = nodeSelector + ',' + image.nodeSelector
+        } else {
+            nodeSelector = image.nodeSelector
+        }
+    }
+
+    podTemplate(
+        cloud: cloudName,
+        runAsUser: "0",
+        runAsGroup: "0",
+        nodeSelector: nodeSelector,
+        containers: [
+            containerTemplate(name: 'jnlp', image: k8sArchConf.jnlpImage, args: '${computer.jnlpmac} ${computer.name}'),
+            containerTemplate(name: 'docker', image: k8sArchConf.dockerImage, ttyEnabled: true, alwaysPullImage: true, command: 'cat')
+        ],
+        volumes: listV
+    )
     {
         node(POD_LABEL) {
             unstash "${env.JOB_NAME}"
@@ -708,9 +763,7 @@ def main() {
                 }
             }
         }
-
     }
-
 }
 
 return this
