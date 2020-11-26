@@ -437,7 +437,7 @@ Map getTasks(axes, image, config, include=null, exclude=null) {
     def val = getConfigVal(config, ['failFast'], true)
 
     config.logger.debug("getTasks() -->")
-    
+
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
@@ -485,8 +485,9 @@ Map getTasks(axes, image, config, include=null, exclude=null) {
 }
 
 Map getMatrixTasks(image, config) {
-    List axes = []
-    List include = null, exclude = null
+    
+    def include = [], exclude = [], axes = []
+    config.logger.debug("getMatrixTasks() -->")
 
     if (config.get("matrix")) {
         axes = getMatrixAxes(config.matrix.axes).findAll()
