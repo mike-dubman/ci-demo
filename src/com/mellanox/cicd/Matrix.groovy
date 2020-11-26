@@ -434,7 +434,7 @@ Map getTasks(axes, image, config, include, exclude) {
 
     def val = getConfigVal(config, ['failFast'], true)
 
-    config.logger.debug("getTasks() -->")
+    config.logger.debug("getTasks() --> ")
 
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
@@ -445,12 +445,14 @@ Map getTasks(axes, image, config, include, exclude) {
         axis.put("axis_index", i + 1)
 
         if (exclude.size() && matchMapEntry(config, exclude, axis)) {
-            config.logger.info("Applying exclude filter on  " + axis.toMapString())
+            config.logger.debug("Excluding by 'exclude' rule, axis " + axis.toMapString())
             continue
         } else if (include.size() && ! matchMapEntry(config, include, axis)) {
-            config.logger.info("Applying include filter on  " + axis.toMapString())
+            config.logger.debug("Excluding by 'include' rule, axis " + axis.toMapString())
             continue
         }
+
+        config.logger.info("Working on axis " + axis.toMapString())
 
         def tmpl = getConfigVal(config, ['taskName'], '${arch}/${name} v${axis_index}')
         def branchName = resolveTemplate(axis, tmpl)
@@ -495,6 +497,7 @@ Map getMatrixTasks(image, config) {
         axes.add(image)
     }
 
+    config.logger.debug("Filters include size: " + include.size() + " exclude size: " + exclude.size())
     return getTasks(axes, image, config, include, exclude)
 }
 
