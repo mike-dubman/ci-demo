@@ -180,8 +180,10 @@ def gen_image_map(config) {
     return image_map
 }
 
-def matchMapEntry(filters, entry) {
+def matchMapEntry(config, filters, entry) {
     def match
+
+    config.logger.debug("Applying filters: " + filters)
     for (filter in filters) {
         match = 1
         filter.each { k,v ->
@@ -434,6 +436,7 @@ Map getTasks(axes, image, config, include=null, exclude=null) {
 
     def val = getConfigVal(config, ['failFast'], true)
 
+    config.logger.debug("getTasks() -->")
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
@@ -442,10 +445,10 @@ Map getTasks(axes, image, config, include=null, exclude=null) {
         axis.put("variant", i + 1)
         axis.put("axis_index", i + 1)
 
-        if (exclude && matchMapEntry(exclude, axis)) {
+        if (exclude && matchMapEntry(config, exclude, axis)) {
             config.logger.info("Applying exclude filter on  " + axis.toMapString())
             continue
-        } else if (include && ! matchMapEntry(include, axis)) {
+        } else if (include && ! matchMapEntry(config, include, axis)) {
             config.logger.info("Applying include filter on  " + axis.toMapString())
             continue
         }
