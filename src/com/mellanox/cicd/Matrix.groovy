@@ -174,14 +174,13 @@ def gen_image_map(config) {
                 name: "${dfile.name}", \
                 build_args: "${dfile.build_args}" \
             ]
-            if (dfile.nodeLabel) {
-                item.put('nodeLabel', dfile.nodeLabel)
-            }
 
-            if (dfile.nodeSelector) {
-                item.put('nodeSelector', dfile.nodeSelector)
+            def copyKeysList = ['id', 'nodeLabel', 'nodeSelector', 'type']
+            copyKeysList.each { k ->
+                if (dfile.containsKey(k)) {
+                    item.put(k, dfile.get(k))
+                }
             }
-
             config.logger.debug("Adding docker to image_map for " + item.arch + " name: " + item.name)
             images.add(item)
         }
@@ -252,10 +251,27 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
     return ret
 }
 
-def run_step(config, title, oneStep) {
+def run_step(image, config, title, oneStep) {
 
     def shell = getDefaultShell(config, oneStep)
     def script = oneStep.run
+
+    def skip = 0
+    if (image.type != null && image.type == "tool") {
+        config.logger.debug("Detected image type=tool")
+        skip++
+    }
+
+    def customSel = oneStep.get("container_select_by")
+    if (customSel != null && matchMapEntry(customSel, image)) {
+        config.logger.debug("step name=" + oneStep.name + " requests container with attr=" + customSel)
+        skip--
+    }
+
+    if (skip) {
+        config.logger.debug("Skipping step=" + oneStep.name + " for image type=tool")
+        return
+    }
 
     config.logger.debug("Running step with shell=" + shell)
     run_shell("echo Starting step: ${title}", title)
@@ -267,7 +283,7 @@ def run_step(config, title, oneStep) {
     }
 
     if (shell == "action") {
-        config.logger.debug("Running step action="+script)
+        config.logger.debug("Running step action=" + script)
 
         def argList = []
         def vars = [:]
@@ -301,7 +317,7 @@ def runSteps(image, config, branchName) {
         // collect parallel steps (if any) and run it when non-parallel step discovered or last element.
         if ( par != null && par == true) {
             def stepName = branchName + "->" + one.name
-            parallelNestedSteps[stepName] = {run_step(config, stepName, oneStep)}
+            parallelNestedSteps[stepName] = {run_step(image, config, stepName, oneStep)}
             // last element - run and flush
             if (i == config.steps.size() -1) {
                 parallel(parallelNestedSteps)
@@ -317,7 +333,7 @@ def runSteps(image, config, branchName) {
             parallelNestedSteps = [:]
         }
         try {
-            run_step(config, one.name, oneStep)
+            run_step(image, config, one.name, oneStep)
         } catch (e) {
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")
@@ -525,6 +541,12 @@ Map getMatrixTasks(image, config) {
 
     def include = [], exclude = [], axes = []
     config.logger.debug("getMatrixTasks() -->")
+
+    // tool is only needed once
+    if (image.type != null and image.type == "tool") {
+        axes.add(image)
+        return
+    }
 
     if (config.get("matrix")) {
         axes = getMatrixAxes(config.matrix.axes).findAll()

@@ -30,9 +30,9 @@ env:
 
 runs_on_dockers:
 #  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64', nodeLabel: '(dockerserver || docker) && x86_64'}
-#  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', arch: 'x86_64'}
+  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', arch: 'x86_64', type: 'tool', id: 'blackduck'}
   - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64'}
- 
+
 
 #matrix_disabled:
 #  axes:
@@ -48,12 +48,17 @@ runs_on_dockers:
 #      - x86_64
 
 steps:
-  - name: step1
+  - name: Run on all containers
+    run: touch aaa
+
+  - name: once
+    container_select_by: '{name:ubuntu16-4,variant:1}'
     run: touch aaa
 
   - name: Blackduck scan source
     shell: action
     run: blackDuck
+    container_select_by: '{id:blackduck}'
     args: 
       - "ci-demo"
       - "1.0"
