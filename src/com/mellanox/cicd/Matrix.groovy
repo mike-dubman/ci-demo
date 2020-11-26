@@ -489,8 +489,8 @@ Map getMatrixTasks(image, config) {
 
     if (config.get("matrix")) {
         axes = getMatrixAxes(config.matrix.axes).findAll()
-        exclude = getConfigVal(config, ['matrix', 'exclude'])
-        include = getConfigVal(config, ['matrix', 'include'])
+        exclude = getConfigVal(config, ['matrix', 'exclude'], [])
+        include = getConfigVal(config, ['matrix', 'include'], [])
     } else {
         axes.add(image)
     }
