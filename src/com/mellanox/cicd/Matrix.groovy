@@ -189,7 +189,7 @@ def gen_image_map(config) {
     return image_map
 }
 
-def matchMapEntry(config, filters, entry) {
+def matchMapEntry(filters, entry) {
     def match
     for (filter in filters) {
         match = 1
