@@ -542,8 +542,8 @@ Map getMatrixTasks(image, config) {
     def include = [], exclude = [], axes = []
     config.logger.debug("getMatrixTasks() -->")
 
-    // tool is only needed once
-    if (image.type != null and image.type == "tool") {
+    // tool is only need to be added once
+    if (image.type != null && image.type == "tool") {
         axes.add(image)
         return
     }
