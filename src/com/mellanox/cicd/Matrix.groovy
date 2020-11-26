@@ -437,6 +437,7 @@ Map getTasks(axes, image, config, include=null, exclude=null) {
     def val = getConfigVal(config, ['failFast'], true)
 
     config.logger.debug("getTasks() -->")
+    
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
@@ -581,7 +582,7 @@ def buildDocker(image, config) {
 def build_docker_on_k8(image, config) {
 
     config.logger.debug("build_docker_on_k8() -->")
-    
+
     def myVols = config.volumes.collect()
     myVols.add([mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'])
 
