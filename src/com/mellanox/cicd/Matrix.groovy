@@ -543,7 +543,7 @@ Map getMatrixTasks(image, config) {
     config.logger.debug("getMatrixTasks() -->")
 
     // tool is only need to be added once
-    if (image.type != null && image.type == "tool") {
+    if (image.get("type") != null && image.type == "tool") {
         axes.add(image)
         return
     }
