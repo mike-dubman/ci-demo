@@ -182,8 +182,6 @@ def gen_image_map(config) {
 
 def matchMapEntry(config, filters, entry) {
     def match
-
-    config.logger.debug("Applying filters: " + filters)
     for (filter in filters) {
         match = 1
         filter.each { k,v ->
@@ -432,7 +430,7 @@ def runDocker(image, config, branchName=null, axis=null, Closure func, runInDock
 }
 
 
-Map getTasks(axes, image, config, include=null, exclude=null) {
+Map getTasks(axes, image, config, include, exclude) {
 
     def val = getConfigVal(config, ['failFast'], true)
 
@@ -446,10 +444,10 @@ Map getTasks(axes, image, config, include=null, exclude=null) {
         axis.put("variant", i + 1)
         axis.put("axis_index", i + 1)
 
-        if (exclude && matchMapEntry(config, exclude, axis)) {
+        if (exclude.size() && matchMapEntry(config, exclude, axis)) {
             config.logger.info("Applying exclude filter on  " + axis.toMapString())
             continue
-        } else if (include && ! matchMapEntry(config, include, axis)) {
+        } else if (include.size() && ! matchMapEntry(config, include, axis)) {
             config.logger.info("Applying include filter on  " + axis.toMapString())
             continue
         }
