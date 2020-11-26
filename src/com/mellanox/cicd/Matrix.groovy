@@ -336,7 +336,13 @@ def getConfigVal(config, list, defaultVal=null) {
         }
     }
 
-    def ret =  (val instanceof ArrayList)? val[0] : val
+    def ret
+    if (val instanceof ArrayList && val.size() == 1) {
+        ret = val[0]
+    } else {
+        ret = val
+    }
+    //def ret =  (val instanceof ArrayList)? val[0] : val
     config.logger.debug("getConfigVal: Found " + list.toString() + " = " + ret)
     return ret
 }
