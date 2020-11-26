@@ -175,7 +175,7 @@ def gen_image_map(config) {
                 build_args: "${dfile.build_args}" \
             ]
 
-            def copyKeysList = ['id', 'nodeLabel', 'nodeSelector', 'type']
+            def copyKeysList = ['id', 'nodeLabel', 'nodeSelector', 'category']
             copyKeysList.each { k ->
                 if (dfile.containsKey(k)) {
                     item.put(k, dfile.get(k))
@@ -257,8 +257,8 @@ def run_step(image, config, title, oneStep) {
     def script = oneStep.run
 
     def skip = 0
-    if (image.type != null && image.type == "tool") {
-        config.logger.debug("Detected image type=tool")
+    if (image.get("category") != null && image.category == "tool") {
+        config.logger.debug("Detected image category=tool")
         skip++
     }
 
@@ -269,7 +269,7 @@ def run_step(image, config, title, oneStep) {
     }
 
     if (skip) {
-        config.logger.debug("Skipping step=" + oneStep.name + " for image type=tool")
+        config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
         return
     }
 
@@ -543,9 +543,9 @@ Map getMatrixTasks(image, config) {
     config.logger.debug("getMatrixTasks() --> image=" + image)
 
     // tool is only need to be added once
-    if (image.get("type") != null && image.type == "tool") {
+    if (image.get("category") != null && image.category == "tool") {
         config.logger.debug("getMatrixTasks() --> adding")
-        axes += image
+        axes.add(image)
         return
     }
 
