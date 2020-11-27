@@ -545,6 +545,12 @@ def getMatrixTasks(image, config) {
     // tool is only need to be added once
     if (image.get("category") != null && image.category == "tool") {
         config.logger.debug("getMatrixTasks() --> adding axes=" + axes.getClass() + " image=" + image.getClass())
+        image.each { tab ->
+            config.logger.debug("getMatrixTasks() tab --> " + tab.getClass())
+            tab.each { k,v ->
+                config.logger.debug("getMatrixTasks() tab --> k=" + k + " v=" + v)
+            }
+        }
         axes.add(image.get(0))
         return
     }
