@@ -35,10 +35,11 @@ class Logger {
 }
  
 
-def getMatrixAxes(matrix_axes) {
-    def axes = []
+@NonCPS
+List getMatrixAxes(matrix_axes) {
+    List axes = []
     matrix_axes.each { axis, values ->
-        def axisList = []
+        List axisList = []
         values.each { value ->
             axisList << [(axis): value]
         }
@@ -536,6 +537,7 @@ Map getTasks(axes, image, config, include, exclude) {
     return tasks
 }
 
+@NonCPS
 Map getMatrixTasks(image, config) {
 
     def include = [], exclude = [], axes = []
