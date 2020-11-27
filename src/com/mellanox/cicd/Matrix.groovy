@@ -547,7 +547,6 @@ Map getMatrixTasks(image, config) {
     if (image.get("category") != null && image.category == "tool") {
         config.logger.debug("getMatrixTasks() --> adding axes=" + axes.getClass() + " image=" + image.getClass())
         def image1 = [:]
-        image1 += image
         axes.add(image1)
         return
     }
