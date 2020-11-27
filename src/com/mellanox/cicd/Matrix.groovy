@@ -539,7 +539,8 @@ Map getTasks(axes, image, config, include, exclude) {
 
 def getMatrixTasks(image, config) {
 
-    def include = [], exclude = [], axes = []
+    def include = [], exclude = []
+    def List<LinkedHashMap> axes = []
     config.logger.debug("getMatrixTasks() --> image=" + image)
 
     // tool is only need to be added once
