@@ -539,7 +539,8 @@ Map getTasks(axes, image, config, include, exclude) {
 
 Map getMatrixTasks(image, config) {
 
-    def include = [], exclude = [], axes = []
+    def include = [], exclude = []
+    List axes = []
     config.logger.debug("getMatrixTasks() --> image=" + image)
 
     // tool is only need to be added once
