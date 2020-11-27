@@ -52,14 +52,14 @@ steps:
     run: touch aaa
 
   - name: once
-    container_select_by: '{name:ubuntu16-4,variant:1}'
+    containerSelector: '{name:ubuntu16-4,variant:1}'
     run: touch aaa
 
   - name: Blackduck scan source
     enable: false
     shell: action
     run: blackDuck
-    container_select_by: '{id:blackduck}'
+    containerSelector: '{id:blackduck}'
     args: 
       - "ci-demo"
       - "1.0"
