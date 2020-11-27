@@ -266,7 +266,7 @@ def run_step(image, config, title, oneStep) {
 
     def customSel = oneStep.get("container_select_by")
     if (customSel != null && matchMapEntry(customSel, image)) {
-        config.logger.debug("step name=" + oneStep.name + " requests container with attr=" + customSel)
+        config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel)
         skip--
     }
 
