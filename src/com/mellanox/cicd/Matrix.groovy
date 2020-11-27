@@ -285,7 +285,6 @@ def run_step(image, config, title, oneStep) {
     }
 
     if (shell == "action") {
-        config.logger.debug("Running step action=" + script)
 
         def argList = []
         def vars = [:]
@@ -294,7 +293,8 @@ def run_step(image, config, title, oneStep) {
             arg = resolveTemplate(vars, arg)
             argList.add(arg)
         }
-        
+
+        config.logger.debug("Running step action=" + script + " args=" + argList)
         this."${script}"(argList)
         return
     }
