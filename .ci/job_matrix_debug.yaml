@@ -56,6 +56,7 @@ steps:
     run: touch aaa
 
   - name: Blackduck scan source
+    enable: false
     shell: action
     run: blackDuck
     container_select_by: '{id:blackduck}'

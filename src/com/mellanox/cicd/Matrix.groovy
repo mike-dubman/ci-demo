@@ -243,8 +243,10 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
 
 def run_step(image, config, title, oneStep) {
 
-    def shell = getDefaultShell(config, oneStep)
-    def script = oneStep.run
+    if (oneStep.get("enable") != null && !oneStep.enable) {
+        config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
+        return
+    }
 
     def skip = 0
     if (image.get("category") != null && image.category == "tool") {
@@ -262,6 +264,9 @@ def run_step(image, config, title, oneStep) {
         config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
         return
     }
+
+    def shell = getDefaultShell(config, oneStep)
+    def script = oneStep.run
 
     config.logger.debug("Running step with shell=" + shell)
     run_shell("echo Starting step: ${title}", title)
