@@ -539,30 +539,20 @@ Map getTasks(axes, image, config, include, exclude) {
 
 def getMatrixTasks(image, config) {
 
-    def include = [], exclude = []
-    def List<LinkedHashMap> axes = []
+    def include = [], exclude = [], axes = []
     config.logger.debug("getMatrixTasks() --> image=" + image)
 
     // tool is only need to be added once
     if (image.get("category") != null && image.category == "tool") {
-        config.logger.debug("getMatrixTasks() --> adding axes=" + axes.getClass() + " image=" + image.getClass())
-        image.each { k,v ->
-            config.logger.debug("getMatrixTasks() image --> k=" + k + " v=" + v)
-        }
-
-        //axes.add(image)
-        return
-    }
-
-    config.logger.debug("getMatrixTasks() --> passed")
-
-
-    if (config.get("matrix")) {
-        axes = getMatrixAxes(config.matrix.axes).findAll()
-        exclude = getConfigVal(config, ['matrix', 'exclude'], [])
-        include = getConfigVal(config, ['matrix', 'include'], [])
-    } else {
         axes.add(image)
+    } else {
+        if (config.get("matrix")) {
+            axes = getMatrixAxes(config.matrix.axes).findAll()
+            exclude = getConfigVal(config, ['matrix', 'exclude'], [])
+            include = getConfigVal(config, ['matrix', 'include'], [])
+        } else {
+            axes.add(image)
+        }
     }
 
     config.logger.debug("Filters include size: " + include.size() + " exclude size: " + exclude.size())
