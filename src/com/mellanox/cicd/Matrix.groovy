@@ -167,24 +167,12 @@ def gen_image_map(config) {
                 dfile.uri = resolveTemplate(env_map, dfile.uri)
             }
 
+            def item = dfile
+            dfile.url = "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
+            dfile.filename = "${dfile.file}"
 
-            def item = [\
-                arch: "${arch}", \
-                tag:  "${dfile.tag}", \
-                filename: "${dfile.file}", \
-                url: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}", \
-                name: "${dfile.name}", \
-                build_args: "${dfile.build_args}" \
-            ]
-
-            def copyKeysList = ['id', 'nodeLabel', 'nodeSelector', 'category']
-            copyKeysList.each { k ->
-                if (dfile.containsKey(k)) {
-                    item.put(k, dfile.get(k))
-                }
-            }
             config.logger.debug("Adding docker to image_map for " + item.arch + " name: " + item.name)
-            images.add(item)
+            images.add(dfile)
         }
     }
     return image_map
@@ -642,8 +630,6 @@ def buildDocker(image, config) {
 
 
 def build_docker_on_k8(image, config) {
-
-    config.logger.debug("build_docker_on_k8() -->")
 
     def myVols = config.volumes.collect()
     myVols.add([mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'])
