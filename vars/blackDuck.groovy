@@ -8,13 +8,13 @@ def call(projectName, projectVersion, projectSrcPath, attachArtifact, reportName
 
     println("==>BlackDuck($projectName, $projectVersion, $projectSrcPath, $attachArtifact, $reportName, $scanMode)")
 
-    //NGCIBlackDuckScan (
-    //    projectName: $projectName,
-    //    projectVersion: $projectVersion,
-    //    projectSrcPath: $projectSrcPath,
-    //    attachArtifact: $attachArtifact,
-    //    reportName: $reportName,
-    //    scanMode: $scanMode
-    //)
+    NGCIBlackDuckScan (
+        projectName: $projectName,
+        projectVersion: $projectVersion,
+        projectSrcPath: $projectSrcPath,
+        attachArtifact: $attachArtifact,
+        reportName: $reportName,
+        scanMode: $scanMode
+    )
     return;
 }
