@@ -6,13 +6,15 @@ def call(projectName, projectVersion, projectSrcPath, attachArtifact, reportName
             retriever: modernSCM([$class: 'GitSCMSource', 
             remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
-    NGCIBlackDuckScan (
-        projectName: $projectName,
-        projectVersion: $projectVersion,
-        projectSrcPath: $projectSrcPath,
-        attachArtifact: $attachArtifact,
-        reportName: $reportName,
-        scanMode: $scanMode
-    )
+    println("==>BlackDuck($projectName, $projectVersion, $projectSrcPath, $attachArtifact, $reportName, $scanMode)")
+
+    //NGCIBlackDuckScan (
+    //    projectName: $projectName,
+    //    projectVersion: $projectVersion,
+    //    projectSrcPath: $projectSrcPath,
+    //    attachArtifact: $attachArtifact,
+    //    reportName: $reportName,
+    //    scanMode: $scanMode
+    //)
     return;
 }
