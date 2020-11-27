@@ -537,7 +537,6 @@ Map getTasks(axes, image, config, include, exclude) {
     return tasks
 }
 
-@NonCPS
 Map getMatrixTasks(image, config) {
 
     def include = [], exclude = [], axes = []
