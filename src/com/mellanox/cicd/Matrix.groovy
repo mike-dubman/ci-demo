@@ -35,11 +35,10 @@ class Logger {
 }
  
 
-@NonCPS
-List getMatrixAxes(matrix_axes) {
-    List axes = []
+def getMatrixAxes(matrix_axes) {
+    def axes = []
     matrix_axes.each { axis, values ->
-        List axisList = []
+        def axisList = []
         values.each { value ->
             axisList << [(axis): value]
         }
