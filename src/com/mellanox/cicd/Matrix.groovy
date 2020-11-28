@@ -706,8 +706,9 @@ def run_parallel_in_chunks(myTasks, bSize) {
 
 def loadConfigFile(filepath, logger) {
     def config = readYaml(file: filepath)
+    def rawFile = readFile(filepath)
 
-    logger.debug("loadConfigFile: " + config.toString())
+    logger.debug("loadConfigFile: " + rawFile)
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
