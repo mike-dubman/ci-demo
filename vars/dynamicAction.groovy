@@ -1,8 +1,9 @@
 #!/usr/bin/env groovy
 
-def call(actionName, preCmd, buildCmd) {
+def call(List args) {
 
-    println("==>DynamicAction ($actionName, $preCmd, $buildCmd)")
+    println("==>DynamicAction(" + args + ")")
+    def actionName = args[0]
     def actionScript = libraryResource "actions/${actionName}"
     def toFile = new File (env.WORKSPACE + "/cidemo_" + actionName)
 
@@ -10,6 +11,6 @@ def call(actionName, preCmd, buildCmd) {
     writeFile(file: toFile.getAbsolutePath(), text: actionScript)
     sh("chmod +x " + toFile.getAbsolutePath())
 
-    sh(toFile.getAbsolutePath() + " $buildCmd")
+    sh(toFile.getAbsolutePath() + args)
     return;
 }

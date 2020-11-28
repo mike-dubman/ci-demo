@@ -1,3 +1,3 @@
 #!/bin/bash -eE
 
-echo welcome coverity "@*"
+echo welcome coverity "$@"
