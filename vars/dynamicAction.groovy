@@ -5,7 +5,7 @@ def call(actionName, preCmd, buildCmd) {
 
     println("==>DynamicAction ($actionName, $preCmd, $buildCmd)")
     def actionScript = libraryResource "actions/${actionName}"
-    def toFile = new File ("cidemo_" + actionName)
+    def toFile = new File (env.WORKSPACE + "/cidemo_" + actionName)
 
     println("action file: " + toFile.getAbsolutePath())
     toFile.write("${actionScript}")
