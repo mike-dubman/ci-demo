@@ -1,6 +1,5 @@
 #!/usr/bin/env groovy
 
-@NonCPS
 def call(actionName, preCmd, buildCmd) {
 
     println("==>DynamicAction ($actionName, $preCmd, $buildCmd)")
