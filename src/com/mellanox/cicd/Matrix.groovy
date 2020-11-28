@@ -703,17 +703,11 @@ def run_parallel_in_chunks(myTasks, bSize) {
     }
 }
 
-@NonCPS
-String yamlToString(Object data){
-    def opts = new DumperOptions()
-    opts.setDefaultFlowStyle(BLOCK)
-    return new Yaml(opts).dump(data)
-}
 
 def loadConfigFile(filepath, logger) {
     def config = readYaml(file: filepath)
 
-    logger.debug("loadConfigFile: " + yamlToString(config))
+    logger.debug("loadConfigFile: " + config.toString())
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
