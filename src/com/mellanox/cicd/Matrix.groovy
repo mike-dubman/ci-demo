@@ -121,7 +121,7 @@ def gen_image_map(config) {
     def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null)
 
     if (arch_list) {
-        config.logger.info("XXXXXX + " arch_list)
+        config.logger.info("XXXXXX " + arch_list)
         for (arch in arch_list) {
             config.logger.info("XXXXXXyyyy " + arch)
             image_map[arch] = []
