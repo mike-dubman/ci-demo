@@ -2,7 +2,7 @@
 
 def call(List args) {
 
-    println("==>DynamicAction(" + args + ")")
+    println("==>DynamicAction(" + args.toSTring() + ")")
 
     if (args.size() < 1) {
         println("fatal: DynamicAction() expects at least 1 parameter")
@@ -16,7 +16,7 @@ def call(List args) {
     writeFile(file: toFile.getAbsolutePath(), text: actionScript)
     sh("chmod +x " + toFile.getAbsolutePath())
 
-    def cmd = toFile.getAbsolutePath() + " " + args.subList(1,args.size()).join(" ")
+    def cmd = toFile.getAbsolutePath() + " " + args.subList(1,args.size()).toString().join(" ")
     println("Running " + cmd)
 
     sh(cmd)
