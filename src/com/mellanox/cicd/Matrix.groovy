@@ -118,7 +118,7 @@ def getArchConf(config, arch) {
 def gen_image_map(config) {
     def image_map = [:]
 
-    def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null)
+    def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null, false)
 
     if (arch_list) {
         config.logger.info("XXXXXX " + arch_list)
@@ -349,7 +349,7 @@ def runSteps(image, config, branchName) {
     attachArtifacts(config.archiveArtifacts)
 }
 
-def getConfigVal(config, list, defaultVal=null) {
+def getConfigVal(config, list, defaultVal=null, toString=true) {
     def val = config
     for (item in list) {
         config.logger.debug("getConfigVal: Checking $item in config file")
@@ -361,7 +361,7 @@ def getConfigVal(config, list, defaultVal=null) {
     }
 
     def ret
-    if (val instanceof ArrayList && val.size() == 1) {
+    if (toString && (val instanceof ArrayList) && (val.size() == 1)) {
         ret = val[0]
     } else {
         ret = val
