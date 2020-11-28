@@ -703,10 +703,17 @@ def run_parallel_in_chunks(myTasks, bSize) {
     }
 }
 
+@NonCPS
+String yamlToString(Object data){
+    def opts = new DumperOptions()
+    opts.setDefaultFlowStyle(BLOCK)
+    return new Yaml(opts).dump(data)
+}
+
 def loadConfigFile(filepath, logger) {
     def config = readYaml(file: filepath)
 
-    logger.debug("loadConfigFile: " + config.toString())
+    logger.debug("loadConfigFile: " + yamlToString(config))
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
@@ -762,7 +769,9 @@ def main() {
 // $arch -> List[$docker, $docker, $docker]
 // this is to avoid that multiple axis from matrix will create own same copy for $docker but creating it upfront.
 
-            def parallelBuildDockers = [:]
+
+            def val = getConfigVal(config, ['failFast'], true)
+            def parallelBuildDockers = [failFast: val]
 
             def arch_distro_map = gen_image_map(config)
             arch_distro_map.each { arch, images ->
