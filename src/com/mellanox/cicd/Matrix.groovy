@@ -172,7 +172,7 @@ def gen_image_map(config) {
             dfile.filename = "${dfile.file}"
 
             config.logger.debug("Adding docker to image_map for " + item.arch + " name: " + item.name)
-            images.add(dfile)
+            images.add(item)
         }
     }
     return image_map
