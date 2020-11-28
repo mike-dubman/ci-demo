@@ -55,6 +55,16 @@ steps:
     containerSelector: '{name:ubuntu16-4,variant:1}'
     run: touch aaa
 
+  - name: Coverity scan
+    shell: action
+    run: dynamicAction
+    containerSelector: '{id:blackduck}'
+    args: 
+      - "coverity.sh"
+      - "./autogen.sh;./configure"
+      - "make"
+
+
   - name: Blackduck scan source
     enable: false
     shell: action
