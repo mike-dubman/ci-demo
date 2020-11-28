@@ -518,7 +518,7 @@ Map getTasks(axes, image, config, include, exclude) {
 
         config.logger.info("Working on axis " + axis.toMapString())
 
-        def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis_index}")
+        def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis.axis_index}")
         def branchName = resolveTemplate(axis, tmpl)
 
         // convert the Axis into valid values for withEnv step
