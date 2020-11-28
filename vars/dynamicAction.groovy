@@ -2,7 +2,7 @@
 
 def call(List args) {
 
-    println("==>DynamicAction(" + args.toSTring() + ")")
+    println("==>DynamicAction(" + args.toString() + ")")
 
     if (args.size() < 1) {
         println("fatal: DynamicAction() expects at least 1 parameter")
