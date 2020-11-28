@@ -708,7 +708,7 @@ def loadConfigFile(filepath, logger) {
     def config = readYaml(file: filepath)
     def rawFile = readFile(filepath)
 
-    logger.debug("loadConfigFile: " + rawFile)
+    logger.debug("loadConfigFile:\n" + rawFile)
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
