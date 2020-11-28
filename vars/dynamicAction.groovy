@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-@NonCPS
+
 def call(List args) {
 
     println("==>DynamicAction(" + args + ")")
@@ -17,9 +17,10 @@ def call(List args) {
     writeFile(file: toFile.getAbsolutePath(), text: actionScript)
     sh("chmod +x " + toFile.getAbsolutePath())
 
-    def cmd = toFile.getAbsolutePath() + " " + args.subList(1,args.size()).collect{ '"' + it + '"'}.join(" ")
+    def cmd = toFile.getAbsolutePath() + " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
     println("Running " + cmd)
 
+    @NonCPS
     sh(cmd)
     return;
 }
