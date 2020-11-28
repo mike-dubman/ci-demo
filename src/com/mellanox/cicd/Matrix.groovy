@@ -118,8 +118,10 @@ def getArchConf(config, arch) {
 def gen_image_map(config) {
     def image_map = [:]
 
-    if (config.get("matrix") && config.matrix.axes.arch) {
-        for (arch in config.matrix.axes.arch) {
+    def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null)
+
+    if (arch_list) {
+        for (arch in arch_list) {
             image_map[arch] = []
         }
     } else {
