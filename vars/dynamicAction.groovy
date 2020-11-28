@@ -7,7 +7,7 @@ def call(actionName, preCmd, buildCmd) {
     def actionScript = libraryResource "actions/${actionName}"
     def toFile = new File ("cidemo_" + actionName)
     toFile.write("${actionScript}")
-    sh("chmod 755 " + toFile)
+    sh("chmod 755 " + toFile.getAbsolutePath())
 
     sh(toFile.getAbsolutePath() + " $buildCmd")
     return;
