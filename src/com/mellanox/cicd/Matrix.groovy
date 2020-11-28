@@ -693,6 +693,17 @@ def run_parallel_in_chunks(myTasks, bSize) {
     }
 }
 
+def loadConfigFile(filepath, logger) {
+    def config = readYaml(file: filepath)
+
+    if (config.get("matrix")) {
+        if (config.matrix.include != null && config.matrix.exclude != null) {
+            logger.fatal("matrix.include and matrix.exclude sections in config file=${filepath} are mutually exclusive. Please keep only one.")
+        }
+    }
+    return config
+}
+
 def main() {
     node("master") {
 
@@ -719,15 +730,14 @@ def main() {
 
         files.each { file ->
             def branches = [:]
-            def config = readYaml(file: file.path)
-            def cmd
+            def config = loadConfigFile(file.path, logger)
             logger.info("New Job: " + config.job + " file: " + file.path)
 
             config.put("logger", logger)
             config.put("cFiles", getChangedFilesList(config))
 
             if (config.pipeline_start) {
-                cmd = config.pipeline_start.run
+                def cmd = config.pipeline_start.run
                 if (cmd) {
                     logger.debug("Running pipeline_start")
                     stage("Start ${config.job}") {
@@ -767,7 +777,7 @@ def main() {
                 }
             } finally {
                 if (config.pipeline_stop) {
-                    cmd = config.pipeline_stop.run
+                    def cmd = config.pipeline_stop.run
                     if (cmd) {
                         logger.debug("running pipeline_stop")
                         stage("Stop ${config.job}") {

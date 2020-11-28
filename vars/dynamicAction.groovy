@@ -3,9 +3,12 @@
 @NonCPS
 def call(actionName, preCmd, buildCmd) {
 
-    def actionScript = libraryResource 'actions/coverity.sh'
+    println("==>DynamicAction ($actionName, $preCmd, $buildCmd)")
+    def actionScript = libraryResource 'actions/${actionName}'
+    def toFile = File.createTempFile(actionName) 
+    writeFile(file: toFile.getAbsolutePath(), text: "${actionScript}")
+    sh("chmod 755 " + toFile.getAbsolutePath())
 
-    println("==>DynamicAction ($actionName, $preCmd, $buildCmd) == " + actionScript)
-
+    sh(toFile.getAbsolutePath() + " $buildCmd")
     return;
 }
