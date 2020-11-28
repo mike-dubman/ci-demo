@@ -35,7 +35,7 @@ runs_on_dockers:
 
 
 matrix:
-#  axes:
+  axes:
 #    driver:
 #      - MLNX_OFED_LINUX-4.9-0.1.8.0
 #      - MLNX_OFED_LINUX-5.1-1.0.0.0
