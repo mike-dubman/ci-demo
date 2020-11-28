@@ -17,9 +17,11 @@ def call(List args) {
     writeFile(file: toFile.getAbsolutePath(), text: actionScript)
     sh("chmod +x " + toFile.getAbsolutePath())
 
-    def cmd = toFile.getAbsolutePath() + " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
+    def cmd = toFile.getAbsolutePath()
+    if (args.size() > 1) {
+        cmd += " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
+    }
     println("Running " + cmd)
-
     sh(cmd)
     return;
 }

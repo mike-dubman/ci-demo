@@ -30,11 +30,11 @@ env:
 
 runs_on_dockers:
 #  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64', nodeLabel: '(dockerserver || docker) && x86_64'}
-  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', arch: 'x86_64', category: 'tool', id: 'blackduck'}
-  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64'}
+  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', category: 'tool', id: 'blackduck'}
+  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest'}
 
 
-#matrix_disabled:
+matrix:
 #  axes:
 #    driver:
 #      - MLNX_OFED_LINUX-4.9-0.1.8.0
@@ -44,8 +44,8 @@ runs_on_dockers:
 #      - dev/cuda9.3
 #      - dev/cuda9.4
 #      - dev/cuda9.5
-#    arch:
-#      - x86_64
+    arch:
+      - x86_64
 
 steps:
   - name: Run on all containers
