@@ -20,7 +20,6 @@ def call(List args) {
     def cmd = toFile.getAbsolutePath() + " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
     println("Running " + cmd)
 
-    @NonCPS
     sh(cmd)
     return;
 }
