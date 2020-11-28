@@ -494,10 +494,19 @@ Map getTasks(axes, image, config, include, exclude) {
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
-        axis.put("name", image.name)
+
+        if(axis.arch != image.arch) {
+            config.logger.debug("getTasks: skipping axis=" + axis + " as its arch does not match image=" + image)
+            continue
+        }
+
+        // todo: some keys from matrix can be same as in image map and it will cause confusion
+        // maybe need to prefix image keys with special prefix to distinguish or copy only non-existing keys
+        axis += image
         axis.put("job", config.job)
         axis.put("variant", i + 1)
         axis.put("axis_index", i + 1)
+
 
         if (exclude.size() && matchMapEntry(exclude, axis)) {
             config.logger.debug("Excluding by 'exclude' rule, axis " + axis.toMapString())
@@ -509,9 +518,8 @@ Map getTasks(axes, image, config, include, exclude) {
 
         config.logger.info("Working on axis " + axis.toMapString())
 
-        def tmpl = getConfigVal(config, ['taskName'], '${arch}/${name} v${axis_index}')
+        def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis_index}")
         def branchName = resolveTemplate(axis, tmpl)
-        //def branchName = axis.values().join(', ')
 
         // convert the Axis into valid values for withEnv step
         if (config.get("env")) {
@@ -697,6 +705,8 @@ def run_parallel_in_chunks(myTasks, bSize) {
 
 def loadConfigFile(filepath, logger) {
     def config = readYaml(file: filepath)
+
+    logger.debug("loadConfigFile: " + config.dump())
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
