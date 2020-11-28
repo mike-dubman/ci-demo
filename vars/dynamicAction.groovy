@@ -5,10 +5,10 @@ def call(actionName, preCmd, buildCmd) {
 
     println("==>DynamicAction ($actionName, $preCmd, $buildCmd)")
     def actionScript = libraryResource "actions/${actionName}"
-    def toFile = "cidemo_" + actionName
-    writeFile(file: toFile, text: "${actionScript}")
+    def toFile = new File ("cidemo_" + actionName)
+    toFile.write("${actionScript}")
     sh("chmod 755 " + toFile)
 
-    sh(toFile + " $buildCmd")
+    sh(toFile.getAbsolutePath() + " $buildCmd")
     return;
 }
