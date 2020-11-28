@@ -121,9 +121,7 @@ def gen_image_map(config) {
     def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null, false)
 
     if (arch_list) {
-        config.logger.info("XXXXXX " + arch_list)
         for (arch in arch_list) {
-            config.logger.info("XXXXXXyyyy " + arch)
             image_map[arch] = []
         }
     } else {
@@ -145,12 +143,18 @@ def gen_image_map(config) {
             return
         }
 
-        config.runs_on_dockers.each { dfile ->
+        config.runs_on_dockers.each { item ->
+
+            def dfile = item.clone()
+
+            if (!dfile.arch) {
+                dfile.arch = arch
+            }
 
             if (!dfile.file) {
                 dfile.file = ""
             }
-
+    
             if (dfile.arch && dfile.arch != arch) {
                 config.logger.warn("skipped conf: " + arch + " name: " + dfile.name)
                 return
@@ -171,12 +175,11 @@ def gen_image_map(config) {
                 dfile.uri = resolveTemplate(env_map, dfile.uri)
             }
 
-            def item = dfile
             dfile.url = "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
             dfile.filename = "${dfile.file}"
 
-            config.logger.debug("Adding docker to image_map for " + item.arch + " name: " + item.name)
-            images.add(item)
+            config.logger.debug("Adding docker to image_map for " + dfile.arch + " name: " + dfile.name)
+            images.add(dfile)
         }
     }
     return image_map
@@ -541,17 +544,12 @@ def getMatrixTasks(image, config) {
     def include = [], exclude = [], axes = []
     config.logger.debug("getMatrixTasks() --> image=" + image)
 
-    // tool is only need to be added once
-    if (image.get("category") != null && image.category == "tool") {
-        axes.add(image)
+    if (config.get("matrix")) {
+        axes = getMatrixAxes(config.matrix.axes).findAll()
+        exclude = getConfigVal(config, ['matrix', 'exclude'], [])
+        include = getConfigVal(config, ['matrix', 'include'], [])
     } else {
-        if (config.get("matrix")) {
-            axes = getMatrixAxes(config.matrix.axes).findAll()
-            exclude = getConfigVal(config, ['matrix', 'exclude'], [])
-            include = getConfigVal(config, ['matrix', 'include'], [])
-        } else {
-            axes.add(image)
-        }
+        axes.add(image)
     }
 
     config.logger.debug("Filters include size: " + include.size() + " exclude size: " + exclude.size())
