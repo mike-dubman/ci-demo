@@ -8,9 +8,9 @@ def call(actionName, preCmd, buildCmd) {
     def toFile = new File (env.WORKSPACE + "/cidemo_" + actionName)
 
     println("action file: " + toFile.getAbsolutePath())
-    matrix.writeFile(file: toFile.getAbsolutePath(), text: actionScript)
-    matrix.sh("chmod +x " + toFile.getAbsolutePath())
+    writeFile(file: toFile.getAbsolutePath(), text: actionScript)
+    sh("chmod +x " + toFile.getAbsolutePath())
 
-    matrix.sh(toFile.getAbsolutePath() + " $buildCmd")
+    sh(toFile.getAbsolutePath() + " $buildCmd")
     return;
 }
