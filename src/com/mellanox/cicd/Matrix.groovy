@@ -237,16 +237,13 @@ def attachArtifacts(args) {
 @NonCPS
 def int getDebugLevel() {
     def val = env.DEBUG
-    println("XXXXXXXXXXXXXXXXXX inp debug=" + val)
-    if (val != null) {
-        if (val == "true") {
-            val = 1
-        } else if (val == "false") { 
-            val = 0
-        }
+    def intValue = 0
+    if (val != null && val == "true") {
+        intValue = 1
+    } else {
+        intValue = val.isInteger()? val.toInteger() : 0
     }
-    println("XXXXXXXXXXXXXXXXXX outp debug=" + val)
-    return val
+    return intValue
 }
 def isDebugMode() {
     def mode = (getDebugLevel())? true : false
