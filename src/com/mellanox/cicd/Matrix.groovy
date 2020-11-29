@@ -241,7 +241,7 @@ def int getDebugLevel() {
     if (val != null) {
         if (val == "true") {
             val = 1
-        } else { 
+        } else if (val == "false") { 
             val = 0
         }
     }
