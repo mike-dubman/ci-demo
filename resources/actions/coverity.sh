@@ -1,4 +1,4 @@
-#!/bin/bash -eE
+#!/bin/bash -eEl
 
 pre_cmd=$1
 build_cmd=$2
