@@ -234,6 +234,7 @@ def attachArtifacts(args) {
     }
 }
 
+@NonCPS
 def getDebugLevel() {
     def val = env.DEBUG
     if (val) {
