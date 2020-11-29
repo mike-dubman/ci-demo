@@ -59,7 +59,7 @@ steps:
     shell: action
     run: dynamicAction
     containerSelector: '{category:tool, variant:1}'
-    args: 
+    args:
       - "coverity.sh"
       - "./autogen.sh;./configure;make -j 3 clean"
       - "make -j 3"
@@ -71,7 +71,7 @@ steps:
     shell: action
     run: blackDuck
     containerSelector: '{category:tool, variant:1}'
-    args: 
+    args:
       - "ci-demo"
       - "1.0"
       - "${env.WORKSPACE}/src"
