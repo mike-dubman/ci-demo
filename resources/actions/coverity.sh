@@ -17,7 +17,7 @@ echo "==== Running coverity ===="
 ncpus=$(cat /proc/cpuinfo|grep processor|wc -l)
 export AUTOMAKE_JOBS=$ncpus
 
-$pre_cmd
+eval $pre_cmd
 
 cov_build="cov_build"
 rm -rf $cov_build
