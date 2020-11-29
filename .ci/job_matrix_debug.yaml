@@ -30,7 +30,7 @@ env:
 
 runs_on_dockers:
 #  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64', nodeLabel: '(dockerserver || docker) && x86_64'}
-  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', category: 'tool', id: 'blackduck'}
+  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', category: 'tool'}
   - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest'}
 
 
@@ -58,18 +58,19 @@ steps:
   - name: Coverity scan
     shell: action
     run: dynamicAction
-    containerSelector: '{id:blackduck}'
+    containerSelector: '{category:tool, variant:1}'
     args: 
       - "coverity.sh"
       - "./autogen.sh;./configure;make -j 3 clean"
       - "make -j 3"
+    archiveArtifacts: 'cov.log'
 
 
   - name: Blackduck scan source
     enable: false
     shell: action
     run: blackDuck
-    containerSelector: '{id:blackduck}'
+    containerSelector: '{category:tool, variant:1}'
     args: 
       - "ci-demo"
       - "1.0"
