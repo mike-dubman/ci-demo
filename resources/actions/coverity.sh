@@ -1,7 +1,7 @@
 #!/bin/bash -eE
 
-$pre_cmd=$1
-$build_cmd=$2
+pre_cmd=$1
+build_cmd=$2
 
 topdir=$(git rev-parse --show-toplevel)
 cd $topdir
