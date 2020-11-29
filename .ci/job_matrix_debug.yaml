@@ -61,8 +61,8 @@ steps:
     containerSelector: '{id:blackduck}'
     args: 
       - "coverity.sh"
-      - "./autogen.sh;./configure"
-      - "make"
+      - "./autogen.sh;./configure;make -j 3 clean"
+      - "make -j 3"
 
 
   - name: Blackduck scan source
