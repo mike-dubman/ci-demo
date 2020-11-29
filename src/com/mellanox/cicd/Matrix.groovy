@@ -237,7 +237,7 @@ def attachArtifacts(args) {
 def getDebugLevel() {
     def val = env.DEBUG
     if (val) {
-        if (val == "true")) {
+        if (val == "true") {
             return 1
         }
 
