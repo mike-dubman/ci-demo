@@ -4,10 +4,12 @@ package com.mellanox.cicd;
 class Logger {
     def ctx
     def cat
+    def traceLevel
 
     Logger(ctx) {
         this.ctx = ctx
         this.cat = "matrix_job"
+        this.traceLevel = ctx.getDebugLevel()
     }
     def info(String message) {
         this.ctx.echo this.cat + " INFO: ${message}"
@@ -28,8 +30,14 @@ class Logger {
 
 
     def debug(String message) {
-        if (this.ctx.isDebugMode(this.ctx.env.DEBUG)) {
+        if (this.ctx.isDebugMode()) {
             this.ctx.echo this.cat + " DEBUG: ${message}"
+        }
+    }
+
+    def trace(int level, String message) {
+        if (level <= this.traceLevel) {
+            this.ctx.echo this.cat + " TRACE[${level}]: ${message}"
         }
     }
 }
@@ -226,11 +234,23 @@ def attachArtifacts(args) {
     }
 }
 
-def isDebugMode(val) {
-    if (val && (val == "true")) {
-        return true
+def getDebugLevel() {
+    def val = env.DEBUG
+    if (val) {
+        if (val == "true")) {
+            return 1
+        }
+
+        if (val == "false") {
+            return 0
+        }
+
+        return val
     }
-    return false
+    return 0
+}
+def isDebugMode() {
+    return (getDebugLevel() > 0)
 }
 
 def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
@@ -240,7 +260,7 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
         ret = step.shell
     } else if ((config != null) && (config.shell != null)) {
         ret = config.shell
-    } else if (isDebugMode(env.DEBUG)) {
+    } else if (isDebugMode()) {
         ret += 'x'
     }
 
@@ -355,7 +375,7 @@ def runSteps(image, config, branchName) {
 def getConfigVal(config, list, defaultVal=null, toString=true) {
     def val = config
     for (item in list) {
-        config.logger.debug("getConfigVal: Checking $item in config file")
+        config.logger.trace(2, "getConfigVal: Checking $item in config file")
         val = val.get(item)
         if (val == null) {
             config.logger.debug("getConfigVal: Defaulting " + list.toString() + " = " + defaultVal)
@@ -369,7 +389,6 @@ def getConfigVal(config, list, defaultVal=null, toString=true) {
     } else {
         ret = val
     }
-    //def ret =  (val instanceof ArrayList)? val[0] : val
     config.logger.debug("getConfigVal: Found " + list.toString() + " = " + ret)
     return ret
 }
