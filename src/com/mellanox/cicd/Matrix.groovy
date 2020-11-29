@@ -238,16 +238,19 @@ def attachArtifacts(args) {
 def int getDebugLevel() {
     def val = env.DEBUG
     def intValue = 0
-    if (val != null && val == "true") {
-        intValue = 1
-    } else {
-        intValue = val.isInteger()? val.toInteger() : 0
+    if (val != null) {
+        if (val == "true") {
+            intValue = 1
+        } else {
+            intValue = val.isInteger()? val.toInteger() : 0
+        }
     }
+
     return intValue
 }
+
 def isDebugMode() {
     def mode = (getDebugLevel())? true : false
-    println("XXXXXXXXXXXXXXXXXX mode=" + mode + " level=" + getDebugLevel())
 }
 
 def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
