@@ -19,7 +19,7 @@ def call(List args) {
         cmd += " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
     }
     println("Running " + cmd)
-    "$actionName"(cmd)
+    "$actionName"(args.subList(1,args.size()))
 
     return;
 }
