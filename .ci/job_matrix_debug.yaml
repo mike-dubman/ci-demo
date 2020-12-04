@@ -57,6 +57,7 @@ steps:
 
   - name: Coverity scan
     shell: action
+    enable: false
     run: dynamicAction
     containerSelector: '{category:tool, variant:1}'
     args:
@@ -67,7 +68,7 @@ steps:
 
 
   - name: Blackduck scan source
-    enable: false
+#    enable: false
     shell: action
     run: ngci
     containerSelector: '{category:tool, variant:1}'
