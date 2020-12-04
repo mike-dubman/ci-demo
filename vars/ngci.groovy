@@ -14,6 +14,7 @@ def call(List args) {
     }
     def actionName = args[0]
 
+    def cmd = ""
     if (args.size() > 1) {
         cmd += " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
     }
