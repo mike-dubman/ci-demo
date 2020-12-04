@@ -69,9 +69,10 @@ steps:
   - name: Blackduck scan source
     enable: false
     shell: action
-    run: blackDuck
+    run: ngci
     containerSelector: '{category:tool, variant:1}'
     args:
+      - "NGCIBlackDuckScan"
       - "ci-demo"
       - "1.0"
       - "${env.WORKSPACE}/src"
