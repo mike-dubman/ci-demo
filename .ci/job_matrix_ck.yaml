@@ -105,6 +105,8 @@ steps:
     run: make -j 2 install
 
   - name: Coverity scan
+    containerSelector: '{name:centos7-7, variant:1}'
+
     shell: action
     enable: true
     run: dynamicAction

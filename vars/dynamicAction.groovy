@@ -11,15 +11,15 @@ def call(List args) {
     }
     def actionName = args[0]
     def actionScript = libraryResource "actions/${actionName}"
-    def toFile = new File (env.WORKSPACE + "/cidemo_" + actionName)
+    def uuid = UUID.randomUUID().toString()
+    def toFile = env.WORKSPACE + "/cidemo_${uuid}_${actionName}"
 
-    println("action file: " + toFile.getAbsolutePath())
-    println("xxxxx write " + cmd)
-    writeFile(file: toFile.getAbsolutePath(), text: actionScript)
-    sh("chmod +x " + toFile.getAbsolutePath())
-    println("xxxxx passed write " + cmd)
+    println("xxxxx action file " + toFile)
+    writeFile(file: toFile, text: actionScript)
+    sh("chmod +x " + toFile)
+    println("xxxxx passed write ")
 
-    def cmd = toFile.getAbsolutePath()
+    def cmd = toFile
     if (args.size() > 1) {
         cmd += " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
     }
