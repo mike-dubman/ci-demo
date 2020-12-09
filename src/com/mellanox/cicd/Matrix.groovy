@@ -246,13 +246,11 @@ def int getDebugLevel() {
         }
     }
 
-    println("XXXXXXXXX intValue = ${intValue}")
     return intValue
 }
 
 def isDebugMode() {
     def mode = (getDebugLevel())? true : false
-    println("XXXXXXXXX mode = ${mode}")
     return mode
 }
 
@@ -271,8 +269,7 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
     return ret
 }
 
-@NonCPS
-def run_step(image, config, title, oneStep) {
+def run_step(image, config, title, oneStep, axis) {
 
     if (oneStep.get("enable") != null && !oneStep.enable) {
         config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
@@ -286,8 +283,8 @@ def run_step(image, config, title, oneStep) {
     }
 
     def customSel = oneStep.get("containerSelector")
-    if (customSel != null && matchMapEntry(customSel, image)) {
-        config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel)
+    if (customSel != null && matchMapEntry(customSel, axis)) {
+        config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
         skip--
     }
 
@@ -329,21 +326,21 @@ def run_step(image, config, title, oneStep) {
     run_shell(cmd, title)
 }
 
-def runSteps(image, config, branchName) {
+def runSteps(image, config, branchName, axis) {
     forceCleanupWS()
     // fetch .git from server and unpack
     unstash "${env.JOB_NAME}"
     onUnstash()
 
     def parallelNestedSteps = [:]
-    config.steps.eachWithIndex { one, i ->
-
+    for (int i=0; i < config.steps.size();i++) {
+        def one = config.steps[i]
         def par = one.get("parallel")
         def oneStep = one
         // collect parallel steps (if any) and run it when non-parallel step discovered or last element.
         if ( par != null && par == true) {
             def stepName = branchName + "->" + one.name
-            parallelNestedSteps[stepName] = {run_step(image, config, stepName, oneStep)}
+            parallelNestedSteps[stepName] = {run_step(image, config, stepName, oneStep, axis)}
             // last element - run and flush
             if (i == config.steps.size() -1) {
                 parallel(parallelNestedSteps)
@@ -359,7 +356,7 @@ def runSteps(image, config, branchName) {
             parallelNestedSteps = [:]
         }
         try {
-            run_step(image, config, one.name, oneStep)
+            run_step(image, config, one.name, oneStep, axis)
         } catch (e) {
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")
@@ -460,7 +457,7 @@ def runK8(image, branchName, config, axis) {
         node(POD_LABEL) {
             stage (branchName) {
                 container(cname) {
-                    runSteps(image, config, branchName)
+                    runSteps(image, config, branchName, axis)
                 }
             }
         }
@@ -560,7 +557,7 @@ Map getTasks(axes, image, config, include, exclude) {
                     config.logger.fatal("Please define kubernetes cloud name in yaml config file or define nodeLabel for docker")
                 }
                 if (image.nodeLabel) {
-                    runDocker(image, config, branchName, axis, { pimage, pconfig -> runSteps(pimage, pconfig, branchName) })
+                    runDocker(image, config, branchName, axis, { pimage, pconfig -> runSteps(pimage, pconfig, branchName, axis) })
                 } else {
                     runK8(image, branchName, config, axis)
                 }
@@ -820,8 +817,6 @@ def main() {
                         run_parallel_in_chunks(config, branches, bSize)
                     }
                 }
-            } catch (e) {
-                logger.warn("Pipeline was terminated by exception: " + e)
             } finally {
                 if (config.pipeline_stop) {
                     def cmd = config.pipeline_stop.run
