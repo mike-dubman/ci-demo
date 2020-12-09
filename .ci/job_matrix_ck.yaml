@@ -93,24 +93,23 @@ steps:
       done
       sudo env build=$driver $mofed_installer_exe $opt
 
-  - name: Build package
+  - name: Configure
     run: |
-        cuda=$cuda .ci/build_package.sh
+      ./autogen.sh
+      ./configure --prefix ${WORKSPACE}/install
 
-  - name: Coverity
-    containerSelector: '{name: centos7-7, variant:1}'
-    run: |
-      cuda=$cuda .ci/cov.sh
+  - name: Build
+    run: make -j 2 all
 
-  - name: Check package
-    run:  cuda=$cuda .ci/check_package.sh
+  - name: Install
+    run: make -j 2 install
 
-  - name: Run tests
-    run:  cuda=$cuda .ci/runtests.sh
-
-  - name: Check build.sh script
-    run: |
-      module load $cuda
-      module load hpcx-gcc
-      make distclean
-      ./build.sh --clean --with-cuda=$CUDA_HOME --mpi_home $HPCX_HOME
+  - name: Coverity scan
+    shell: action
+    enable: false
+    run: dynamicAction
+    args:
+      - "coverity.sh"
+      - "./autogen.sh;./configure;make -j 3 clean"
+      - "make -j 3"
+    archiveArtifacts: 'cov.log'
