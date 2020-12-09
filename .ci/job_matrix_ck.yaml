@@ -112,4 +112,4 @@ steps:
       - "coverity.sh"
       - "./autogen.sh;./configure;make -j 3 clean"
       - "make -j 3"
-#    archiveArtifacts: 'cov.log'
+    archiveArtifacts: 'cov.log'
