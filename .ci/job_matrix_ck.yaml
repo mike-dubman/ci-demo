@@ -106,7 +106,7 @@ steps:
 
   - name: Coverity scan
     shell: action
-    enable: false
+    enable: true
     run: dynamicAction
     args:
       - "coverity.sh"
