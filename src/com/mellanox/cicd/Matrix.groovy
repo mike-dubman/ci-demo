@@ -246,11 +246,13 @@ def int getDebugLevel() {
         }
     }
 
+    println("XXXXXXXXX intValue = ${intValue}")
     return intValue
 }
 
 def isDebugMode() {
     def mode = (getDebugLevel())? true : false
+    println("XXXXXXXXX mode = ${mode}")
     return mode
 }
 
