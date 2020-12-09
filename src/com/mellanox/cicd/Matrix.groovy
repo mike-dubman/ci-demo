@@ -816,6 +816,9 @@ def main() {
                         run_parallel_in_chunks(config, branches, bSize)
                     }
                 }
+            } catch (e) {
+                logger.warn("Pipeline was terminated by exception: " + e)
+                
             } finally {
                 if (config.pipeline_stop) {
                     def cmd = config.pipeline_stop.run
@@ -826,8 +829,6 @@ def main() {
                         }
                     }
                 }
-            } catch (e) {
-                logger.warn("Pipeline was terminated by exception: " + e)
             }
         }
     }
