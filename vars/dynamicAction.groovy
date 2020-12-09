@@ -1,6 +1,5 @@
 #!/usr/bin/env groovy
 
-@NonCPS
 def call(List args) {
 
     println("==>DynamicAction(" + args + ")")
