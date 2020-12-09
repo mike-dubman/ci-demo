@@ -14,15 +14,17 @@ def call(List args) {
     def toFile = new File (env.WORKSPACE + "/cidemo_" + actionName)
 
     println("action file: " + toFile.getAbsolutePath())
+    println("xxxxx write " + cmd)
     writeFile(file: toFile.getAbsolutePath(), text: actionScript)
     sh("chmod +x " + toFile.getAbsolutePath())
+    println("xxxxx passed write " + cmd)
 
     def cmd = toFile.getAbsolutePath()
     if (args.size() > 1) {
         cmd += " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
     }
-    println("Running " + cmd)
+    println("xxxxx Running " + cmd)
     sh(cmd)
-    println("${actionName} -- call done")
+    println("xxxxx ${actionName} -- call done")
     return;
 }
