@@ -251,6 +251,7 @@ def int getDebugLevel() {
 
 def isDebugMode() {
     def mode = (getDebugLevel())? true : false
+    return mode
 }
 
 def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
@@ -375,10 +376,10 @@ def runSteps(image, config, branchName) {
 def getConfigVal(config, list, defaultVal=null, toString=true) {
     def val = config
     for (item in list) {
-        config.logger.trace(2, "getConfigVal: Checking $item in config file")
+        config.logger.trace(5, "getConfigVal: Checking $item in config file")
         val = val.get(item)
         if (val == null) {
-            config.logger.debug("getConfigVal: Defaulting " + list.toString() + " = " + defaultVal)
+            config.logger.trace(5, "getConfigVal: Defaulting " + list.toString() + " = " + defaultVal)
             return defaultVal
         }
     }
@@ -389,7 +390,7 @@ def getConfigVal(config, list, defaultVal=null, toString=true) {
     } else {
         ret = val
     }
-    config.logger.debug("getConfigVal: Found " + list.toString() + " = " + ret)
+    config.logger.trace(5, "getConfigVal: Found " + list.toString() + " = " + ret)
     return ret
 }
 
@@ -818,7 +819,6 @@ def main() {
                 }
             } catch (e) {
                 logger.warn("Pipeline was terminated by exception: " + e)
-                
             } finally {
                 if (config.pipeline_stop) {
                     def cmd = config.pipeline_stop.run
