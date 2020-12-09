@@ -36,14 +36,14 @@ runs_on_dockers:
 
 matrix:
   axes:
-#    driver:
-#      - MLNX_OFED_LINUX-4.9-0.1.8.0
-#      - MLNX_OFED_LINUX-5.1-1.0.0.0
-#    cuda:
-#      - dev/cuda9.2
-#      - dev/cuda9.3
-#      - dev/cuda9.4
-#      - dev/cuda9.5
+    driver:
+      - MLNX_OFED_LINUX-4.9-0.1.8.0
+      - MLNX_OFED_LINUX-5.1-1.0.0.0
+    cuda:
+      - dev/cuda9.2
+      - dev/cuda9.3
+      - dev/cuda9.4
+      - dev/cuda9.5
     arch:
       - x86_64
 
@@ -68,7 +68,7 @@ steps:
 
 
   - name: Blackduck scan source
-#    enable: false
+    enable: false
     shell: action
     run: ngci
     containerSelector: '{category:tool, variant:1}'

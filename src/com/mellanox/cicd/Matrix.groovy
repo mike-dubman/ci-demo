@@ -716,7 +716,13 @@ def build_docker_on_k8(image, config) {
     }
 }
 
-def run_parallel_in_chunks(myTasks, bSize) {
+def run_parallel_in_chunks(config, myTasks, bSize) {
+    if (bSize <= 0) {
+        bSize = myTasks.size()
+    }
+
+    config.logger.trace(3, "run_parallel_in_chunks: batch size is ${bSize}")
+
     (myTasks.keySet() as List).collate(bSize).each {
         parallel myTasks.subMap(it)
     }
@@ -802,12 +808,12 @@ def main() {
             }
         
             try {
-                def bSize = getConfigVal(config, ['batchSize'], 10)
+                def bSize = getConfigVal(config, ['batchSize'], 0)
                 def timeout_min = getConfigVal(config, ['timeout_minutes'], "90")
                 timeout(time: timeout_min, unit: 'MINUTES') {
                     timestamps {
-                        run_parallel_in_chunks(parallelBuildDockers, bSize)
-                        run_parallel_in_chunks(branches, bSize)
+                        run_parallel_in_chunks(config, parallelBuildDockers, bSize)
+                        run_parallel_in_chunks(config, branches, bSize)
                     }
                 }
             } finally {
@@ -820,6 +826,8 @@ def main() {
                         }
                     }
                 }
+            } catch (e) {
+                logger.warn("Pipeline was terminated by exception: " + e)
             }
         }
     }
