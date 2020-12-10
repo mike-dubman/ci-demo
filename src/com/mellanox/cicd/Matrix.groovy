@@ -119,7 +119,7 @@ def getArchConf(config, arch) {
         key = resolveTemplate(varsMap, val)
     }
 
-    config.logger.debug("getArchConf[${arch}] " + k8sArchConfTable[arch])
+    config.logger.trace(7, "getArchConf[${arch}] " + k8sArchConfTable[arch])
     return k8sArchConfTable[arch]
 }
 
@@ -464,6 +464,7 @@ def runK8(image, branchName, config, axis) {
     }
 }
 
+@NonCPS
 def resolveTemplate(varsMap, str) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = shell.evaluate('"' + str +'"')

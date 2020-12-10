@@ -91,7 +91,7 @@ steps:
           opt+=" $item"
         fi
       done
-      sudo env build=$driver $mofed_installer_exe $opt
+      echo sudo env build=$driver $mofed_installer_exe $opt
 
   - name: Configure
     run: |
