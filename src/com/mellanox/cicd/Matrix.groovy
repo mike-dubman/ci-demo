@@ -68,12 +68,8 @@ def run_shell(cmd, title, retOut=false) {
     sh(script: cmd, label: title, returnStdout: retOut)
 }
 
+
 @NonCPS
-def run_step_shell(cmd, title, retOut=false) {
-    sh(script: cmd, label: title, returnStdout: retOut)
-}
-
-
 def forceCleanupWS() {
     env.WORKSPACE = pwd()
     def cmd = """
@@ -84,11 +80,12 @@ def forceCleanupWS() {
 }
 
 
+@NonCPS
 def getArchConf(config, arch) {
 
     def k8sArchConfTable = [:]
 
-    config.logger.debug("getArchConf: arch=" + arch)
+    config.logger.trace(4, "getArchConf: arch=" + arch)
     
     k8sArchConfTable['x86_64']  = [
         nodeSelector: 'kubernetes.io/arch=amd64',
@@ -136,6 +133,7 @@ def getArchConf(config, arch) {
     return k8sArchConfTable[arch]
 }
 
+@NonCPS
 def gen_image_map(config) {
     def image_map = [:]
 
@@ -206,6 +204,7 @@ def gen_image_map(config) {
     return image_map
 }
 
+@NonCPS
 def matchMapEntry(filters, entry) {
     def match
     for (filter in filters) {
@@ -223,6 +222,7 @@ def matchMapEntry(filters, entry) {
     return match
 }
 
+@NonCPS
 def onUnstash() {
 
     env.PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -237,6 +237,7 @@ def onUnstash() {
     run_shell(cmd, "Extracting project files into workspace")
 }
 
+@NonCPS
 def attachArtifacts(config, args) {
     if(args != null) {
         try {
@@ -268,6 +269,7 @@ def isDebugMode() {
     return mode
 }
 
+@NonCPS
 def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
 
     def ret = shell
@@ -283,6 +285,7 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
     return ret
 }
 
+@NonCPS
 def run_step(image, config, title, oneStep, axis) {
 
     if (oneStep.get("enable") != null && !oneStep.enable) {
@@ -337,9 +340,10 @@ def run_step(image, config, title, oneStep, axis) {
     def cmd = """${shell}
     ${script}
     """
-    run_step_shell(cmd, title)
+    run_shell(cmd, title)
 }
 
+@NonCPS
 def runSteps(image, config, branchName, axis) {
     forceCleanupWS()
     // fetch .git from server and unpack
@@ -387,6 +391,7 @@ def runSteps(image, config, branchName, axis) {
     attachArtifacts(config, config.archiveArtifacts)
 }
 
+@NonCPS
 def getConfigVal(config, list, defaultVal=null, toString=true) {
     def val = config
     for (item in list) {
@@ -408,6 +413,7 @@ def getConfigVal(config, list, defaultVal=null, toString=true) {
     return ret
 }
 
+@NonCPS
 def parseListV(volumes) {
     def listV = []
     for (vol in volumes) {
@@ -419,6 +425,7 @@ def parseListV(volumes) {
     return listV
 }
 
+@NonCPS
 def runK8(image, branchName, config, axis) {
 
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
@@ -486,6 +493,7 @@ def resolveTemplate(varsMap, str) {
     return res
 }
 
+@NonCPS
 def getDockerOpt(config) {
     def opts = getConfigVal(config, ['docker_opt'], "")
     if (config.get("volumes")) {
@@ -497,6 +505,7 @@ def getDockerOpt(config) {
     return opts
 }
 
+@NonCPS
 def runDocker(image, config, branchName=null, axis=null, Closure func, runInDocker=true) {
     def nodeName = image.nodeLabel
 
@@ -520,6 +529,7 @@ def runDocker(image, config, branchName=null, axis=null, Closure func, runInDock
 }
 
 
+@NonCPS
 Map getTasks(axes, image, config, include, exclude) {
 
     def val = getConfigVal(config, ['failFast'], true)
@@ -586,6 +596,7 @@ Map getTasks(axes, image, config, include, exclude) {
     return tasks
 }
 
+@NonCPS
 def getMatrixTasks(image, config) {
 
     def include = [], exclude = [], axes = []
@@ -603,6 +614,7 @@ def getMatrixTasks(image, config) {
     return getTasks(axes, image, config, include, exclude)
 }
 
+@NonCPS
 def buildImage(img, filename, extra_args, config) {
     if(filename == "") {
         config.logger.fatal("No docker filename specified, skipping build docker")
@@ -612,6 +624,7 @@ def buildImage(img, filename, extra_args, config) {
 }
 
 
+@NonCPS
 String getChangedFilesList(config) {
 
     def cFiles = []
@@ -640,6 +653,7 @@ String getChangedFilesList(config) {
     return cFiles
 }
 
+@NonCPS
 def buildDocker(image, config) {
 
     def img = image.url
@@ -683,6 +697,7 @@ def buildDocker(image, config) {
 }
 
 
+@NonCPS
 def build_docker_on_k8(image, config) {
 
     def myVols = config.volumes.collect()
@@ -736,6 +751,7 @@ def build_docker_on_k8(image, config) {
     }
 }
 
+@NonCPS
 def run_parallel_in_chunks(config, myTasks, bSize) {
 
     if (bSize <= 0) {
@@ -750,6 +766,7 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
 }
 
 
+@NonCPS
 def loadConfigFile(filepath, logger) {
     def config = readYaml(file: filepath)
     def rawFile = readFile(filepath)
@@ -764,6 +781,7 @@ def loadConfigFile(filepath, logger) {
     return config
 }
 
+@NonCPS
 def main() {
     node("master") {
 
