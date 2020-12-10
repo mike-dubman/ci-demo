@@ -722,7 +722,7 @@ def build_docker_on_k8(image, config) {
             onUnstash()
 
             container('docker') {
-                buildDocker(image, config)
+                //buildDocker(image, config)
             }
         }
     }
