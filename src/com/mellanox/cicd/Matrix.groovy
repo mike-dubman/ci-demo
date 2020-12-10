@@ -224,8 +224,8 @@ def onUnstash() {
     run_shell(cmd, "Extracting project files into workspace")
 }
 
-def attachArtifacts(args) {
-    if(args) {
+def attachArtifacts(config, args) {
+    if(args != null) {
         try {
             archiveArtifacts(artifacts: args, allowEmptyArchive: true )
         } catch (e) {
@@ -361,16 +361,16 @@ def runSteps(image, config, branchName, axis) {
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")
             }
-            attachArtifacts(config.archiveArtifacts)
+            attachArtifacts(config, config.archiveArtifacts)
             throw(e)
         } finally {
             if (one.get("always") != null) {
                 run_shell(one.always, "always command for ${one.name}")
             }
-            attachArtifacts(one.archiveArtifacts)
+            attachArtifacts(config, one.archiveArtifacts)
         }
     }
-    attachArtifacts(config.archiveArtifacts)
+    attachArtifacts(config, config.archiveArtifacts)
 }
 
 def getConfigVal(config, list, defaultVal=null, toString=true) {
@@ -511,6 +511,7 @@ Map getTasks(axes, image, config, include, exclude) {
 
     config.logger.debug("getTasks() -->")
 
+    int axis_index = 0
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
@@ -536,6 +537,7 @@ Map getTasks(axes, image, config, include, exclude) {
             continue
         }
 
+        axis.put("axis_id", ++axis_index)
         config.logger.info("Working on axis " + axis.toMapString())
 
         def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis.axis_index}")
@@ -564,6 +566,8 @@ Map getTasks(axes, image, config, include, exclude) {
             }
         }
     }
+
+    config.logger.info("Matrix size: " + axis.size() + " filtered permutations: " + axis_index)
     return tasks
 }
 

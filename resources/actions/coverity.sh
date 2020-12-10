@@ -26,7 +26,7 @@ module load tools/cov
 
 cov-build --dir $cov_build $build_cmd all
 cov-analyze --jobs $ncpus $COV_OPT --security --concurrency --dir $cov_build
-cov-format-errors --dir $cov_build --emacs-style |& tee cov.log
+cov-format-errors --dir $cov_build --emacs-style |& tee cov_${variant}.log
 
 nerrors=$(cov-format-errors --dir $cov_build | awk '/Processing [0-9]+ errors?/ { print $2 }')
 rc=$(($rc+$nerrors))
