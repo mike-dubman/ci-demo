@@ -11,7 +11,6 @@ class Logger {
         this.cat = "matrix_job"
         this.traceLevel = ctx.getDebugLevel()
     }
-
     def info(String message) {
         this.ctx.echo this.cat + " INFO: ${message}"
     }
@@ -28,6 +27,7 @@ class Logger {
         this.ctx.echo this.cat + " FATAL: ${message}"
         this.ctx.run_shell("false", "Fatal error")
     }
+
 
     def debug(String message) {
         if (this.ctx.isDebugMode()) {
@@ -234,6 +234,7 @@ def attachArtifacts(config, args) {
     }
 }
 
+@NonCPS
 def int getDebugLevel() {
     def val = env.DEBUG
     def intValue = 0
@@ -772,7 +773,8 @@ def main() {
         }
 
 
-        files.each { file ->
+        for (int i=0; i < files.size(); i++) {
+            def file = files[i]
             def branches = [:]
             def config = loadConfigFile(file.path, logger)
             logger.info("New Job: " + config.job + " file: " + file.path)
@@ -799,8 +801,10 @@ def main() {
             def parallelBuildDockers = [failFast: val]
 
             def arch_distro_map = gen_image_map(config)
-            arch_distro_map.each { arch, images ->
-                images.each { image ->
+            for (entry in arch_distro_map) {
+                def arch = entry.key
+                def images = entry.value
+                for (image in images) {
                     parallelBuildDockers[image.name] = {
                         if (image.nodeLabel) {
                             runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
