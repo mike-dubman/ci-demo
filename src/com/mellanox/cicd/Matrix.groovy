@@ -567,7 +567,7 @@ Map getTasks(axes, image, config, include, exclude) {
         }
     }
 
-    config.logger.info("Matrix size: " + axis.size() + " filtered permutations: " + axis_index)
+    config.logger.info("Matrix size: " + axes.size() + " filtered permutations: " + axis_index)
     return tasks
 }
 
