@@ -99,10 +99,12 @@ steps:
       ./configure --prefix ${WORKSPACE}/install
 
   - name: Build
-    run: make -j 2 all
+    run: |
+      make -j 2 all
 
   - name: Install
-    run: make -j 2 install
+    run: |
+      make -j 2 install
 
   - name: Coverity scan
     containerSelector: '{name:centos7-7, variant:1}'

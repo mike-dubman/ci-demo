@@ -526,7 +526,7 @@ Map getTasks(axes, image, config, include, exclude) {
 
     config.logger.debug("getTasks() -->")
 
-    int axis_index = 0
+    int serialNum = 1
     Map tasks = [failFast: val]
     for(int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
@@ -540,19 +540,20 @@ Map getTasks(axes, image, config, include, exclude) {
         // maybe need to prefix image keys with special prefix to distinguish or copy only non-existing keys
         axis += image
         axis.put("job", config.job)
-        axis.put("variant", i + 1)
-        axis.put("axis_index", i + 1)
 
 
         if (exclude.size() && matchMapEntry(exclude, axis)) {
-            config.logger.debug("Excluding by 'exclude' rule, axis " + axis.toMapString())
+            config.logger.debug("Skipping by 'exclude' rule, axis " + axis.toMapString())
             continue
         } else if (include.size() && ! matchMapEntry(include, axis)) {
-            config.logger.debug("Excluding by 'include' rule, axis " + axis.toMapString())
+            config.logger.debug("Skipping by 'include' rule, axis " + axis.toMapString())
             continue
         }
 
-        axis.put("axis_id", ++axis_index)
+        axis.put("variant", serialNum)
+        axis.put("axis_index", serialNum)
+        serialNum++
+
         config.logger.info("Working on axis " + axis.toMapString())
 
         def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis.axis_index}")
@@ -691,7 +692,7 @@ def build_docker_on_k8(image, config) {
 
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
 
-    config.logger.trace(7, "Checking docker image availability")
+    config.logger.trace(7, "Checking docker image availability for " + image)
 
     def k8sArchConf = getArchConf(config, image.arch)
     def nodeSelector = ''
@@ -702,7 +703,7 @@ def build_docker_on_k8(image, config) {
     }
 
     nodeSelector = k8sArchConf.nodeSelector
-    config.logger.info("build_docker_on_k8 | nodeSelector: ${nodeSelector}")
+    config.logger.info("build_docker_on_k8 for image ${image.name} | nodeSelector: ${nodeSelector}")
 
     if (image.nodeSelector) {
         if (nodeSelector) {
@@ -742,14 +743,10 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
     }
 
     config.logger.trace(3, "run_parallel_in_chunks: batch size is ${bSize}")
-    if (myTasks) {
-        parallel myTasks
-    } else {
-        config.logger.warn("XXXXXXX no tasks?")
+
+    (myTasks.keySet() as List).collate(bSize).each {
+        parallel myTasks.subMap(it)
     }
-  //  (myTasks.keySet() as List).collate(bSize).each {
-  //      parallel myTasks.subMap(it)
-  //  }
 }
 
 
