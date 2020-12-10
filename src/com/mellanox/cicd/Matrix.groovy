@@ -727,7 +727,7 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
 
     config.logger.trace(3, "run_parallel_in_chunks: batch size is ${bSize}")
     
-    parallel myTasks.subMap(myTasks)
+    parallel myTasks
   //  (myTasks.keySet() as List).collate(bSize).each {
   //      parallel myTasks.subMap(it)
   //  }
