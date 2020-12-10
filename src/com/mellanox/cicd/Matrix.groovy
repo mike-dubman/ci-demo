@@ -567,7 +567,6 @@ Map getTasks(axes, image, config, include, exclude) {
         }
     }
 
-    config.logger.info("Matrix size: " + axes.size() + " filtered permutations: " + axis_index)
     return tasks
 }
 
@@ -728,9 +727,9 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
 
     config.logger.trace(3, "run_parallel_in_chunks: batch size is ${bSize}")
 
-    (myTasks.keySet() as List).collate(bSize).each {
+  //  (myTasks.keySet() as List).collate(bSize).each {
         parallel myTasks.subMap(it)
-    }
+  //  }
 }
 
 
