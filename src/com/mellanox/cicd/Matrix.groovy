@@ -117,7 +117,7 @@ def getArchConf(config, arch) {
 
     def archEntry = k8sArchConfTable[arch]
     for (entryKey in archEntry.keySet()) {
-        archEntry[entryKey] = resolveTemplate(varsMap, archEntry[archKey])
+        archEntry[entryKey] = resolveTemplate(varsMap, archEntry[entryKey])
     }
 
     config.logger.trace(7, "getArchConf[${arch}] " + k8sArchConfTable[arch])
