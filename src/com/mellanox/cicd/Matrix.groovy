@@ -1,7 +1,6 @@
 #!/usr/bin/groovy
 package com.mellanox.cicd;
 
-@NonCPS
 class Logger {
     def ctx
     def cat
@@ -12,30 +11,36 @@ class Logger {
         this.cat = "matrix_job"
         this.traceLevel = ctx.getDebugLevel()
     }
+
+    @NonCPS
     def info(String message) {
         this.ctx.echo this.cat + " INFO: ${message}"
     }
 
+    @NonCPS
     def error(String message) {
         this.ctx.echo this.cat + " ERROR: ${message}"
     }
 
+    @NonCPS
     def warn(String message) {
         this.ctx.echo this.cat + " WARN: ${message}"
     }
 
+    @NonCPS
     def fatal(String message) {
         this.ctx.echo this.cat + " FATAL: ${message}"
         this.ctx.run_shell("false", "Fatal error")
     }
 
-
+    @NonCPS
     def debug(String message) {
         if (this.ctx.isDebugMode()) {
             this.ctx.echo this.cat + " DEBUG: ${message}"
         }
     }
 
+    @NonCPS
     def trace(int level, String message) {
         if (level <= this.traceLevel) {
             this.ctx.echo this.cat + " TRACE[${level}]: ${message}"
