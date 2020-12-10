@@ -1,6 +1,7 @@
 #!/usr/bin/groovy
 package com.mellanox.cicd;
 
+@NonCPS
 class Logger {
     def ctx
     def cat
