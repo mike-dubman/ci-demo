@@ -677,7 +677,7 @@ def build_docker_on_k8(image, config) {
 
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
 
-    config.logger.debug("Checking docker image availability")
+    config.logger.trace(7, "Checking docker image availability")
 
     def k8sArchConf = getArchConf(config, image.arch)
     def nodeSelector = ''
@@ -722,13 +722,17 @@ def build_docker_on_k8(image, config) {
 }
 
 def run_parallel_in_chunks(config, myTasks, bSize) {
+
     if (bSize <= 0) {
         bSize = myTasks.size()
     }
 
     config.logger.trace(3, "run_parallel_in_chunks: batch size is ${bSize}")
-    
-    parallel myTasks
+    if (myTasks) {
+        parallel myTasks
+    } else {
+        config.logger.warn("XXXXXXX no tasks?")
+    }
   //  (myTasks.keySet() as List).collate(bSize).each {
   //      parallel myTasks.subMap(it)
   //  }
