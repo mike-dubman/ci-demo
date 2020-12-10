@@ -667,7 +667,7 @@ def buildDocker(image, config) {
     }
 }
 
-
+@NonCPS
 def build_docker_on_k8(image, config) {
 
     def myVols = config.volumes.collect()
