@@ -115,8 +115,9 @@ def getArchConf(config, arch) {
         registry_host: config.registry_host
     ]
 
-    for (entry in k8sArchConfTable[arch]) {
-        entry.key = resolveTemplate(varsMap, entry.value)
+    def archEntry = k8sArchConfTable[arch]
+    for (entryKey in archEntry.keySet()) {
+        archEntry[entryKey] = resolveTemplate(varsMap, archEntry[archKey])
     }
 
     config.logger.trace(7, "getArchConf[${arch}] " + k8sArchConfTable[arch])
