@@ -115,8 +115,8 @@ def getArchConf(config, arch) {
         registry_host: config.registry_host
     ]
 
-    k8sArchConfTable[arch].each { key, val ->
-        key = resolveTemplate(varsMap, val)
+    for (entry in k8sArchConfTable[arch]) {
+        entry.key = resolveTemplate(varsMap, entry.value)
     }
 
     config.logger.trace(7, "getArchConf[${arch}] " + k8sArchConfTable[arch])
@@ -688,7 +688,6 @@ def build_docker_on_k8(image, config) {
     }
 
     nodeSelector = k8sArchConf.nodeSelector
-    config.logger.info("build_docker_on_k8 for image ${image.name} | nodeSelector: ${nodeSelector}")
 
     if (image.nodeSelector) {
         if (nodeSelector) {
@@ -697,6 +696,8 @@ def build_docker_on_k8(image, config) {
             nodeSelector = image.nodeSelector
         }
     }
+
+    config.logger.info("build_docker_on_k8 for image ${image.name} | nodeSelector: ${nodeSelector}")
 
     podTemplate(
         cloud: cloudName,
