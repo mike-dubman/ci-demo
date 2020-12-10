@@ -63,6 +63,7 @@ List getMatrixAxes(matrix_axes) {
     axes.combinations()*.sum()
 }
 
+@NonCPS
 def run_shell(cmd, title, retOut=false) {
     sh(script: cmd, label: title, returnStdout: retOut)
 }
@@ -353,7 +354,7 @@ def runSteps(image, config, branchName, axis) {
                 parallel(parallelNestedSteps)
                 parallelNestedSteps = [:]
             }
-            return
+            continue
         }
         // non-parallel step discovered, need to flush all parallel 
         // steps collected previously to keep ordering.
