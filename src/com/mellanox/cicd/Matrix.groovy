@@ -255,6 +255,7 @@ def int getDebugLevel() {
     return intValue
 }
 
+@NonCPS
 def isDebugMode() {
     def mode = (getDebugLevel())? true : false
     return mode
