@@ -115,9 +115,8 @@ def getArchConf(config, arch) {
         registry_host: config.registry_host
     ]
 
-    def archEntry = k8sArchConfTable[arch]
-    for (entryKey in archEntry.keySet()) {
-        archEntry[entryKey] = resolveTemplate(varsMap, archEntry[entryKey])
+    k8sArchConfTable[arch].each { key, val ->
+        key = resolveTemplate(varsMap, val)
     }
 
     config.logger.trace(7, "getArchConf[${arch}] " + k8sArchConfTable[arch])
@@ -188,12 +187,7 @@ def gen_image_map(config) {
             dfile.filename = "${dfile.file}"
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + " name: " + dfile.name)
-            //hack
-            def test_item = [:]
-            for (k in dfile.keySet()) {
-                test_item[k] = dfile[k]
-            }
-            images.add(test_item)
+            images.add(dfile)
         }
     }
     return image_map
@@ -722,7 +716,7 @@ def build_docker_on_k8(image, config) {
             onUnstash()
 
             container('docker') {
-                //buildDocker(image, config)
+                buildDocker(image, config)
             }
         }
     }
