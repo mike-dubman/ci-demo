@@ -68,6 +68,12 @@ def run_shell(cmd, title, retOut=false) {
     sh(script: cmd, label: title, returnStdout: retOut)
 }
 
+@NonCPS
+def run_step_shell(cmd, title, retOut=false) {
+    sh(script: cmd, label: title, returnStdout: retOut)
+}
+
+
 def forceCleanupWS() {
     env.WORKSPACE = pwd()
     def cmd = """
@@ -331,7 +337,7 @@ def run_step(image, config, title, oneStep, axis) {
     def cmd = """${shell}
     ${script}
     """
-    run_shell(cmd, title)
+    run_step_shell(cmd, title)
 }
 
 def runSteps(image, config, branchName, axis) {
@@ -341,7 +347,7 @@ def runSteps(image, config, branchName, axis) {
     onUnstash()
 
     def parallelNestedSteps = [:]
-    for (int i=0; i < config.steps.size();i++) {
+    for (int i = 0; i < config.steps.size(); i++) {
         def one = config.steps[i]
         def par = one.get("parallel")
         def oneStep = one
@@ -350,7 +356,7 @@ def runSteps(image, config, branchName, axis) {
             def stepName = branchName + "->" + one.name
             parallelNestedSteps[stepName] = {run_step(image, config, stepName, oneStep, axis)}
             // last element - run and flush
-            if (i == config.steps.size() -1) {
+            if (i == config.steps.size() - 1) {
                 parallel(parallelNestedSteps)
                 parallelNestedSteps = [:]
             }
