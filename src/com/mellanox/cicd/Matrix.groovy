@@ -743,7 +743,7 @@ def loadConfigFile(filepath, logger) {
 
     logger.debug("loadConfigFile: path=" + filepath)
     def config = readYaml(file: filepath)
-    def rawFile = readFile(fifilepath)
+    def rawFile = readFile(filepath)
 
     logger.debug("loadConfigFile:\n" + rawFile)
 
