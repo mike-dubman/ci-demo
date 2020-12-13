@@ -817,7 +817,7 @@ def main() {
                 def entry = arch_distro_map[i]
                 def arch = entry.key
                 def images = entry.value
-                for (for j=0; j<images.size(); j++) {
+                for (j=0; j<images.size(); j++) {
                     def image = images[j]
                     parallelBuildDockers[image.name] = {
                         if (image.nodeLabel) {
