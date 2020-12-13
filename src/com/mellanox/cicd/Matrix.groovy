@@ -129,12 +129,12 @@ def gen_image_map(config) {
     def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null, false)
 
     if (arch_list) {
-        for (int i;i<arch_list.size();i++) {
+        for (int i=0; i<arch_list.size();i++) {
             def arch = arch_list.get(i)
             image_map[arch] = []
         }
     } else {
-        for (int i; i<config.runs_on_dockers.size();i++) {
+        for (int i=0; i<config.runs_on_dockers.size();i++) {
             def dfile = config.runs_on_dockers.get(i)
             if (dfile.arch) {
                 image_map["${dfile.arch}"] = []
