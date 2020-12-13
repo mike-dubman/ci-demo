@@ -412,7 +412,7 @@ def runK8(image, branchName, config, axis) {
     config.logger.info("Running kubernetes ${cloudName}")
 
     def str = ""
-    axis.collect { key, val ->
+    axis.each { key, val ->
         str += "$key = $val\n"
     }
 
@@ -548,11 +548,13 @@ Map getTasks(axes, image, config, include, exclude) {
         if (config.get("env")) {
             axis += config.env
         }
-        List axisEnv = axis.collect { k, v ->
-            "${k}=${v}"
+
+        def axisEnv = []
+        axis.each { k,v ->
+            axisEnv.add("${k}=${v}")
         }
 
-        config.logger.debug("task name " + branchName)
+        config.logger.trace(5, "task name " + branchName)
         def arch = axis.arch
         tasks[branchName] = { ->
             withEnv(axisEnv) {
@@ -667,13 +669,14 @@ def buildDocker(image, config) {
     }
 }
 
-@NonCPS
 def build_docker_on_k8(image, config) {
 
-    def myVols = config.volumes.collect()
-    myVols.add([mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'])
+    if (config.get("volumes") == null) {
+        config.put("volumes", [])
+    }
+    config.volumes.add([mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'])
 
-    def listV = parseListV(myVols)
+    def listV = parseListV(config.volumes)
 
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
 
