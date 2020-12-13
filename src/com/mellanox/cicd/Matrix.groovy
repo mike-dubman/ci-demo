@@ -749,10 +749,6 @@ def loadConfigFile(filepath, logger) {
 
     logger.debug("loadConfigFile:\n" + rawFile)
 
-    writeJSON(config, ".ci/koko")
-    config = readJSON(file: ".ci/koko", )
-
-
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
             logger.fatal("matrix.include and matrix.exclude sections in config file=${filepath} are mutually exclusive. Please keep only one.")
