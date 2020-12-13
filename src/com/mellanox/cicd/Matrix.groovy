@@ -197,7 +197,7 @@ def gen_image_map(config) {
 
 def matchMapEntry(filters, entry) {
     def match = false
-    for (int i=0; i<filers.size(); i++) {
+    for (int i=0; i<filters.size(); i++) {
         def filter = filters[i]
         filter.each { k,v ->
             if (v == entry[k]) {
