@@ -744,10 +744,11 @@ def loadConfigFile(filepath, logger) {
     logger.debug("loadConfigFile: path=" + filepath)
     def rawFile = readFile(filepath)
     rawFile = rawFile.trim()
-    
-    def config = readJSON text: rawFile
 
     logger.debug("loadConfigFile:\n" + rawFile)
+
+    def config = readJSON text: rawFile
+
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
