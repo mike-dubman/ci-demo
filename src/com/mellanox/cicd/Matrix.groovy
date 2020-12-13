@@ -129,11 +129,13 @@ def gen_image_map(config) {
     def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null, false)
 
     if (arch_list) {
-        for (arch in arch_list) {
+        for (int i;i<arch_list.size();i++) {
+            def arch = arch_list[i]
             image_map[arch] = []
         }
     } else {
-        for (dfile in config.runs_on_dockers) {
+        for (int i; i<config.runs_on_dockers.size();i++) {
+            def dfile = config.runs_on_dockers[i]
             if (dfile.arch) {
                 image_map["${dfile.arch}"] = []
             } else {
@@ -194,17 +196,13 @@ def gen_image_map(config) {
 }
 
 def matchMapEntry(filters, entry) {
-    def match
-    for (filter in filters) {
-        match = 1
+    def match = false
+    for (int i=0; i<filers.size(); i++) {
+        def filter = filters[i]
         filter.each { k,v ->
-            if (v != entry[k]) {
-                match = 0
-                return
+            if (v == entry[k]) {
+                match = true
             }
-        }
-        if (match) {
-            break
         }
     }
     return match
@@ -310,9 +308,13 @@ def run_step(image, config, title, oneStep, axis) {
         def argList = []
         def vars = [:]
         vars['env'] = env
-        for (arg in oneStep.args) {
-            arg = resolveTemplate(vars, arg)
-            argList.add(arg)
+
+        if (oneStep.args != null) {
+            for (int i=0; i< oneStep.args.size(); i++) {
+                arg = oneStep.args[i]
+                arg = resolveTemplate(vars, arg)
+                argList.add(arg)
+            }
         }
 
         config.logger.debug("Running step action=" + script + " args=" + argList)
@@ -375,7 +377,8 @@ def runSteps(image, config, branchName, axis) {
 
 def getConfigVal(config, list, defaultVal=null, toString=true) {
     def val = config
-    for (item in list) {
+    for (int i=0; i<list.size();i++) {
+        item = list[i]
         config.logger.trace(5, "getConfigVal: Checking $item in config file")
         val = val.get(item)
         if (val == null) {
@@ -474,7 +477,8 @@ def resolveTemplate(varsMap, str) {
 def getDockerOpt(config) {
     def opts = getConfigVal(config, ['docker_opt'], "")
     if (config.get("volumes")) {
-        for (vol in config.volumes) {
+        for (int i=0; i<config.volumes;i++) {
+            def vol = config.volumes[i]
             hostPath = vol.get("hostPath")? vol.hostPath : vol.mountPath
             opts += " -v ${vol.mountPath}:${hostPath}"
         }
@@ -809,10 +813,12 @@ def main() {
             def parallelBuildDockers = [failFast: val]
 
             def arch_distro_map = gen_image_map(config)
-            for (entry in arch_distro_map) {
+            for (int i=0; i<arch_distro_map.size();i++) {
+                def entry = arch_distro_map[i]
                 def arch = entry.key
                 def images = entry.value
-                for (image in images) {
+                for (for j=0; j<images.size(); j++) {
+                    def image = images[j]
                     parallelBuildDockers[image.name] = {
                         if (image.nodeLabel) {
                             runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
