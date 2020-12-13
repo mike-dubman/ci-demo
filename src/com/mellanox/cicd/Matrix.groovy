@@ -742,13 +742,15 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
 def loadConfigFile(filepath, logger) {
 
     logger.debug("loadConfigFile: path=" + filepath)
-    def config = readYaml(file: filepath)
     def rawFile = readFile(filepath)
+    rawFile = rawFile.trim()
+
+    def config = readYaml(text: rawFile, charset: 'UTF-8')
 
     logger.debug("loadConfigFile:\n" + rawFile)
 
     writeJSON(config, ".ci/koko")
-    config = readJSON(file: ".ci/koko")
+    config = readJSON(file: ".ci/koko", )
 
 
     if (config.get("matrix")) {
