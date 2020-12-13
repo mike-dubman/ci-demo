@@ -130,12 +130,12 @@ def gen_image_map(config) {
 
     if (arch_list) {
         for (int i;i<arch_list.size();i++) {
-            def arch = arch_list[i]
+            def arch = arch_list.get(i)
             image_map[arch] = []
         }
     } else {
         for (int i; i<config.runs_on_dockers.size();i++) {
-            def dfile = config.runs_on_dockers[i]
+            def dfile = config.runs_on_dockers.get(i)
             if (dfile.arch) {
                 image_map["${dfile.arch}"] = []
             } else {
