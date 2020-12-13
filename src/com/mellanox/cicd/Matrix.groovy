@@ -740,7 +740,10 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
 
 
 def loadConfigFile(filepath, logger) {
-    def config = readJSON(file: filepath)
+
+    logger.debug("loadConfigFile: path=" + filepath)
+
+    def config = readJSON file: filepath
     def rawFile = readFile(filepath)
 
     logger.debug("loadConfigFile:\n" + rawFile)
