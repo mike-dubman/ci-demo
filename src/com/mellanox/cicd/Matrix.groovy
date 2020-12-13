@@ -815,18 +815,18 @@ def main() {
             def arch_distro_map = gen_image_map(config)
             for (int x=0; x<arch_distro_map.size();x++) {
                 def entry = arch_distro_map[x]
-                def arch = entry.key
-                def images = entry.value
-                for (j=0; j<images.size(); j++) {
-                    def image = images[j]
-                    parallelBuildDockers[image.name] = {
-                        if (image.nodeLabel) {
-                            runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
-                        } else {
-                            build_docker_on_k8(image, config)
+                entry.each { arch, images ->
+                    for (int j=0; j<images.size(); j++) {
+                        def image = images[j]
+                        parallelBuildDockers[image.name] = {
+                            if (image.nodeLabel) {
+                                runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
+                            } else {
+                                build_docker_on_k8(image, config)
+                            }
                         }
+                        branches += getMatrixTasks(image, config)
                     }
-                    branches += getMatrixTasks(image, config)
                 }
             }
         
