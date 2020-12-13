@@ -743,11 +743,10 @@ def loadConfigFile(filepath, logger) {
 
     logger.debug("loadConfigFile: path=" + filepath)
     def rawFile = readFile(filepath)
-    rawFile = rawFile.trim()
 
     logger.debug("loadConfigFile:\n" + rawFile)
 
-    def config = readYAML text: rawFile
+    def config = readYAML(file: filepath)
     writeJSON(config, ".ci/koko")
     config = readJSON(file: ".ci/koko")
 
