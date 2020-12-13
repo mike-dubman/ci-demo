@@ -477,7 +477,7 @@ def resolveTemplate(varsMap, str) {
 def getDockerOpt(config) {
     def opts = getConfigVal(config, ['docker_opt'], "")
     if (config.get("volumes")) {
-        for (int i=0; i<config.volumes;i++) {
+        for (int i=0; i<config.volumes.size();i++) {
             def vol = config.volumes[i]
             hostPath = vol.get("hostPath")? vol.hostPath : vol.mountPath
             opts += " -v ${vol.mountPath}:${hostPath}"
@@ -813,20 +813,18 @@ def main() {
             def parallelBuildDockers = [failFast: val]
 
             def arch_distro_map = gen_image_map(config)
-            for (int x=0; x<arch_distro_map.size();x++) {
-                def entry = arch_distro_map[x]
-                entry.each { arch, images ->
-                    for (int j=0; j<images.size(); j++) {
-                        def image = images[j]
-                        parallelBuildDockers[image.name] = {
-                            if (image.nodeLabel) {
-                                runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
-                            } else {
-                                build_docker_on_k8(image, config)
-                            }
+            for (String arch : arch_distro_map.keySet()) {
+                def images = arch_distro_map.get(arch)
+                for (int j=0; j<images.size(); j++) {
+                    def image = images[j]
+                    parallelBuildDockers[image.name] = {
+                        if (image.nodeLabel) {
+                            runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
+                        } else {
+                            build_docker_on_k8(image, config)
                         }
-                        branches += getMatrixTasks(image, config)
                     }
+                    branches += getMatrixTasks(image, config)
                 }
             }
         
