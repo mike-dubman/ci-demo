@@ -813,8 +813,8 @@ def main() {
             def parallelBuildDockers = [failFast: val]
 
             def arch_distro_map = gen_image_map(config)
-            for (int i=0; i<arch_distro_map.size();i++) {
-                def entry = arch_distro_map[i]
+            for (int x=0; x<arch_distro_map.size();x++) {
+                def entry = arch_distro_map[x]
                 def arch = entry.key
                 def images = entry.value
                 for (j=0; j<images.size(); j++) {
