@@ -747,7 +747,9 @@ def loadConfigFile(filepath, logger) {
 
     logger.debug("loadConfigFile:\n" + rawFile)
 
-    def config = readJSON text: rawFile
+    def config = readYAML text: rawFile
+    writeJSON(config, ".ci/koko")
+    config = readJSON(file: ".ci/koko")
 
 
     if (config.get("matrix")) {
