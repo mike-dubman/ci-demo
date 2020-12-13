@@ -396,7 +396,7 @@ def getConfigVal(config, list, defaultVal=null, toString=true) {
 
 def parseListV(volumes) {
     def listV = []
-    for (vol in volumes) {
+    volumes.each { vol ->
         hostPath = vol.get("hostPath")
         mountPath = vol.get("mountPath")
         hpv = hostPathVolume(hostPath: hostPath, mountPath: mountPath)
