@@ -196,12 +196,11 @@ def gen_image_map(config) {
 }
 
 def matchMapEntry(filters, entry) {
-    def match = false
+    def match = true
     for (int i=0; i<filters.size(); i++) {
-        def filter = filters[i]
-        filter.each { k,v ->
-            if (v == entry[k]) {
-                match = true
+        filters[i].each { k,v ->
+            if (entry[k] != null && v != entry[k]) {
+                match = false
             }
         }
     }
@@ -304,6 +303,8 @@ def run_step(image, config, title, oneStep, axis) {
         }
     }
 
+    run_shell("echo Starting step: ${title}", title)
+
     if (shell == "action") {
 
         def argList = []
@@ -320,15 +321,12 @@ def run_step(image, config, title, oneStep, axis) {
 
         config.logger.debug("Running step action=" + script + " args=" + argList)
         this."${script}"(argList)
-        config.logger.debug("Running step action done")
-        return
+    } else {
+        def cmd = """${shell}
+        ${script}
+        """
+        run_shell(cmd, title)
     }
-
-    run_shell("echo Starting step: ${title}", title)
-    def cmd = """${shell}
-    ${script}
-    """
-    run_shell(cmd, title)
     config.logger.debug("Running step done")
 }
 
@@ -364,7 +362,7 @@ def runSteps(image, config, branchName, axis) {
         try {
             run_step(image, config, one.name, oneStep, axis)
         } catch (e) {
-            config.logger.warn("Step[${i}] failed - running onfail procedures")
+            config.logger.warn("Step[${i}] failed - running onfail procedures with error: " + e)
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")
             }
