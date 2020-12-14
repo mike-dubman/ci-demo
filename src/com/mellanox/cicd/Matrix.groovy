@@ -295,10 +295,11 @@ def run_step(image, config, title, oneStep, axis) {
     def script = oneStep.run
 
     config.logger.debug("Running step with shell=" + shell)
-    run_shell("echo Starting step: ${title}", title)
+    run_shell("echo Setting env for step: ${title}", title)
 
     if (oneStep.env) {
-        oneStep.env.each {k,v ->
+        for (String k : oneStep.env.keySet()) {
+            def v = oneStep.env[k]
             env[k] = v
         }
     }
@@ -322,6 +323,7 @@ def run_step(image, config, title, oneStep, axis) {
         return
     }
 
+    run_shell("echo Starting step: ${title}", title)
     def cmd = """${shell}
     ${script}
     """
@@ -467,6 +469,7 @@ def runK8(image, branchName, config, axis) {
     }
 }
 
+@NonCPS
 def resolveTemplate(varsMap, str) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = shell.evaluate('"' + str +'"')
