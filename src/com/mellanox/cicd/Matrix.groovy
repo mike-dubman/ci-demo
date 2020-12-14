@@ -380,6 +380,7 @@ def runSteps(image, config, branchName, axis) {
         }
     }
     attachArtifacts(config, config.archiveArtifacts)
+    config.logger.debug("runSteps ${branchName} done")
 }
 
 def getConfigVal(config, list, defaultVal=null, toString=true) {
@@ -472,6 +473,7 @@ def runK8(image, branchName, config, axis) {
             }
         }
     }
+    config.logger.debug("runK8 ${branchName} done")
 }
 
 def resolveTemplate(varsMap, str) {
@@ -580,6 +582,9 @@ Map getTasks(axes, image, config, include, exclude) {
             }
         }
     }
+
+    config.logger.debug("getTasks() done")
+
 
     return tasks
 }
