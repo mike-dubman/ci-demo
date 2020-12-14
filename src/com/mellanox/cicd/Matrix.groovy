@@ -225,6 +225,7 @@ def onUnstash() {
     run_shell(cmd, "Extracting project files into workspace")
 }
 
+@NonCPS
 def attachArtifacts(config, args) {
     if(args != null) {
         try {
