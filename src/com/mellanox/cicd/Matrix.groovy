@@ -442,7 +442,7 @@ def runK8(image, branchName, config, axis) {
     }
 
     nodeSelector = k8sArchConf.nodeSelector
-    config.logger.info("runK8 | nodeSelector: ${nodeSelector}")
+    config.logger.info("runK8 ${branchName} | nodeSelector: ${nodeSelector}")
 
     if (axis.nodeSelector) {
         if (nodeSelector) {

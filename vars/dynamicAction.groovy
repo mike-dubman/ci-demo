@@ -17,7 +17,9 @@ def call(List args) {
 
     def cmd = toFile
     if (args.size() > 1) {
-        cmd += " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
+        for (int i=1; i< args.size(); i++) {
+            cmd += " '" + args[i] + "'"
+        }
     }
     sh(cmd)
     return;

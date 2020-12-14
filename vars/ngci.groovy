@@ -14,12 +14,14 @@ def call(List args) {
     }
     def actionName = args[0]
 
-    def cmd = ""
+    def params = []
     if (args.size() > 1) {
-        cmd += " " + args.subList(1,args.size()).collect{ "'" + it + "'"}.join(" ")
+        for (int i=1; i< args.size(); i++) {
+            params.add(args[i])
+        }
     }
-    println("Running " + cmd)
-    "$actionName"(args.subList(1,args.size()))
+    println("Running ${actionName} with params: " + args)
+    "$actionName"(params)
 
     return;
 }
