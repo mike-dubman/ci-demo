@@ -320,6 +320,7 @@ def run_step(image, config, title, oneStep, axis) {
 
         config.logger.debug("Running step action=" + script + " args=" + argList)
         this."${script}"(argList)
+        config.logger.debug("Running step action done")
         return
     }
 
@@ -328,6 +329,7 @@ def run_step(image, config, title, oneStep, axis) {
     ${script}
     """
     run_shell(cmd, title)
+    config.logger.debug("Running step done")
 }
 
 def runSteps(image, config, branchName, axis) {
@@ -362,6 +364,7 @@ def runSteps(image, config, branchName, axis) {
         try {
             run_step(image, config, one.name, oneStep, axis)
         } catch (e) {
+            config.logger.warn("Step[${i}] failed - running onfail procedures")
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")
             }
