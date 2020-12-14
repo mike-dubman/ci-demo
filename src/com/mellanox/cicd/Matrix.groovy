@@ -366,12 +366,13 @@ def runSteps(image, config, branchName, axis) {
         try {
             run_step(image, config, one.name, oneStep, axis)
         } catch (e) {
-            config.logger.warn("Step[${i}] failed - running onfail procedures with error: " + e)
+            config.logger.warn("Step[${one.name}] failed - running onfail procedures with error: " + e)
+            e.printStackTrace()
             if (one.get("onfail") != null) {
                 run_shell(one.onfail, "onfail command for ${one.name}")
             }
             attachArtifacts(config, config.archiveArtifacts)
-            throw(e)
+            currentBuild.result = 'FAILURE'
         } finally {
             if (one.get("always") != null) {
                 run_shell(one.always, "always command for ${one.name}")
