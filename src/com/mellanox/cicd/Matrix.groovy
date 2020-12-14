@@ -520,11 +520,11 @@ Map getTasks(axes, image, config, include, exclude) {
 
     def val = getConfigVal(config, ['failFast'], true)
 
-    config.logger.debug("getTasks() -->")
+    config.logger.trace(3, "getTasks() -->")
 
     int serialNum = 1
     Map tasks = [failFast: val]
-    for(int i = 0; i < axes.size(); i++) {
+    for (int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
 
         if(axis.arch != image.arch) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def call(List args) {
+def call(args) {
 
     library(identifier: 'ngci@ci_version-3.1',
             retriever: modernSCM([$class: 'GitSCMSource', 
