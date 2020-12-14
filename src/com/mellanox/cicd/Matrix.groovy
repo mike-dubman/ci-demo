@@ -225,7 +225,7 @@ def onUnstash() {
     run_shell(cmd, "Extracting project files into workspace")
 }
 
-@NonCPS
+
 def attachArtifacts(config, args) {
     if(args != null) {
         try {
@@ -478,10 +478,11 @@ def runK8(image, branchName, config, axis) {
     config.logger.debug("runK8 ${branchName} done")
 }
 
+@NonCPS
 def resolveTemplate(varsMap, str) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = shell.evaluate('"' + str +'"')
-    new Logger(this).trace(3, "resolveTemplate: Evaluating varsMap: " + varsMap.toString() + " str: " + str + " res: " + res)
+    //new Logger(this).trace(3, "resolveTemplate: Evaluating varsMap: " + varsMap.toString() + " str: " + str + " res: " + res)
     return res
 }
 
