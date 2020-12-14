@@ -472,7 +472,6 @@ def runK8(image, branchName, config, axis) {
     }
 }
 
-@NonCPS
 def resolveTemplate(varsMap, str) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = shell.evaluate('"' + str +'"')
@@ -742,10 +741,9 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
     }
 
     config.logger.trace(3, "run_parallel_in_chunks: batch size is ${bSize}")
-    parallel myTasks
-    //(myTasks.keySet() as List).collate(bSize).each {
-    //    parallel myTasks.subMap(it)
-    //}
+    (myTasks.keySet() as List).collate(bSize).each {
+        parallel myTasks.subMap(it)
+    }
 }
 
 
