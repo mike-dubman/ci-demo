@@ -196,12 +196,16 @@ def gen_image_map(config) {
 }
 
 def matchMapEntry(filters, entry) {
-    def match = true
+    def match
     for (int i=0; i<filters.size(); i++) {
+        match = true
         filters[i].each { k,v ->
             if (entry[k] != null && v != entry[k]) {
                 match = false
             }
+        }
+        if (match) {
+            break
         }
     }
     return match
