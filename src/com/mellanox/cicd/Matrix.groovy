@@ -285,7 +285,7 @@ def run_step(image, config, title, oneStep, axis) {
     }
 
     def customSel = oneStep.get("containerSelector")
-    if (customSel != null && matchMapEntry(customSel, axis)) {
+    if (customSel != null && matchMapEntry([customSel], axis)) {
         config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
         skip--
     }
@@ -298,7 +298,6 @@ def run_step(image, config, title, oneStep, axis) {
     def shell = getDefaultShell(config, oneStep)
     def script = oneStep.run
 
-    config.logger.debug("Running step with shell=" + shell)
     run_shell("echo Setting env for step: ${title}", title)
 
     if (oneStep.env) {
@@ -310,28 +309,44 @@ def run_step(image, config, title, oneStep, axis) {
 
     run_shell("echo Starting step: ${title}", title)
 
-    if (shell == "action") {
+    try {
+        if (shell == "action") {
 
-        def argList = []
-        def vars = [:]
-        vars['env'] = env
+            def argList = []
+            def vars = [:]
+            vars['env'] = env
 
-        if (oneStep.args != null) {
-            for (int i=0; i< oneStep.args.size(); i++) {
-                arg = oneStep.args[i]
-                arg = resolveTemplate(vars, arg)
-                argList.add(arg)
+            if (oneStep.args != null) {
+                for (int i=0; i< oneStep.args.size(); i++) {
+                    arg = oneStep.args[i]
+                    arg = resolveTemplate(vars, arg)
+                    argList.add(arg)
+                }
             }
-        }
 
-        config.logger.debug("Running step action=" + script + " args=" + argList)
-        this."${script}"(argList)
-    } else {
-        def cmd = """${shell}
-        ${script}
-        """
-        run_shell(cmd, title)
+            config.logger.debug("Running step action=" + script + " args=" + argList)
+            this."${script}"(argList)
+        } else {
+            def cmd = """${shell}
+            ${script}
+            """
+            run_shell(cmd, title)
+        }
+    } catch (e) {
+        config.logger.warn("Step[${title}] failed - running onfail procedures with error: " + e)
+        if (oneStep.get("onfail") != null) {
+            run_shell(oneStep.onfail, "onfail command for ${title}")
+        }
+        attachArtifacts(config, config.archiveArtifacts)
+        currentBuild.result = 'FAILURE'
+        run_shell("false", "fatal error")
+    } finally {
+        if (oneStep.get("always") != null) {
+            run_shell(oneStep.always, "always command for ${title}")
+        }
+        attachArtifacts(config, oneStep.archiveArtifacts)
     }
+
     config.logger.debug("Running step done")
 }
 
@@ -364,22 +379,7 @@ def runSteps(image, config, branchName, axis) {
             parallel(parallelNestedSteps)
             parallelNestedSteps = [:]
         }
-        try {
-            run_step(image, config, one.name, oneStep, axis)
-        } catch (e) {
-            config.logger.warn("Step[${one.name}] failed - running onfail procedures with error: " + e)
-            e.printStackTrace()
-            if (one.get("onfail") != null) {
-                run_shell(one.onfail, "onfail command for ${one.name}")
-            }
-            attachArtifacts(config, config.archiveArtifacts)
-            currentBuild.result = 'FAILURE'
-        } finally {
-            if (one.get("always") != null) {
-                run_shell(one.always, "always command for ${one.name}")
-            }
-            attachArtifacts(config, one.archiveArtifacts)
-        }
+        run_step(image, config, one.name, oneStep, axis)
     }
     attachArtifacts(config, config.archiveArtifacts)
     config.logger.debug("runSteps ${branchName} done")
