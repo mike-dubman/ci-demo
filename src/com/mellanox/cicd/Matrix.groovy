@@ -56,6 +56,11 @@ List getMatrixAxes(matrix_axes) {
     axes.combinations()*.sum()
 }
 
+// hack to avoid Serializble errors as intermediate access to entrySet returns non-serializable objects
+
+@NonCPS def entrySet(m) {m.collect {k, v -> [key: k, value: v]}}
+
+
 def run_shell(cmd, title, retOut=false) {
     sh(script: cmd, label: title, returnStdout: retOut)
 }
@@ -299,11 +304,11 @@ def run_step(image, config, title, oneStep, axis) {
 
     run_shell("echo Setting env for step: ${title}", title)
 
-//    if (oneStep.env) {
-//        for (String k : oneStep.env.keySet()) {
-//            env[k] = oneStep.env[k]
-//        }
-//    }
+    if (oneStep.env) {
+        for (def entry in entrySet(oneStep.env)) {
+            env[entry.key] = entry.value
+        }
+    }
 
     run_shell("echo Starting step: ${title}", title)
 
@@ -827,8 +832,9 @@ def main() {
             def parallelBuildDockers = [:]
 
             def arch_distro_map = gen_image_map(config)
-            for (String arch : arch_distro_map.keySet()) {
-                def images = arch_distro_map.get(arch)
+            for (def entry in entrySet(arch_distro_map))
+                def arch = entry.key
+                def images = entry.value
                 for (int j=0; j<images.size(); j++) {
                     def image = images[j]
                     parallelBuildDockers[image.name] = {
