@@ -482,7 +482,6 @@ def runK8(image, branchName, config, axis) {
 def resolveTemplate(varsMap, str) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = shell.evaluate('"' + str +'"')
-    //new Logger(this).trace(3, "resolveTemplate: Evaluating varsMap: " + varsMap.toString() + " str: " + str + " res: " + res)
     return res
 }
 
@@ -523,12 +522,11 @@ def runDocker(image, config, branchName=null, axis=null, Closure func, runInDock
 
 Map getTasks(axes, image, config, include, exclude) {
 
-    def val = getConfigVal(config, ['failFast'], true)
 
     config.logger.trace(3, "getTasks() -->")
 
     int serialNum = 1
-    Map tasks = [failFast: val]
+    Map tasks = [:]
     for (int i = 0; i < axes.size(); i++) {
         Map axis = axes[i]
 
@@ -750,9 +748,13 @@ def run_parallel_in_chunks(config, myTasks, bSize) {
         bSize = myTasks.size()
     }
 
+    def val = getConfigVal(config, ['failFast'], true)
+
     config.logger.trace(3, "run_parallel_in_chunks: batch size is ${bSize}")
     (myTasks.keySet() as List).collate(bSize).each {
-        parallel myTasks.subMap(it)
+        def batchMap = myTasks.subMap(it)
+        batchMap['failFast'] = val
+        parallel batchMap
     }
 }
 
@@ -823,8 +825,7 @@ def main() {
 // this is to avoid that multiple axis from matrix will create own same copy for $docker but creating it upfront.
 
 
-            def val = getConfigVal(config, ['failFast'], true)
-            def parallelBuildDockers = [failFast: val]
+            def parallelBuildDockers = [:]
 
             def arch_distro_map = gen_image_map(config)
             for (String arch : arch_distro_map.keySet()) {
