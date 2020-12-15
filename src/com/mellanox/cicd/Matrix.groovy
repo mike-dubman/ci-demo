@@ -58,7 +58,10 @@ List getMatrixAxes(matrix_axes) {
 
 // hack to avoid Serializble errors as intermediate access to entrySet returns non-serializable objects
 
-@NonCPS def entrySet(m) {m.collect {k, v -> [key: k, value: v]}}
+@NonCPS 
+def entrySet(m) {
+    m.collect {k, v -> [key: k, value: v]}
+}
 
 
 def run_shell(cmd, title, retOut=false) {
@@ -832,7 +835,7 @@ def main() {
             def parallelBuildDockers = [:]
 
             def arch_distro_map = gen_image_map(config)
-            for (def entry in entrySet(arch_distro_map))
+            for (def entry in entrySet(arch_distro_map)) {
                 def arch = entry.key
                 def images = entry.value
                 for (int j=0; j<images.size(); j++) {
