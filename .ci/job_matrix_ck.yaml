@@ -95,15 +95,21 @@ steps:
 
   - name: Configure
     run: |
+      pwd
+      ls -al
       ./autogen.sh
       ./configure --prefix ${WORKSPACE}/install
 
   - name: Build
     run: |
+      pwd
+      ls -al
       make -j 2 all
 
   - name: Install
     run: |
+      pwd
+      ls -al
       make -j 2 install
 
   - name: Coverity scan
