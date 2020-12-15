@@ -270,6 +270,7 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
     return ret
 }
 
+@NonCPS
 def run_step(image, config, title, oneStep, axis) {
 
     if (oneStep.get("enable") != null && !oneStep.enable) {
@@ -301,8 +302,7 @@ def run_step(image, config, title, oneStep, axis) {
 
     if (oneStep.env) {
         for (String k : oneStep.env.keySet()) {
-            def v = oneStep.env[k]
-            env[k] = v
+            env[k] = oneStep.env[k]
         }
     }
 
