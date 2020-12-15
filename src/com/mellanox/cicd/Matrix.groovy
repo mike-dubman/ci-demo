@@ -326,7 +326,7 @@ def run_step(image, config, title, oneStep, axis) {
             config.logger.debug("Running step action=" + script + " args=" + argList)
             this."${script}"(argList)
         } else {
-            def cmd = shell + "\n" + script}
+            def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
             run_shell(cmd, title)
         }
