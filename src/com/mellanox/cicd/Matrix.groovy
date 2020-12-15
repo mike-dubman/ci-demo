@@ -334,6 +334,8 @@ def run_step(image, config, title, oneStep, axis) {
         }
     } catch (e) {
         config.logger.warn("Step[${title}] failed - running onfail procedures with error: " + e)
+
+        org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
         if (oneStep.get("onfail") != null) {
             run_shell(oneStep.onfail, "onfail command for ${title}")
         }
