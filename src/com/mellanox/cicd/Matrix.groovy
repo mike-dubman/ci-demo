@@ -267,7 +267,6 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
         ret += 'x'
     }
 
-    new Logger(this).debug("shell: " + ret)
     return ret
 }
 
@@ -327,9 +326,8 @@ def run_step(image, config, title, oneStep, axis) {
             config.logger.debug("Running step action=" + script + " args=" + argList)
             this."${script}"(argList)
         } else {
-            def cmd = """${shell}
-            ${script}
-            """
+            def cmd = shell + "\n" + script}
+            config.logger.debug("Running step script=" + cmd)
             run_shell(cmd, title)
         }
     } catch (e) {
