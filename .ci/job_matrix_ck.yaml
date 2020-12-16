@@ -107,16 +107,16 @@ steps:
       make -j 2 all
 
   - name: Install
+    containerSelector: '{name:centos7-7, variant:1}'
     run: |
       pwd
       ls -al
       make -j 2 install
 
-  - name: Coverity scan
-  
-    containerSelector: '{name:centos7-7, variant:1}'
+  - name: Coverity scan  
     shell: action
-    enable: true
+    containerSelector: '{name:centos7-7, variant:1}'
+    enable: false
     run: dynamicAction
     args:
       - "coverity.sh"
