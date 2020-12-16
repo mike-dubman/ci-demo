@@ -345,7 +345,7 @@ def run_step(image, config, title, oneStep, axis) {
             config.logger.debug("Running step script=" + cmd)
             String uuid = UUID.randomUUID().toString() 
             String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
-            writeFile file: fn, text: cmd
+            writeFile(file: "${fn}", text: "${cmd}", encoding: "UTF-8")
             sh("chmod +x ${fn}")
             sh("cat ${fn}")
             def proc = fn.execute()
