@@ -105,14 +105,12 @@ steps:
       pwd
       ls -al
       make -j 2 all
-      echo xxxx $?
 
   - name: Install
     run: |
       pwd
       ls -al
       make -j 2 install
-      echo xxxx $?
 
   - name: Coverity scan
     containerSelector: '{name:centos7-7, variant:1}'

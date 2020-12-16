@@ -335,7 +335,8 @@ def run_step(image, config, title, oneStep, axis) {
         } else {
             def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
-            run_shell(cmd, title)
+            def proc = cmd.execute()
+            //run_shell(cmd, title)
         }
     } catch (e) {
         config.logger.warn("Step[${title}] failed - running onfail procedures with error: " + e)
