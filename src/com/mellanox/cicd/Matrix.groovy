@@ -343,13 +343,14 @@ def run_step(image, config, title, oneStep, axis) {
         } else {
             def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
-            String uuid = UUID.randomUUID().toString() 
-            String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
-            writeFile(file: "${fn}", text: "${cmd}", encoding: "UTF-8")
-            sh("chmod +x ${fn}")
-            sh("cat ${fn}")
-            def proc = fn.execute()
-            //run_shell(cmd, title)
+            //String uuid = UUID.randomUUID().toString() 
+            //String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
+            //writeFile(file: "${fn}", text: "${cmd}", encoding: "UTF-8")
+            //sh("chmod +x ${fn}")
+            //sh("cat ${fn}")
+            //def proc = fn.execute()
+            def ret = run_shell(cmd, title, false, true)
+            config.logger.debug("ret status =" + ret)
         }
     } catch (e) {
         config.logger.warn("Step[${title}] failed - running onfail procedures with error: " + e)
