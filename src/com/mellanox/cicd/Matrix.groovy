@@ -313,7 +313,7 @@ def run_step(image, config, title, oneStep, axis) {
     def shell = getDefaultShell(config, oneStep)
     def script = oneStep.run
 
-    run_shell("echo Setting env for step: ${title}", title)
+    //run_shell("echo Setting env for step: ${title}", title)
 
     if (oneStep.env) {
         for (def entry in entrySet(oneStep.env)) {
@@ -321,7 +321,7 @@ def run_step(image, config, title, oneStep, axis) {
         }
     }
 
-    run_shell("echo Starting step: ${title}", title)
+    //run_shell("echo Starting step: ${title}", title)
 
     try {
         if (shell == "action") {
@@ -344,9 +344,10 @@ def run_step(image, config, title, oneStep, axis) {
             def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
             String uuid = UUID.randomUUID().toString() 
-            String fn = uuid + ".sh"
+            String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
             writeFile file: fn, text: cmd
             sh("chmod +x ${fn}")
+            sh("cat ${fn}")
             def proc = fn.execute()
             //run_shell(cmd, title)
         }
@@ -355,14 +356,14 @@ def run_step(image, config, title, oneStep, axis) {
 
         org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
         if (oneStep.get("onfail") != null) {
-            run_shell(oneStep.onfail, "onfail command for ${title}")
+            //run_shell(oneStep.onfail, "onfail command for ${title}")
         }
         attachArtifacts(config, config.archiveArtifacts)
         currentBuild.result = 'FAILURE'
         run_shell("false", "fatal error")
     } finally {
         if (oneStep.get("always") != null) {
-            run_shell(oneStep.always, "always command for ${title}")
+            //run_shell(oneStep.always, "always command for ${title}")
         }
         attachArtifacts(config, oneStep.archiveArtifacts)
     }
