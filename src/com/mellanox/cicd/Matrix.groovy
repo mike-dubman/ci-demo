@@ -65,7 +65,13 @@ def entrySet(m) {
 
 
 def run_shell(cmd, title, retOut=false) {
-    sh(script: cmd, label: title, returnStdout: retOut)
+    def ret
+    if (retOut) {
+        ret = sh(script: cmd, label: title, returnStdout: true)
+    } else {
+        ret = sh(script: cmd, label: title, returnStatus: true)
+    }
+    return ret
 }
 
 
@@ -278,6 +284,8 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
     return ret
 }
 
+
+
 def run_step(image, config, title, oneStep, axis) {
 
     if (oneStep.get("enable") != null && !oneStep.enable) {
@@ -335,7 +343,11 @@ def run_step(image, config, title, oneStep, axis) {
         } else {
             def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
-            def proc = cmd.execute()
+            String uuid = randomUUID() as String
+            String fn = uuid + ".sh"
+            writeFile file: fn, text: cmd
+            sh("chmod +x ${fn}")
+            def proc = fn.execute()
             //run_shell(cmd, title)
         }
     } catch (e) {
