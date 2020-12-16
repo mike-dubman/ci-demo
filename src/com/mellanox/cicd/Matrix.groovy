@@ -343,7 +343,7 @@ def run_step(image, config, title, oneStep, axis) {
         } else {
             def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
-            String uuid = randomUUID() as String
+            String uuid = UUID.randomUUID().toString() 
             String fn = uuid + ".sh"
             writeFile file: fn, text: cmd
             sh("chmod +x ${fn}")
