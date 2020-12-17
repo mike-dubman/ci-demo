@@ -313,7 +313,7 @@ def run_step(image, config, title, oneStep, axis) {
     def shell = getDefaultShell(config, oneStep)
     def script = oneStep.run
 
-    //run_shell("echo Setting env for step: ${title}", title)
+    run_shell("echo Setting env for step: ${title}", title)
 
     if (oneStep.env) {
         for (def entry in entrySet(oneStep.env)) {
@@ -321,7 +321,7 @@ def run_step(image, config, title, oneStep, axis) {
         }
     }
 
-    //run_shell("echo Starting step: ${title}", title)
+    run_shell("echo Starting step: ${title}", title)
 
     try {
         if (shell == "action") {
@@ -349,8 +349,8 @@ def run_step(image, config, title, oneStep, axis) {
             //sh("chmod +x ${fn}")
             //sh("cat ${fn}")
             //def proc = fn.execute()
-            def ret = run_shell(cmd, title, false, true)
-            config.logger.debug("ret status =" + ret)
+            def ret = run_shell(cmd, title)
+            config.logger.debug("xxx ret status =" + ret)
         }
     } catch (e) {
         config.logger.warn("Step[${title}] failed - running onfail procedures with error: " + e)
