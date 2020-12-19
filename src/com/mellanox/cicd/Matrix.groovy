@@ -91,8 +91,7 @@ def run_step_shell(cmd, title, oneStep, config) {
         if (oneStep["onfail"] != null) {
             run_shell(oneStep.onfail, "onfail command for ${title}")
         }
-        //currentBuild.result = 'FAILURE'
-        currentBuild.currentResult = 'FAILURE'
+        currentBuild.result = 'FAILURE'
         attachArtifacts(config, config.archiveArtifacts)
     }
 
@@ -102,7 +101,9 @@ def run_step_shell(cmd, title, oneStep, config) {
 
     attachArtifacts(config, oneStep.archiveArtifacts)
     if (ret.rc != 0) {
+        config.logger.warn("Step[${title}] failed xxxxx")
         run_shell("false", "fatal error")
+        error("Step ${title} failed")
     }
 
 }
@@ -347,76 +348,68 @@ def toStringMap(strMap) {
 
 def run_step(image, config, title, oneStep, axis) {
 
-    if (oneStep.get("enable") != null && !oneStep.enable) {
-        config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-        return
-    }
-
-    def skip = 0
-    if (image.get("category") != null && image.category == "tool") {
-        config.logger.debug("Detected image category=tool")
-        skip++
-    }
-
-    def customSel = toStringMap(oneStep.get("containerSelector"))
-
-    config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
-    
-    if (customSel.size() > 0  && matchMapEntry([customSel], axis, debug)) {
-        config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
-        skip--
-    }
-
-    if (skip > 0) {
-        config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
-        return
-    }
-
-    def shell = getDefaultShell(config, oneStep)
-    def script = oneStep.run
-
-    run_shell("echo Setting env for step: ${title}", title)
-
-    if (oneStep.env) {
-        for (def entry in entrySet(oneStep.env)) {
-            env[entry.key] = entry.value
+    stage("${oneStep.name}") {
+        if (oneStep.get("enable") != null && !oneStep.enable) {
+            config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
+            return
         }
-    }
 
-    run_shell("echo Starting step: ${title}", title)
+        def skip = 0
+        if (image.get("category") != null && image.category == "tool") {
+            config.logger.debug("Detected image category=tool")
+            skip++
+        }
 
-    if (shell == "action") {
+        def customSel = toStringMap(oneStep.get("containerSelector"))
 
-        def argList = []
-        def vars = [:]
-        vars['env'] = env
+        config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
+        
+        if (customSel.size() > 0  && matchMapEntry([customSel], axis, debug)) {
+            config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
+            skip--
+        }
 
-        if (oneStep.args != null) {
-            for (int i=0; i< oneStep.args.size(); i++) {
-                arg = oneStep.args[i]
-                arg = resolveTemplate(vars, arg)
-                argList.add(arg)
+        if (skip > 0) {
+            config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
+            return
+        }
+
+        def shell = getDefaultShell(config, oneStep)
+        def script = oneStep.run
+
+        run_shell("echo Setting env for step: ${title}", title)
+
+        if (oneStep.env) {
+            for (def entry in entrySet(oneStep.env)) {
+                env[entry.key] = entry.value
             }
         }
 
-        config.logger.debug("Running step action=" + script + " args=" + argList)
-        //todo: wrap try/catch
-        this."${script}"(argList)
-    } else {
-        def String cmd = shell + "\n" + script
-        config.logger.debug("Running step script=" + cmd)
-        run_step_shell(cmd, title, oneStep, config)
-        //String uuid = UUID.randomUUID().toString() 
-        //String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
-        //writeFile(file: "${fn}", text: "${cmd}", encoding: "UTF-8")
-        //sh("chmod +x ${fn}")
-        //sh("cat ${fn}")
-        //def proc = fn.execute()
-        //def ret = run_shell(cmd, title)
-        //config.logger.debug("xxx ret status =" + ret)
-    }
+        run_shell("echo Starting step: ${title}", title)
 
-    config.logger.debug("Running step done")
+        if (shell == "action") {
+
+            def argList = []
+            def vars = [:]
+            vars['env'] = env
+
+            if (oneStep.args != null) {
+                for (int i=0; i< oneStep.args.size(); i++) {
+                    arg = oneStep.args[i]
+                    arg = resolveTemplate(vars, arg)
+                    argList.add(arg)
+                }
+            }
+
+            config.logger.debug("Running step action=" + script + " args=" + argList)
+            //todo: wrap try/catch
+            this."${script}"(argList)
+        } else {
+            def String cmd = shell + "\n" + script
+            config.logger.debug("Running step script=" + cmd)
+            run_step_shell(cmd, title, oneStep, config)
+        }
+    }
 }
 
 def runSteps(image, config, branchName, axis) {
@@ -448,9 +441,7 @@ def runSteps(image, config, branchName, axis) {
             parallel(parallelNestedSteps)
             parallelNestedSteps = [:]
         }
-        stage("stepchik") {
         run_step(image, config, one.name, oneStep, axis)
-        }
     }
     attachArtifacts(config, config.archiveArtifacts)
     config.logger.debug("runSteps ${branchName} done")
