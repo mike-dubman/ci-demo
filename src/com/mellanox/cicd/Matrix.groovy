@@ -65,13 +65,43 @@ def entrySet(m) {
 
 
 def run_shell(cmd, title, retOut=false) {
-    def ret
-    if (retOut) {
-        ret = sh(script: cmd, label: title, returnStdout: true)
-    } else {
-        ret = sh(script: cmd, label: title, returnStatus: true)
+    def text = ""
+    def rc
+    try {
+        if (retOut) {
+            text = sh(script: cmd, label: title, returnStdout: true)
+            rc = 0
+        } else {
+            rc = sh(script: cmd, label: title, returnStatus: true)
+        }
+
+    } catch(e) {
+        org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
     }
-    return ret
+    return ['text': text, 'rc': rc]
+}
+
+def run_step_shell(cmd, title, oneStep, config) {
+
+    def ret = run_shell(cmd, title)
+    if (ret.rc != 0) {
+        config.logger.warn("Step[${title}] failed with code=${ret.rc} - running onfail procedures with error: " + e)
+        if (oneStep["onfail"] != null) {
+            run_shell(oneStep.onfail, "onfail command for ${title}")
+        }
+        currentBuild.result = 'FAILURE'
+        attachArtifacts(config, config.archiveArtifacts)
+    }
+
+    if (oneStep["always"] != null) {
+        run_shell(oneStep.always, "always command for ${title}")
+    }
+
+    attachArtifacts(config, oneStep.archiveArtifacts)
+    if (ret.rc != 0) {
+        run_shell("false", "fatal error")
+    }
+
 }
 
 
@@ -316,6 +346,10 @@ def run_step(image, config, title, oneStep, axis) {
 
     def customSel = oneStep.get("containerSelector")
     config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
+    if (customSel != null) {
+        config.logger.debug("xxxxxxxx type" + customSel.getClass())
+
+    }
     if (customSel != null && matchMapEntry([customSel], axis, debug)) {
         config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
         skip--
@@ -339,54 +373,35 @@ def run_step(image, config, title, oneStep, axis) {
 
     run_shell("echo Starting step: ${title}", title)
 
-    try {
-        if (shell == "action") {
+    if (shell == "action") {
 
-            def argList = []
-            def vars = [:]
-            vars['env'] = env
+        def argList = []
+        def vars = [:]
+        vars['env'] = env
 
-            if (oneStep.args != null) {
-                for (int i=0; i< oneStep.args.size(); i++) {
-                    arg = oneStep.args[i]
-                    arg = resolveTemplate(vars, arg)
-                    argList.add(arg)
-                }
+        if (oneStep.args != null) {
+            for (int i=0; i< oneStep.args.size(); i++) {
+                arg = oneStep.args[i]
+                arg = resolveTemplate(vars, arg)
+                argList.add(arg)
             }
-
-            config.logger.debug("Running step action=" + script + " args=" + argList)
-            this."${script}"(argList)
-        } else {
-            config.logger.debug("Pre - running step script=")
-            run_shell("echo xxxx pre - step: ${title}", title)
-
-            def String cmd = shell + "\n" + script
-            config.logger.debug("Running step script=" + cmd)
-            run_shell(cmd, title)
-            //String uuid = UUID.randomUUID().toString() 
-            //String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
-            //writeFile(file: "${fn}", text: "${cmd}", encoding: "UTF-8")
-            //sh("chmod +x ${fn}")
-            //sh("cat ${fn}")
-            //def proc = fn.execute()
-            //def ret = run_shell(cmd, title)
-            //config.logger.debug("xxx ret status =" + ret)
         }
-    } catch (e) {
-        config.logger.warn("Step[${title}] failed - running onfail procedures with error: " + e)
 
-        org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
-        if (oneStep.get("onfail") != null) {
-            //run_shell(oneStep.onfail, "onfail command for ${title}")
-        }
-        attachArtifacts(config, config.archiveArtifacts)
-        currentBuild.result = 'FAILURE'
-        run_shell("false", "fatal error")
-    } finally {
-        if (oneStep.get("always") != null) {
-            //run_shell(oneStep.always, "always command for ${title}")
-        }
-        attachArtifacts(config, oneStep.archiveArtifacts)
+        config.logger.debug("Running step action=" + script + " args=" + argList)
+        //todo: wrap try/catch
+        this."${script}"(argList)
+    } else {
+        def String cmd = shell + "\n" + script
+        config.logger.debug("Running step script=" + cmd)
+        run_step_shell(cmd, title, oneStep, config)
+        //String uuid = UUID.randomUUID().toString() 
+        //String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
+        //writeFile(file: "${fn}", text: "${cmd}", encoding: "UTF-8")
+        //sh("chmod +x ${fn}")
+        //sh("cat ${fn}")
+        //def proc = fn.execute()
+        //def ret = run_shell(cmd, title)
+        //config.logger.debug("xxx ret status =" + ret)
     }
 
     config.logger.debug("Running step done")
@@ -674,7 +689,7 @@ String getChangedFilesList(config) {
             def sha = env.ghprbActualCommit? env.ghprbActualCommit : "HEAD"
             dcmd = "git diff --name-only origin/${br}..${sha}"
         }
-        cFiles = run_shell(dcmd, 'Calculating changed files list', true).trim().tokenize()
+        cFiles = run_shell(dcmd, 'Calculating changed files list', true).text.trim().tokenize()
 
         cFiles.each { oneFile ->
             logger.debug("Tracking Changed File: " + oneFile)
