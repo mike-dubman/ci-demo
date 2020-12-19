@@ -101,7 +101,11 @@ def run_step_shell(cmd, title, oneStep, config) {
 
     if (ret.rc != 0) {
         currentBuild.result = 'FAILURE'
-        error("Step ${title} failed with exit code=${ret.rc}" + (ret.exception != null)? " exception=" + ret.exception : "")
+        def msg = "Step ${title} failed with exit code=${ret.rc}"
+        if (ret.exception != null) {
+            msg += " exception=${ret.exception}"
+        }
+        error(msg)
     }
 }
 
@@ -333,8 +337,7 @@ def run_step(image, config, title, oneStep, axis) {
     stage("${oneStep.name}") {
         if (oneStep.get("enable") != null && !oneStep.enable) {
             config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-            Utils.markStageSkippedForConditional(oneStep.name)
-
+            Utils.markStageSkippedForConditional(STAGE_NAME)
             return
         }
 
@@ -353,7 +356,7 @@ def run_step(image, config, title, oneStep, axis) {
 
         if (skip > 0) {
             config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
-            Utils.markStageSkippedForConditional(oneStep.name)
+            Utils.markStageSkippedForConditional(STAGE_NAME)
             return
         }
 
@@ -464,7 +467,7 @@ def runK8(image, branchName, config, axis) {
 
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
 
-    config.logger.info("Using kubernetes ${cloudName}, axis=" + axis)
+    config.logger.trace(1, "Using kubernetes ${cloudName}, axis=" + axis)
 
     def listV = parseListV(config.volumes)
     def cname = image.get("name").replaceAll("[\\.:/_]","")
@@ -478,7 +481,7 @@ def runK8(image, branchName, config, axis) {
     }
 
     nodeSelector = k8sArchConf.nodeSelector
-    config.logger.info("runK8 ${branchName} | nodeSelector: ${nodeSelector}")
+    config.logger.trace(1, "runK8 ${branchName} | nodeSelector: ${nodeSelector}")
 
     if (axis.nodeSelector) {
         if (nodeSelector) {
@@ -508,7 +511,7 @@ def runK8(image, branchName, config, axis) {
             }
         }
     }
-    config.logger.debug("runK8 ${branchName} done")
+    config.logger.trace(1, "runK8 ${branchName} done")
 }
 
 @NonCPS
@@ -750,7 +753,7 @@ def build_docker_on_k8(image, config) {
         }
     }
 
-    config.logger.info("build_docker_on_k8 for image ${image.name} | nodeSelector: ${nodeSelector}")
+    config.logger.trace(2, "build_docker_on_k8 for image ${image.name} | nodeSelector: ${nodeSelector}")
 
     podTemplate(
         cloud: cloudName,
