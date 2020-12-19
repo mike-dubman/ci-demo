@@ -1,5 +1,6 @@
 #!/usr/bin/groovy
 package com.mellanox.cicd;
+import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 class Logger {
     def ctx
@@ -100,7 +101,7 @@ def run_step_shell(cmd, title, oneStep, config) {
 
     if (ret.rc != 0) {
         currentBuild.result = 'FAILURE'
-        error("Step ${title} failed with exit code=${ret.rc}" + ret.exception? " exception=" + ret.exception : "")
+        error("Step ${title} failed with exit code=${ret.rc}" + (ret.exception != null)? " exception=" + ret.exception : "")
     }
 }
 
@@ -329,30 +330,33 @@ def toStringMap(strMap) {
 
 def run_step(image, config, title, oneStep, axis) {
 
-    if (oneStep.get("enable") != null && !oneStep.enable) {
-        config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-        return
-    }
-
-    def skip = 0
-    if (image.get("category") != null && image.category == "tool") {
-        config.logger.debug("Detected image category=tool")
-        skip++
-    }
-
-    def customSel = toStringMap(oneStep.get("containerSelector"))
-
-    if (customSel.size() > 0  && matchMapEntry([customSel], axis)) {
-        config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
-        skip--
-    }
-
-    if (skip > 0) {
-        config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
-        return
-    }
-
     stage("${oneStep.name}") {
+        if (oneStep.get("enable") != null && !oneStep.enable) {
+            config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
+            Utils.markStageSkippedForConditional(oneStep.name)
+
+            return
+        }
+
+        def skip = 0
+        if (image.get("category") != null && image.category == "tool") {
+            config.logger.debug("Detected image category=tool")
+            skip++
+        }
+
+        def customSel = toStringMap(oneStep.get("containerSelector"))
+
+        if (customSel.size() > 0  && matchMapEntry([customSel], axis)) {
+            config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
+            skip--
+        }
+
+        if (skip > 0) {
+            config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
+            Utils.markStageSkippedForConditional(oneStep.name)
+            return
+        }
+
 
         def shell = getDefaultShell(config, oneStep)
         def script = oneStep.run
