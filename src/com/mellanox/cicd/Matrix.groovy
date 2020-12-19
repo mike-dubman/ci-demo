@@ -209,18 +209,24 @@ def gen_image_map(config) {
     return image_map
 }
 
-def matchMapEntry(filters, entry) {
+def matchMapEntry(filters, entry, debug=false) {
     def match
     for (int i=0; i<filters.size(); i++) {
         match = true
         filters[i].each { k,v ->
             if (entry[k] == null || v != entry[k]) {
                 match = false
+                if (debug) {
+                    println("xxxxxxx no match by -- entry[k]=" + entry[k] + " k=${k}  v=${v}")
+                }
             }
         }
         if (match) {
             break
         }
+    }
+    if (debug) {
+        println("xxxxxxx match="+match)
     }
     return match
 }
@@ -300,8 +306,8 @@ def run_step(image, config, title, oneStep, axis) {
     }
 
     def customSel = oneStep.get("containerSelector")
-    config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title}")
-    if (customSel != null && matchMapEntry([customSel], axis)) {
+    config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
+    if (customSel != null && matchMapEntry([customSel], axis, debug)) {
         config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
         skip--
     }
@@ -343,6 +349,8 @@ def run_step(image, config, title, oneStep, axis) {
             this."${script}"(argList)
         } else {
             config.logger.debug("Pre - running step script=")
+            run_shell("xxxx pre - step: ${title}", title)
+
             def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
             //String uuid = UUID.randomUUID().toString() 
@@ -547,7 +555,7 @@ def runDocker(image, config, branchName=null, axis=null, Closure func, runInDock
 Map getTasks(axes, image, config, include, exclude) {
 
 
-    config.logger.trace(3, "getTasks() -->")
+    config.logger.trace(3, "getTasks() --> image=" + image)
 
     int serialNum = 1
     Map tasks = [:]
@@ -608,7 +616,7 @@ Map getTasks(axes, image, config, include, exclude) {
         }
     }
 
-    config.logger.debug("getTasks() done")
+    config.logger.debug("getTasks() done image=" + image)
 
 
     return tasks
