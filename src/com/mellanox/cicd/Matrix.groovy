@@ -335,7 +335,10 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
 def toStringMap(strMap) {
     def ret = [:]
     if (strMap != null) {
+        println("xxxxxxx strMap=" + strMap + " class: " + strMap.getClass())
+
         strMap = '[' + strMap.replaceAll('[\\{\\}]',' ') + ']';
+        println("xxxxxxx strMap=" + strMap)
         ret = evaluate(strMap)
     }
     return ret
