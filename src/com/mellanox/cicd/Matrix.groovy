@@ -332,6 +332,14 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
 }
 
 
+def toStringMap(strMap) {
+    def ret = [:]
+    if (strMap != null) {
+        strMap = '[' + strMap.replaceAll('[\\{\\}]',' ') + ']';
+        ret = evaluate(strMap)
+    }
+    return ret
+}
 
 def run_step(image, config, title, oneStep, axis) {
 
@@ -346,15 +354,11 @@ def run_step(image, config, title, oneStep, axis) {
         skip++
     }
 
-    def customSel = oneStep.get("containerSelector")
-    config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
-    if (customSel != null) {
-        customSel = customSel.replaceAll('\\{',' ').replaceAll('\\}',' ').toString();
-        customSel = evaluate('[' + customSel + ']')
-        config.logger.debug("xxxxxxxx type" + customSel.getClass() + " val=" + customSel)
+    def customSel = toStringMap(oneStep.get("containerSelector"))
 
-    }
-    if (customSel != null && matchMapEntry([customSel], axis, debug)) {
+    config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
+    
+    if (customSel.size() > 0  && matchMapEntry([customSel], axis, debug)) {
         config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
         skip--
     }
