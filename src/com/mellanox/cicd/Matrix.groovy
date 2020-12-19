@@ -878,10 +878,12 @@ def main() {
                 for (int j=0; j<images.size(); j++) {
                     def image = images[j]
                     parallelBuildDockers[image.name] = {
-                        if (image.nodeLabel) {
-                            runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
-                        } else {
-                            build_docker_on_k8(image, config)
+                        stage("Build Docker") {
+                            if (image.nodeLabel) {
+                                runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
+                            } else {
+                                build_docker_on_k8(image, config)
+                            }
                         }
                     }
                     branches += getMatrixTasks(image, config)
