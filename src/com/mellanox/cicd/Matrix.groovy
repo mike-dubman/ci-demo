@@ -333,11 +333,6 @@ def toStringMap(strMap) {
 }
 
 def run_step(image, config, title, oneStep, axis) {
-        if (oneStep.get("enable") != null && !oneStep.enable) {
-            config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-            Utils.markStageSkippedForConditional(env.STAGE_NAME)
-            return
-        }
 
     stage("${oneStep.name}") {
         if (oneStep.get("enable") != null && !oneStep.enable) {
