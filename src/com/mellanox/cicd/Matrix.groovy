@@ -67,6 +67,7 @@ def entrySet(m) {
 def run_shell(cmd, title, retOut=false) {
     def text = ""
     def rc
+    def err = ""
     try {
         if (retOut) {
             text = sh(script: cmd, label: title, returnStdout: true)
@@ -76,16 +77,17 @@ def run_shell(cmd, title, retOut=false) {
         }
 
     } catch(e) {
+        err = e
         org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
     }
-    return ['text': text, 'rc': rc]
+    return ['text': text, 'rc': rc, 'exception': err]
 }
 
 def run_step_shell(cmd, title, oneStep, config) {
 
     def ret = run_shell(cmd, title)
     if (ret.rc != 0) {
-        config.logger.warn("Step[${title}] failed with code=${ret.rc} - running onfail procedures with error: " + e)
+        config.logger.warn("Step[${title}] failed with code=${ret.rc} - running onfail procedures with error: " + ret.exception)
         if (oneStep["onfail"] != null) {
             run_shell(oneStep.onfail, "onfail command for ${title}")
         }
@@ -347,7 +349,9 @@ def run_step(image, config, title, oneStep, axis) {
     def customSel = oneStep.get("containerSelector")
     config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
     if (customSel != null) {
-        config.logger.debug("xxxxxxxx type" + customSel.getClass())
+        customSel = customSel.replaceAll('\{',' ').replaceAll('\}',' ').toString();
+        customSel = evaluate('[' + customSel + ']')
+        config.logger.debug("xxxxxxxx type" + customSel.getClass() + " val=" + customSel)
 
     }
     if (customSel != null && matchMapEntry([customSel], axis, debug)) {
