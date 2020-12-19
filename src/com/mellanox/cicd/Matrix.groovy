@@ -67,7 +67,7 @@ def entrySet(m) {
 def run_shell(cmd, title, retOut=false) {
     def text = ""
     def rc
-    def err = ""
+    def err = null
     try {
         if (retOut) {
             text = sh(script: cmd, label: title, returnStdout: true)
@@ -87,12 +87,9 @@ def run_step_shell(cmd, title, oneStep, config) {
 
     def ret = run_shell(cmd, title)
     if (ret.rc != 0) {
-        config.logger.warn("Step[${title}] failed with code=${ret.rc} - running onfail procedures with error: " + ret.exception)
         if (oneStep["onfail"] != null) {
             run_shell(oneStep.onfail, "onfail command for ${title}")
         }
-        currentBuild.result = 'FAILURE'
-        attachArtifacts(config, config.archiveArtifacts)
     }
 
     if (oneStep["always"] != null) {
@@ -100,10 +97,11 @@ def run_step_shell(cmd, title, oneStep, config) {
     }
 
     attachArtifacts(config, oneStep.archiveArtifacts)
-    if (ret.rc != 0) {
-        error("Step ${title} failed")
-    }
 
+    if (ret.rc != 0) {
+        currentBuild.result = 'FAILURE'
+        error("Step ${title} failed with exit code=${ret.rc}" + ret.exception? " exception=" + ret.exception : "")
+    }
 }
 
 
@@ -359,15 +357,11 @@ def run_step(image, config, title, oneStep, axis) {
         def shell = getDefaultShell(config, oneStep)
         def script = oneStep.run
 
-        run_shell("echo Setting env for step: ${title}", title)
-
         if (oneStep.env) {
             for (def entry in entrySet(oneStep.env)) {
                 env[entry.key] = entry.value
             }
         }
-
-        run_shell("echo Starting step: ${title}", title)
 
         if (shell == "action") {
 
@@ -466,19 +460,10 @@ def runK8(image, branchName, config, axis) {
 
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
 
-    config.logger.info("Running kubernetes ${cloudName}")
-
-    def str = ""
-    axis.each { key, val ->
-        str += "$key = $val\n"
-    }
-
-    config.logger.debug("runK8 | str: ${str}")
+    config.logger.info("Using kubernetes ${cloudName}, axis=" + axis)
 
     def listV = parseListV(config.volumes)
     def cname = image.get("name").replaceAll("[\\.:/_]","")
-
-    config.logger.debug("runK8 | arch: ${axis.arch}")
 
     def k8sArchConf = getArchConf(config, axis.arch)
     def nodeSelector = ''
@@ -699,7 +684,7 @@ def buildDocker(image, config) {
     def extra_args = image.build_args
     def changed_files = config.get("cFiles")
 
-    stage("Prepare docker image for ${config.job}/$arch/$distro") {
+    stage("Setting image") {
         config.logger.info("Going to fetch docker image: ${img} from ${config.registry_host}")
         def need_build = 0
 
