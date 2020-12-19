@@ -91,7 +91,8 @@ def run_step_shell(cmd, title, oneStep, config) {
         if (oneStep["onfail"] != null) {
             run_shell(oneStep.onfail, "onfail command for ${title}")
         }
-        currentBuild.result = 'FAILURE'
+        //currentBuild.result = 'FAILURE'
+        currentBuild.currentResult = 'FAILURE'
         attachArtifacts(config, config.archiveArtifacts)
     }
 
@@ -447,7 +448,9 @@ def runSteps(image, config, branchName, axis) {
             parallel(parallelNestedSteps)
             parallelNestedSteps = [:]
         }
+        stage("stepchik") {
         run_step(image, config, one.name, oneStep, axis)
+        }
     }
     attachArtifacts(config, config.archiveArtifacts)
     config.logger.debug("runSteps ${branchName} done")
