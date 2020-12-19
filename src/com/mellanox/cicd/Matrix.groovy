@@ -349,7 +349,7 @@ def run_step(image, config, title, oneStep, axis) {
     def customSel = oneStep.get("containerSelector")
     config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
     if (customSel != null) {
-        customSel = customSel.replaceAll('\{',' ').replaceAll('\}',' ').toString();
+        customSel = customSel.replaceAll('\\{',' ').replaceAll('\\}',' ').toString();
         customSel = evaluate('[' + customSel + ']')
         config.logger.debug("xxxxxxxx type" + customSel.getClass() + " val=" + customSel)
 
