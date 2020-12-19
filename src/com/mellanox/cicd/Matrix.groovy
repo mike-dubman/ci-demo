@@ -333,11 +333,16 @@ def toStringMap(strMap) {
 }
 
 def run_step(image, config, title, oneStep, axis) {
+        if (oneStep.get("enable") != null && !oneStep.enable) {
+            config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
+            Utils.markStageSkippedForConditional(env.STAGE_NAME)
+            return
+        }
 
     stage("${oneStep.name}") {
         if (oneStep.get("enable") != null && !oneStep.enable) {
             config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-            Utils.markStageSkippedForConditional(STAGE_NAME)
+            Utils.markStageSkippedForConditional(env.STAGE_NAME)
             return
         }
 
@@ -356,7 +361,7 @@ def run_step(image, config, title, oneStep, axis) {
 
         if (skip > 0) {
             config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
-            Utils.markStageSkippedForConditional(STAGE_NAME)
+            Utils.markStageSkippedForConditional(env.STAGE_NAME)
             return
         }
 
@@ -427,7 +432,6 @@ def runSteps(image, config, branchName, axis) {
         run_step(image, config, one.name, oneStep, axis)
     }
     attachArtifacts(config, config.archiveArtifacts)
-    config.logger.debug("runSteps ${branchName} done")
 }
 
 def getConfigVal(config, list, defaultVal=null, toString=true) {
@@ -467,7 +471,7 @@ def runK8(image, branchName, config, axis) {
 
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
 
-    config.logger.trace(1, "Using kubernetes ${cloudName}, axis=" + axis)
+    config.logger.trace(2, "Using kubernetes ${cloudName}, axis=" + axis)
 
     def listV = parseListV(config.volumes)
     def cname = image.get("name").replaceAll("[\\.:/_]","")
@@ -481,7 +485,7 @@ def runK8(image, branchName, config, axis) {
     }
 
     nodeSelector = k8sArchConf.nodeSelector
-    config.logger.trace(1, "runK8 ${branchName} | nodeSelector: ${nodeSelector}")
+    config.logger.trace(2, "runK8 ${branchName} | nodeSelector: ${nodeSelector}")
 
     if (axis.nodeSelector) {
         if (nodeSelector) {
@@ -511,7 +515,7 @@ def runK8(image, branchName, config, axis) {
             }
         }
     }
-    config.logger.trace(1, "runK8 ${branchName} done")
+    config.logger.trace(2, "runK8 ${branchName} done")
 }
 
 @NonCPS
