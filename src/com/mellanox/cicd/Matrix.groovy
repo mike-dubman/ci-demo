@@ -144,12 +144,12 @@ def gen_image_map(config) {
 
     if (arch_list) {
         for (int i=0; i<arch_list.size();i++) {
-            def arch = arch_list.get(i)
+            def arch = arch_list[i]
             image_map[arch] = []
         }
     } else {
         for (int i=0; i<config.runs_on_dockers.size();i++) {
-            def dfile = config.runs_on_dockers.get(i)
+            def dfile = config.runs_on_dockers[i]
             if (dfile.arch) {
                 image_map["${dfile.arch}"] = []
             } else {
@@ -300,6 +300,7 @@ def run_step(image, config, title, oneStep, axis) {
     }
 
     def customSel = oneStep.get("containerSelector")
+    config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title}")
     if (customSel != null && matchMapEntry([customSel], axis)) {
         config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
         skip--
@@ -341,6 +342,7 @@ def run_step(image, config, title, oneStep, axis) {
             config.logger.debug("Running step action=" + script + " args=" + argList)
             this."${script}"(argList)
         } else {
+            config.logger.debug("Pre - running step script=")
             def cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
             //String uuid = UUID.randomUUID().toString() 
@@ -381,7 +383,7 @@ def runSteps(image, config, branchName, axis) {
     def parallelNestedSteps = [:]
     for (int i = 0; i < config.steps.size(); i++) {
         def one = config.steps[i]
-        def par = one.get("parallel")
+        def par = one["parallel"]
         def oneStep = one
         // collect parallel steps (if any) and run it when non-parallel step discovered or last element.
         if ( par != null && par == true) {
@@ -412,7 +414,7 @@ def getConfigVal(config, list, defaultVal=null, toString=true) {
     for (int i=0; i<list.size();i++) {
         item = list[i]
         config.logger.trace(5, "getConfigVal: Checking $item in config file")
-        val = val.get(item)
+        val = val[item]
         if (val == null) {
             config.logger.trace(5, "getConfigVal: Defaulting " + list.toString() + " = " + defaultVal)
             return defaultVal
