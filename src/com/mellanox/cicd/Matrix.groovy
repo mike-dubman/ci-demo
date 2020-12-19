@@ -101,8 +101,6 @@ def run_step_shell(cmd, title, oneStep, config) {
 
     attachArtifacts(config, oneStep.archiveArtifacts)
     if (ret.rc != 0) {
-        config.logger.warn("Step[${title}] failed xxxxx")
-        run_shell("false", "fatal error")
         error("Step ${title} failed")
     }
 
@@ -243,20 +241,11 @@ def gen_image_map(config) {
     return image_map
 }
 
-def matchMapEntry(filters, entry, debug=false) {
+def matchMapEntry(filters, entry) {
     def match
-    if (debug) {
-        println("mmmm filters=" + filters + " size="+ filters.size() + " entry="+entry)
-    }
     for (int i=0; i<filters.size(); i++) {
         match = true
-        if (debug) {
-            println("mmmm filter[${i}]=" + filters[i])
-        }
         filters[i].each { k,v ->
-            if (debug) {
-                println("mmmm i=${i} k=${k} v=${v} filter=" + filters[i])
-            }
             if (entry[k] == null || v != entry[k]) {
                 match = false
                 if (debug) {
@@ -267,9 +256,6 @@ def matchMapEntry(filters, entry, debug=false) {
         if (match) {
             break
         }
-    }
-    if (debug) {
-        println("mmmm match="+match)
     }
     return match
 }
@@ -337,10 +323,7 @@ def getDefaultShell(config=null, step=null, shell='#!/bin/bash -l') {
 def toStringMap(strMap) {
     def ret = [:]
     if (strMap != null) {
-        println("xxxxxxx strMap=" + strMap + " class: " + strMap.getClass())
-
         strMap = '[' + strMap.replaceAll('[\\{\\}]',' ') + ']';
-        println("xxxxxxx strMap=" + strMap)
         ret = evaluate(strMap)
     }
     return ret
@@ -348,31 +331,30 @@ def toStringMap(strMap) {
 
 def run_step(image, config, title, oneStep, axis) {
 
+    if (oneStep.get("enable") != null && !oneStep.enable) {
+        config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
+        return
+    }
+
+    def skip = 0
+    if (image.get("category") != null && image.category == "tool") {
+        config.logger.debug("Detected image category=tool")
+        skip++
+    }
+
+    def customSel = toStringMap(oneStep.get("containerSelector"))
+
+    if (customSel.size() > 0  && matchMapEntry([customSel], axis)) {
+        config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
+        skip--
+    }
+
+    if (skip > 0) {
+        config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
+        return
+    }
+
     stage("${oneStep.name}") {
-        if (oneStep.get("enable") != null && !oneStep.enable) {
-            config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-            return
-        }
-
-        def skip = 0
-        if (image.get("category") != null && image.category == "tool") {
-            config.logger.debug("Detected image category=tool")
-            skip++
-        }
-
-        def customSel = toStringMap(oneStep.get("containerSelector"))
-
-        config.logger.debug("xxxxxxxx containerSelector=${customSel} title=${title} axis="+axis)
-        
-        if (customSel.size() > 0  && matchMapEntry([customSel], axis, debug)) {
-            config.logger.debug("step name='" + oneStep.name + "' requests container with attr=" + customSel + " for image with attr=" + axis)
-            skip--
-        }
-
-        if (skip > 0) {
-            config.logger.debug("Skipping step=" + oneStep.name + " for image category=tool")
-            return
-        }
 
         def shell = getDefaultShell(config, oneStep)
         def script = oneStep.run
@@ -401,12 +383,12 @@ def run_step(image, config, title, oneStep, axis) {
                 }
             }
 
-            config.logger.debug("Running step action=" + script + " args=" + argList)
+            config.logger.trace(4, "Running step action=" + script + " args=" + argList)
             //todo: wrap try/catch
             this."${script}"(argList)
         } else {
             def String cmd = shell + "\n" + script
-            config.logger.debug("Running step script=" + cmd)
+            config.logger.trace(4, "Running step script=" + cmd)
             run_step_shell(cmd, title, oneStep, config)
         }
     }
