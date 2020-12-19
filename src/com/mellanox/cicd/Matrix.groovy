@@ -211,13 +211,22 @@ def gen_image_map(config) {
 
 def matchMapEntry(filters, entry, debug=false) {
     def match
+    if (debug) {
+        println("mmmm filters=" + filters + " size="+ filters.size() + " entry="+entry)
+    }
     for (int i=0; i<filters.size(); i++) {
         match = true
+        if (debug) {
+            println("mmmm filter[${i}]=" + filters[i])
+        }
         filters[i].each { k,v ->
+            if (debug) {
+                println("mmmm i=${i} k=${k} v=${v} filter=" + filters[i])
+            }
             if (entry[k] == null || v != entry[k]) {
                 match = false
                 if (debug) {
-                    println("xxxxxxx no match by -- entry[k]=" + entry[k] + " k=${k}  v=${v}")
+                    println("mmmm no match by -- entry[${k}]=" + entry[k] + " k=${k}  v=${v}")
                 }
             }
         }
@@ -226,7 +235,7 @@ def matchMapEntry(filters, entry, debug=false) {
         }
     }
     if (debug) {
-        println("xxxxxxx match="+match)
+        println("mmmm match="+match)
     }
     return match
 }
@@ -349,18 +358,19 @@ def run_step(image, config, title, oneStep, axis) {
             this."${script}"(argList)
         } else {
             config.logger.debug("Pre - running step script=")
-            run_shell("xxxx pre - step: ${title}", title)
+            run_shell("echo xxxx pre - step: ${title}", title)
 
-            def cmd = shell + "\n" + script
+            def String cmd = shell + "\n" + script
             config.logger.debug("Running step script=" + cmd)
+            run_shell(cmd, title)
             //String uuid = UUID.randomUUID().toString() 
             //String fn = env.WORKSPACE + "/.ci/" + uuid + ".sh"
             //writeFile(file: "${fn}", text: "${cmd}", encoding: "UTF-8")
             //sh("chmod +x ${fn}")
             //sh("cat ${fn}")
             //def proc = fn.execute()
-            def ret = run_shell(cmd, title)
-            config.logger.debug("xxx ret status =" + ret)
+            //def ret = run_shell(cmd, title)
+            //config.logger.debug("xxx ret status =" + ret)
         }
     } catch (e) {
         config.logger.warn("Step[${title}] failed - running onfail procedures with error: " + e)
