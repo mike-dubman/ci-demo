@@ -345,14 +345,12 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             return true
         }
 
-        // axis/image is defined as tool, but step.containerSelector did not ask for it - skip
-        if (customSel['category'] != 'tool' && axis['category'] == 'tool') {
-            config.logger.trace(2, "Step '" + title + "' skipped as image category=tool but containerSelector did not request category=tool explicitly")
-            return true
-        }
-
         config.logger.debug("Step '" + title + "' will use axis=" + axis)
 
+    } else if (axis['category'] == 'tool') {
+            config.logger.trace(2, "Step '" + title + "' skipped as image category=tool")
+            return true
+        }
     }
     return false
 }
