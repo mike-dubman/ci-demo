@@ -20,7 +20,7 @@ def call(args) {
         for (int i=1; i<args.size(); i++) {
             params.add(args[i])
             println("xxxx args[${i}]=" + args[i] + " class=" + args[i].getClass())
-            if (i!=4) {
+            if (i==4) {
                 callMe += args[i]
             } else {
                 callMe += "'" + args[i] + "'"
