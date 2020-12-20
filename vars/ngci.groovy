@@ -13,15 +13,24 @@ def call(args) {
         sh("false")
     }
     def actionName = args[0]
-
+    def callMe = actionName + "("
+    
     def params = []
     if (args.size() > 1) {
-        for (int i=1; i< args.size(); i++) {
+        for (int i=1; i<args.size(); i++) {
             params.add(args[i])
+            callMe += args[i]
+            if (i<args.size()-1) {
+                callMe += ","
+            }
         }
+        callMe += ")"
     }
-    println("Running ${actionName} with params: " + args)
-    "$actionName"(params)
+
+    
+    println("Calling ${callMe}")
+    //"$actionName"(params)
+    evaluate(callMe)
 
     return;
 }
