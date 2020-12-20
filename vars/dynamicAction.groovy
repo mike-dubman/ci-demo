@@ -4,6 +4,18 @@ def call(args) {
 
     println("==>DynamicAction(" + args + ")")
 
+    def argList = []
+    def vars = [:]
+    vars['env'] = env
+
+    if (args != null) {
+        for (int i=0; i<args.size(); i++) {
+            arg = args[i]
+            arg = resolveTemplate(vars, arg)
+            argList.add(arg)
+        }
+    }
+
     if (args.size() < 1) {
         println("fatal: DynamicAction() expects at least 1 parameter")
         sh(script: "false", label: "action failed", returnStatus: true)

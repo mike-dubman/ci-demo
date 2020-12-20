@@ -10,32 +10,17 @@ def call(args) {
 
     if (args.size() < 1) {
         println("fatal: DynamicAction() expects at least 1 parameter")
-        sh("false")
+        sh(script: "false", label: "action failed", returnStatus: true)
     }
-    def actionName = args[0]
-    def callMe = actionName + "("
-    
-    def params = []
-    if (args.size() > 1) {
-        for (int i=1; i<args.size(); i++) {
-            params.add(args[i])
-            println("xxxx args[${i}]=" + args[i] + " class=" + args[i].getClass())
-            if (i==4) {
-                callMe += args[i]
-            } else {
-                callMe += "'" + args[i] + "'"
-            }
-            if (i<args.size()-1) {
-                callMe += ","
-            }
-        }
-        callMe += ")"
-    }
+    def actionName = "NGCIBlackDuckScan"
 
+    def vars = [env: env]
+    for (def entry in entrySet(args)) {
+        args[entry.key] = resolveTemplate(vars, entry.value)
+    }
     
-    println("Calling ${callMe}")
-    //"$actionName"(params)
-    evaluate(callMe)
+    println("Calling ${actionName} with args=" + args)
+    "$actionName"(args)
 
     return;
 }

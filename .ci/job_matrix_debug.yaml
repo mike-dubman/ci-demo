@@ -72,13 +72,13 @@ steps:
     run: ngci
     containerSelector: "{category:'tool', variant:1}"
     args:
-      - "NGCIBlackDuckScan"
-      - "ci-demo"
-      - "1.0"
-      - "${env.WORKSPACE}/src"
-      - "true"
-      - "BlackDuck report"
-      - "source"
+      projectName: "NGCIBlackDuckScan"
+      projectVersion: "ci-demo"
+      projectVersion: "1.0"
+      projectSrcPath: "${env.WORKSPACE}/src"
+      attachArtifact: true
+      reportName: "BlackDuck report"
+      scanMode: "source"
     env:
       SPRING_APPLICATION_JSON: '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 

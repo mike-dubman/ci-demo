@@ -371,22 +371,8 @@ def run_step(image, config, title, oneStep, axis) {
         }
 
         if (shell == "action") {
-
-            def argList = []
-            def vars = [:]
-            vars['env'] = env
-
-            if (oneStep.args != null) {
-                for (int i=0; i< oneStep.args.size(); i++) {
-                    arg = oneStep.args[i]
-                    arg = resolveTemplate(vars, arg)
-                    argList.add(arg)
-                }
-            }
-
-            config.logger.trace(4, "Running step action=" + script + " args=" + argList)
-            //todo: wrap try/catch
-            this."${script}"(argList)
+            config.logger.trace(4, "Running step action=" + script + " args=" + oneStep.args)
+            this."${script}"(oneStep.args)
         } else {
             def String cmd = shell + "\n" + script
             config.logger.trace(4, "Running step script=" + cmd)
