@@ -348,9 +348,8 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         config.logger.debug("Step '" + title + "' will use axis=" + axis)
 
     } else if (axis['category'] == 'tool') {
-            config.logger.trace(2, "Step '" + title + "' skipped as image category=tool")
+            config.logger.trace(2, "Step '" + title + "' skipped for image category=tool")
             return true
-        }
     }
     return false
 }
