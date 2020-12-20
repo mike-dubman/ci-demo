@@ -329,39 +329,39 @@ def toStringMap(strMap) {
     return ret
 }
 
-def run_step(image, config, title, oneStep, axis) {
 
-    def skipme = false
+def check_skip_stage(image, config, title, oneStep, axis) {
+
     if (oneStep.get("enable") != null && !oneStep.enable) {
         config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-        //Utils.markStageSkippedForConditional(title)
-        skipme=true
+        return true
     }
 
+    def customSel = toStringMap(oneStep.get("containerSelector"))
+    if (customSel.size() > 0) {
+
+        // no match - skip
+        if (false == matchMapEntry([customSel], axis)) {
+            config.logger.debug("Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
+            return true
+        }
+
+        // axis/image is defined as tool, but step.containerSelector did not ask for it - skip
+        if (customSel['category'] != 'tool' && axis['category'] == 'tool') {
+            config.logger.debug("Step '" + title + "' skipped as image category=tool but containerSelector did not request category=tool explicitly")
+            return true
+        }
+
+        config.logger.debug("Step '" + title + "' will use axis=" + axis)
+
+    }
+    return false
+}
+
+def run_step(image, config, title, oneStep, axis) {
+
     stage("${title}") {
-        when(skipme == false) {
-
-                def customSel = toStringMap(oneStep.get("containerSelector"))
-                if (customSel.size() > 0) {
-
-                    // no match - skip
-                    if (false == matchMapEntry([customSel], axis)) {
-                        config.logger.debug("Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
-                        Utils.markStageSkippedForConditional(STAGE_NAME)
-                        return
-                    }
-
-                    // axis/image is defined as tool, but step.containerSelector did not ask for it - skip
-                    if (customSel['category'] != 'tool' && axis['category'] == 'tool') {
-                        config.logger.debug("Step '" + title + "' skipped as image category=tool but containerSelector did not request category=tool explicitly")
-                        Utils.markStageSkippedForConditional(STAGE_NAME)
-                        return
-                    }
-
-                    config.logger.debug("Step '" + title + "' will use axis=" + axis)
-
-                }
-
+        when(false == check_skip_stage(image, config, title, oneStep, axis)) {
 
                 def shell = getDefaultShell(config, oneStep)
                 def script = oneStep.run
@@ -395,9 +395,8 @@ def run_step(image, config, title, oneStep, axis) {
                     run_step_shell(cmd, title, oneStep, config)
                 }
             }
-
         }
-
+    }
 }
 
 def runSteps(image, config, branchName, axis) {
