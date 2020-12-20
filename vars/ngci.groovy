@@ -19,7 +19,7 @@ def call(args) {
     if (args.size() > 1) {
         for (int i=1; i<args.size(); i++) {
             params.add(args[i])
-            callMe += args[i]
+            callMe += "'" + args[i] + "'"
             if (i<args.size()-1) {
                 callMe += ","
             }
