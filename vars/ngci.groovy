@@ -1,5 +1,17 @@
 #!/usr/bin/env groovy
 
+@NonCPS 
+def entrySet(m) {
+    m.collect {k, v -> [key: k, value: v]}
+}
+
+@NonCPS
+def resolveTemplate(varsMap, str) {
+    GroovyShell shell = new GroovyShell(new Binding(varsMap))
+    def res = shell.evaluate('"' + str +'"')
+    return res
+}
+
 def call(args) {
 
     library(identifier: 'ngci@ci_version-3.1',
