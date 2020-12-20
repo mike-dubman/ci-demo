@@ -331,12 +331,11 @@ def toStringMap(strMap) {
 
 def run_step(image, config, title, oneStep, axis) {
 
-    stage("${oneStep.name}") {
+    stage("${title}") {
 
         if (oneStep.get("enable") != null && !oneStep.enable) {
             config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-            run_shell("echo skipping", "skipping")
-            Utils.markStageSkippedForConditional(env.STAGE_NAME)
+            Utils.markStageSkippedForConditional(title)
             return
         }
 
@@ -346,16 +345,14 @@ def run_step(image, config, title, oneStep, axis) {
             // no match - skip
             if (false == matchMapEntry([customSel], axis)) {
                 config.logger.debug("Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
-                run_shell("echo skipping", "skipping")
-                Utils.markStageSkippedForConditional(env.STAGE_NAME)
+                Utils.markStageSkippedForConditional(STAGE_NAME)
                 return
             }
 
             // axis/image is defined as tool, but step.containerSelector did not ask for it - skip
             if (customSel['category'] != 'tool' && axis['category'] == 'tool') {
                 config.logger.debug("Step '" + title + "' skipped as image category=tool but containerSelector did not request category=tool explicitly")
-                run_shell("echo skipping", "skipping")
-                Utils.markStageSkippedForConditional(env.STAGE_NAME)
+                Utils.markStageSkippedForConditional(STAGE_NAME)
                 return
             }
 
