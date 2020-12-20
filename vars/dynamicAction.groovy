@@ -6,14 +6,14 @@ def call(args) {
 
     if (args.size() < 1) {
         println("fatal: DynamicAction() expects at least 1 parameter")
-        sh("false")
+        sh(script: "false", label: "action failed", returnStatus: true)
     }
     def actionName = args[0]
     def actionScript = libraryResource "actions/${actionName}"
     def toFile = env.WORKSPACE + "/cidemo_${actionName}"
 
     writeFile(file: toFile, text: actionScript)
-    sh("chmod +x " + toFile)
+    sh(script: "chmod +x " + toFile, label: "Set script permissions", returnStatus: true)
 
     def cmd = toFile
     if (args.size() > 1) {
@@ -21,6 +21,5 @@ def call(args) {
             cmd += " '" + args[i] + "'"
         }
     }
-    sh(cmd)
-    return;
+    return sh(script: cmd, label: "Runing ${actionName}", returnStatus: true)
 }
