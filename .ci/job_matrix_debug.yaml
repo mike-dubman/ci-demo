@@ -70,7 +70,7 @@ steps:
   - name: Blackduck scan source
     shell: action
     run: ngci
-    containerSelector: '{category:tool, variant:1}'
+    containerSelector: "{category:'tool', variant:1}"
     args:
       - "NGCIBlackDuckScan"
       - "ci-demo"
