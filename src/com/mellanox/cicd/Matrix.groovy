@@ -453,23 +453,6 @@ def parseListV(volumes) {
 def runK8(image, branchName, config, axis) {
 
 
-    def canSkip = true
-
-    for (int i = 0; i < config.steps.size(); i++) {
-        def oneStep = config.steps[i]
-        if (false == check_skip_stage(image, config, branchName, oneStep, axis)) {
-            canSkip = false
-            break
-        }
-    }
-
-    // can skip, image defined but unused by steps
-    // optimization for blueocean UI to not show unused green nodes
-    if (canSkip) {
-        return
-    }
-
-
     def cloudName = getConfigVal(config, ['kubernetes','cloud'], "")
 
     config.logger.trace(2, "Using kubernetes ${cloudName}, axis=" + axis)
@@ -590,6 +573,8 @@ Map getTasks(axes, image, config, include, exclude) {
             continue
         }
 
+
+
         axis.put("variant", serialNum)
         axis.put("axis_index", serialNum)
         serialNum++
@@ -598,6 +583,23 @@ Map getTasks(axes, image, config, include, exclude) {
 
         def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis.axis_index}")
         def branchName = resolveTemplate(axis, tmpl)
+
+        def canSkip = true
+        for (int i = 0; i < config.steps.size(); i++) {
+            def oneStep = config.steps[i]
+            if (false == check_skip_stage(image, config, branchName, oneStep, axis)) {
+                canSkip = false
+                break
+            }
+        }
+
+        // can skip, image defined but unused by steps
+        // optimization for blueocean UI to not show unused green nodes
+        if (canSkip) {
+            continue
+        }
+
+
 
         // convert the Axis into valid values for withEnv step
         if (config.get("env")) {
