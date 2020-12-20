@@ -585,8 +585,8 @@ Map getTasks(axes, image, config, include, exclude) {
         def branchName = resolveTemplate(axis, tmpl)
 
         def canSkip = true
-        for (int i = 0; i < config.steps.size(); i++) {
-            def oneStep = config.steps[i]
+        for (int j = 0; j < config.steps.size(); j++) {
+            def oneStep = config.steps[j]
             if (false == check_skip_stage(image, config, branchName, oneStep, axis)) {
                 canSkip = false
                 break
@@ -598,8 +598,6 @@ Map getTasks(axes, image, config, include, exclude) {
         if (canSkip) {
             continue
         }
-
-
 
         // convert the Axis into valid values for withEnv step
         if (config.get("env")) {
