@@ -331,68 +331,73 @@ def toStringMap(strMap) {
 
 def run_step(image, config, title, oneStep, axis) {
 
+    def skipme = false
+    if (oneStep.get("enable") != null && !oneStep.enable) {
+        config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
+        //Utils.markStageSkippedForConditional(title)
+        skipme=true
+    }
+
     stage("${title}") {
+        when(skipme == false) {
 
-        if (oneStep.get("enable") != null && !oneStep.enable) {
-            config.logger.debug("Step '${oneStep.name}' is disabled in project yaml file, skipping")
-            Utils.markStageSkippedForConditional(title)
-            return
-        }
+                def customSel = toStringMap(oneStep.get("containerSelector"))
+                if (customSel.size() > 0) {
 
-        def customSel = toStringMap(oneStep.get("containerSelector"))
-        if (customSel.size() > 0) {
+                    // no match - skip
+                    if (false == matchMapEntry([customSel], axis)) {
+                        config.logger.debug("Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
+                        Utils.markStageSkippedForConditional(STAGE_NAME)
+                        return
+                    }
 
-            // no match - skip
-            if (false == matchMapEntry([customSel], axis)) {
-                config.logger.debug("Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
-                Utils.markStageSkippedForConditional(STAGE_NAME)
-                return
-            }
+                    // axis/image is defined as tool, but step.containerSelector did not ask for it - skip
+                    if (customSel['category'] != 'tool' && axis['category'] == 'tool') {
+                        config.logger.debug("Step '" + title + "' skipped as image category=tool but containerSelector did not request category=tool explicitly")
+                        Utils.markStageSkippedForConditional(STAGE_NAME)
+                        return
+                    }
 
-            // axis/image is defined as tool, but step.containerSelector did not ask for it - skip
-            if (customSel['category'] != 'tool' && axis['category'] == 'tool') {
-                config.logger.debug("Step '" + title + "' skipped as image category=tool but containerSelector did not request category=tool explicitly")
-                Utils.markStageSkippedForConditional(STAGE_NAME)
-                return
-            }
+                    config.logger.debug("Step '" + title + "' will use axis=" + axis)
 
-            config.logger.debug("Step '" + title + "' will use axis=" + axis)
-
-        }
+                }
 
 
-        def shell = getDefaultShell(config, oneStep)
-        def script = oneStep.run
+                def shell = getDefaultShell(config, oneStep)
+                def script = oneStep.run
 
-        if (oneStep.env) {
-            for (def entry in entrySet(oneStep.env)) {
-                env[entry.key] = entry.value
-            }
-        }
+                if (oneStep.env) {
+                    for (def entry in entrySet(oneStep.env)) {
+                        env[entry.key] = entry.value
+                    }
+                }
 
-        if (shell == "action") {
+                if (shell == "action") {
 
-            def argList = []
-            def vars = [:]
-            vars['env'] = env
+                    def argList = []
+                    def vars = [:]
+                    vars['env'] = env
 
-            if (oneStep.args != null) {
-                for (int i=0; i< oneStep.args.size(); i++) {
-                    arg = oneStep.args[i]
-                    arg = resolveTemplate(vars, arg)
-                    argList.add(arg)
+                    if (oneStep.args != null) {
+                        for (int i=0; i< oneStep.args.size(); i++) {
+                            arg = oneStep.args[i]
+                            arg = resolveTemplate(vars, arg)
+                            argList.add(arg)
+                        }
+                    }
+
+                    config.logger.trace(4, "Running step action=" + script + " args=" + argList)
+                    //todo: wrap try/catch
+                    this."${script}"(argList)
+                } else {
+                    def String cmd = shell + "\n" + script
+                    config.logger.trace(4, "Running step script=" + cmd)
+                    run_step_shell(cmd, title, oneStep, config)
                 }
             }
 
-            config.logger.trace(4, "Running step action=" + script + " args=" + argList)
-            //todo: wrap try/catch
-            this."${script}"(argList)
-        } else {
-            def String cmd = shell + "\n" + script
-            config.logger.trace(4, "Running step script=" + cmd)
-            run_step_shell(cmd, title, oneStep, config)
         }
-    }
+
 }
 
 def runSteps(image, config, branchName, axis) {
