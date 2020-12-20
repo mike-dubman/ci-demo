@@ -359,40 +359,41 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
 def run_step(image, config, title, oneStep, axis) {
 
+    if (check_skip_stage(image, config, title, oneStep, axis) {
+        return
+    }
+
     stage("${title}") {
-        when (false == check_skip_stage(image, config, title, oneStep, axis)) {
+        def shell = getDefaultShell(config, oneStep)
+        def script = oneStep.run
 
-            def shell = getDefaultShell(config, oneStep)
-            def script = oneStep.run
+        if (oneStep.env) {
+            for (def entry in entrySet(oneStep.env)) {
+                env[entry.key] = entry.value
+            }
+        }
 
-            if (oneStep.env) {
-                for (def entry in entrySet(oneStep.env)) {
-                    env[entry.key] = entry.value
+        if (shell == "action") {
+
+            def argList = []
+            def vars = [:]
+            vars['env'] = env
+
+            if (oneStep.args != null) {
+                for (int i=0; i< oneStep.args.size(); i++) {
+                    arg = oneStep.args[i]
+                    arg = resolveTemplate(vars, arg)
+                    argList.add(arg)
                 }
             }
 
-            if (shell == "action") {
-
-                def argList = []
-                def vars = [:]
-                vars['env'] = env
-
-                if (oneStep.args != null) {
-                    for (int i=0; i< oneStep.args.size(); i++) {
-                        arg = oneStep.args[i]
-                        arg = resolveTemplate(vars, arg)
-                        argList.add(arg)
-                    }
-                }
-
-                config.logger.trace(4, "Running step action=" + script + " args=" + argList)
-                //todo: wrap try/catch
-                this."${script}"(argList)
-            } else {
-                def String cmd = shell + "\n" + script
-                config.logger.trace(4, "Running step script=" + cmd)
-                run_step_shell(cmd, title, oneStep, config)
-            }
+            config.logger.trace(4, "Running step action=" + script + " args=" + argList)
+            //todo: wrap try/catch
+            this."${script}"(argList)
+        } else {
+            def String cmd = shell + "\n" + script
+            config.logger.trace(4, "Running step script=" + cmd)
+            run_step_shell(cmd, title, oneStep, config)
         }
     }
 }
