@@ -58,19 +58,21 @@ steps:
 
   - name: Coverity scan
     shell: action
-    run: dynamicAction
+    module: dynamicAction
+    run: coverity.sh 
     containerSelector: "{name:'centos7-7', variant:1}"
     args:
-      - "coverity.sh"
+      - ""
       - "./autogen.sh;./configure;make -j 3 clean"
       - "make -j 3"
     archiveArtifacts: 'cov.log'
 
 
   - name: Blackduck scan source
-    shell: action
-    run: ngci
     containerSelector: "{category:'tool', name: 'blackduck', variant:1}"
+    shell: action
+    module: ngci
+    run: NGCIBlackDuckScan
     args:
       projectName: "NGCIBlackDuckScan"
       projectVersion: "ci-demo"

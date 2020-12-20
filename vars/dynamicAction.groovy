@@ -28,7 +28,7 @@ def call(args) {
         println("fatal: DynamicAction() expects at least 1 parameter")
         sh(script: "false", label: "action failed", returnStatus: true)
     }
-    def actionName = args[0]
+    def actionName = env.FUNC
     def actionScript = libraryResource "actions/${actionName}"
     def toFile = env.WORKSPACE + "/cidemo_${actionName}"
 
@@ -37,7 +37,7 @@ def call(args) {
 
     def cmd = toFile
     if (args.size() > 1) {
-        for (int i=1; i< args.size(); i++) {
+        for (int i=0; i< args.size(); i++) {
             cmd += " '" + args[i] + "'"
         }
     }

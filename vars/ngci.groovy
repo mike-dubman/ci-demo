@@ -24,7 +24,7 @@ def call(args) {
         println("fatal: DynamicAction() expects at least 1 parameter")
         sh(script: "false", label: "action failed", returnStatus: true)
     }
-    def actionName = "NGCIBlackDuckScan"
+    def actionName = env.FUNC
 
     def vars = [env: env]
     for (def entry in entrySet(args)) {

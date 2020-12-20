@@ -364,7 +364,6 @@ def run_step(image, config, title, oneStep, axis) {
 
     stage("${title}") {
         def shell = getDefaultShell(config, oneStep)
-        def script = oneStep.run
 
         if (oneStep.env) {
             for (def entry in entrySet(oneStep.env)) {
@@ -373,10 +372,16 @@ def run_step(image, config, title, oneStep, axis) {
         }
 
         if (shell == "action") {
-            config.logger.trace(4, "Running step action=" + script + " args=" + oneStep.args)
-            this."${script}"(oneStep.args)
+            if (oneStep.module == null) {
+                config.logger.fatal("Step is type of action but has no 'module' defined")
+            }
+
+            config.logger.trace(4, "Running step action module=" + oneStep.module + " args=" + oneStep.args + " run=" + oneStep.run)
+            env.FUNC = oneStep.run
+            this."${oneStep.module}"(oneStep.args)
+            env.FUNC = ''
         } else {
-            def String cmd = shell + "\n" + script
+            def String cmd = shell + "\n" + oneStep.run
             config.logger.trace(4, "Running step script=" + cmd)
             run_step_shell(cmd, title, oneStep, config)
         }

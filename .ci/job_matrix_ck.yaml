@@ -111,13 +111,15 @@ steps:
       pwd
       ls -al
       make -j 2 install
+    parallel: true
 
   - name: Coverity scan  
     shell: action
     containerSelector: "{name:'centos7-7', variant:1}"
-    run: dynamicAction
+    module: dynamicAction
+    run: coverity.sh
     args:
-      - "coverity.sh"
       - "./autogen.sh;./configure;make -j 3 clean"
       - "make -j 3"
+    parallel: true
     archiveArtifacts: 'cov.log'
