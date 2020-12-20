@@ -57,7 +57,6 @@ steps:
 
   - name: Coverity scan
     shell: action
-    enable: false
     run: dynamicAction
     containerSelector: "{name:'centos7-7', variant:1}"
     args:

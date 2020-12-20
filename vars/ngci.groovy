@@ -32,7 +32,9 @@ def call(args) {
     }
     
     println("Calling ${actionName} with args=" + args)
-    "$actionName"(args)
+    container('harbor.mellanox.com/toolbox/ngci-centos:7.9.2009') {
+        "$actionName"(args)
+    }
 
     return;
 }
