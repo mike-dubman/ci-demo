@@ -52,14 +52,14 @@ steps:
     run: touch aaa
 
   - name: once
-    containerSelector: '{name:ubuntu16-4,variant:1}'
+    containerSelector: "{name:'ubuntu16-4',variant:1}"
     run: touch aaa
 
   - name: Coverity scan
     shell: action
     enable: false
     run: dynamicAction
-    containerSelector: '{category:tool, variant:1}'
+    containerSelector: "{name:'centos7-7', variant:1}"
     args:
       - "coverity.sh"
       - "./autogen.sh;./configure;make -j 3 clean"
@@ -68,7 +68,6 @@ steps:
 
 
   - name: Blackduck scan source
-    enable: false
     shell: action
     run: ngci
     containerSelector: '{category:tool, variant:1}'
