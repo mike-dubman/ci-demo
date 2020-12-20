@@ -359,7 +359,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
 def run_step(image, config, title, oneStep, axis) {
 
-    if (check_skip_stage(image, config, title, oneStep, axis) {
+    if (check_skip_stage(image, config, title, oneStep, axis)) {
         return
     }
 
