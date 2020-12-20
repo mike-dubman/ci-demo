@@ -32,6 +32,7 @@ runs_on_dockers:
 #  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64', nodeLabel: '(dockerserver || docker) && x86_64'}
   - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', category: 'tool'}
   - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest'}
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', category: 'tool'}
 
 
 matrix:
