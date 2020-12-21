@@ -824,7 +824,7 @@ def main() {
 
         logger = new Logger(this)
 
-        stage("Prepare checkout") {
+        stage("Checkout source code") {
             forceCleanupWS()
             def scmVars = checkout scm
             
@@ -875,7 +875,10 @@ def main() {
                 def images = entry.value
                 for (int j=0; j<images.size(); j++) {
                     def image = images[j]
-                    parallelBuildDockers["Prepare image ${image.arch}/${image.name}"] = {
+                    def tmpl = getConfigVal(config, ['taskNameSetupImage'], "Setup Image ${image.arch}/${image.name}")
+                    def branchName = resolveTemplate(image, tmpl)
+
+                    parallelBuildDockers[branchName] = {
                         if (image.nodeLabel) {
                             runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
                         } else {
