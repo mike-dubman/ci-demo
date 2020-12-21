@@ -699,33 +699,31 @@ def buildDocker(image, config) {
     def extra_args = image.build_args
     def changed_files = config.get("cFiles")
 
-    stage("Setting image") {
-        config.logger.info("Going to fetch docker image: ${img} from ${config.registry_host}")
-        def need_build = 0
+    config.logger.info("Going to fetch docker image: ${img} from ${config.registry_host}")
+    def need_build = 0
 
-        docker.withRegistry("https://${config.registry_host}", config.registry_auth) {
-            try {
-                config.logger.info("Pulling image - ${img}")
-                docker.image(img).pull()
-            } catch (exception) {
-                config.logger.info("Image NOT found - ${img} - will build ${filename} ...")
-                need_build++
-            }
+    docker.withRegistry("https://${config.registry_host}", config.registry_auth) {
+        try {
+            config.logger.info("Pulling image - ${img}")
+            docker.image(img).pull()
+        } catch (exception) {
+            config.logger.info("Image NOT found - ${img} - will build ${filename} ...")
+            need_build++
+        }
 
-            if ("${env.build_dockers}" == "true") {
-                config.logger.info("Forcing building file per user request: ${filename} ... ")
-                need_build++
-            }
-            config.logger.debug("Dockerfile name: ${filename}")
-            config.logger.debug("Changed files: ${changed_files}")
-            if (changed_files.contains(filename)) {
-                config.logger.info("Forcing building, file modified by commit: ${filename} ... ")
-                need_build++
-            }
-            if (need_build) {
-                config.logger.info("Building - ${img} - ${filename}")
-                buildImage(img, filename, extra_args, config)
-            }
+        if ("${env.build_dockers}" == "true") {
+            config.logger.info("Forcing building file per user request: ${filename} ... ")
+            need_build++
+        }
+        config.logger.debug("Dockerfile name: ${filename}")
+        config.logger.debug("Changed files: ${changed_files}")
+        if (changed_files.contains(filename)) {
+            config.logger.info("Forcing building, file modified by commit: ${filename} ... ")
+            need_build++
+        }
+        if (need_build) {
+            config.logger.info("Building - ${img} - ${filename}")
+            buildImage(img, filename, extra_args, config)
         }
     }
 }
@@ -878,7 +876,7 @@ def main() {
                 for (int j=0; j<images.size(); j++) {
                     def image = images[j]
                     parallelBuildDockers[image.name] = {
-                        stage("Build Docker") {
+                        stage("Build Image") {
                             if (image.nodeLabel) {
                                 runDocker(image, config, "Preparing docker image", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
                             } else {
