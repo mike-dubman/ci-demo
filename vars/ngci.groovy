@@ -21,8 +21,6 @@ def call(oneStep) {
             retriever: modernSCM([$class: 'GitSCMSource', 
             remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
-    println("==>ngci(" + args + ")")
-
     if (args.size() < 1) {
         println("fatal: DynamicAction() expects at least 1 parameter")
         sh(script: "false", label: "action failed", returnStatus: true)
