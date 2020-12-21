@@ -12,7 +12,10 @@ def resolveTemplate(varsMap, str) {
     return res
 }
 
-def call(args) {
+def call(oneStep) {
+
+    def args = oneStep.args
+    def actionName = oneStep.run
 
     library(identifier: 'ngci@ci_version-3.1',
             retriever: modernSCM([$class: 'GitSCMSource', 
@@ -24,7 +27,6 @@ def call(args) {
         println("fatal: DynamicAction() expects at least 1 parameter")
         sh(script: "false", label: "action failed", returnStatus: true)
     }
-    def actionName = env.FUNC
 
     def vars = [env: env]
     for (def entry in entrySet(args)) {

@@ -62,7 +62,6 @@ steps:
     run: coverity.sh 
     containerSelector: "{name:'centos7-7', variant:1}"
     args:
-      - ""
       - "./autogen.sh;./configure;make -j 3 clean"
       - "make -j 3"
     archiveArtifacts: 'cov.log'

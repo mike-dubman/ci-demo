@@ -8,7 +8,10 @@ def resolveTemplate(varsMap, str) {
 }
 
 
-def call(args) {
+def call(oneStep) {
+
+    def args = oneStep.args
+    def actionName = oneStep.run
 
     println("==>DynamicAction(" + args + ")")
 
@@ -28,7 +31,6 @@ def call(args) {
         println("fatal: DynamicAction() expects at least 1 parameter")
         sh(script: "false", label: "action failed", returnStatus: true)
     }
-    def actionName = env.FUNC
     def actionScript = libraryResource "actions/${actionName}"
     def toFile = env.WORKSPACE + "/cidemo_${actionName}"
 
