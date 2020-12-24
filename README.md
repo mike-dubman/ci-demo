@@ -22,6 +22,12 @@ registry_host: harbor.mellanox.com
 registry_path: /swx-storage/ci-demo
 registry_auth: swx-storage
 
+volumes:
+  - {mountPath: /hpc/local, hostPath: /hpc/local}
+  - {mountPath: /auto/sw_tools, hostPath: /auto/sw_tools}
+  - {mountPath: /.autodirect/mtrswgwork, hostPath: /.autodirect/mtrswgwork}
+  - {mountPath: /.autodirect/sw/release, hostPath: /.autodirect/sw/release}
+
 kubernetes:
   cloud: swx-k8s
 
@@ -47,6 +53,8 @@ steps:
   - name: Install mofed
     run: |
       echo Installing driver: ${driver} ...
+      mofed_installer_exe=/auto/sw/release/mlnx_ofed/MLNX_OFED/mlnx_ofed_install
+      mofed_installer_opt='--user-space-only --without-fw-update --all -q --skip-unsupported-devices-check'
       sudo env build=$driver $mofed_installer_exe $mofed_installer_opt
 
   - name: Build package
