@@ -613,7 +613,6 @@ Map getTasks(axes, image, config, include, exclude) {
         }
 
         config.logger.trace(5, "task name " + branchName)
-        def arch = axis.arch
         tasks[branchName] = { ->
             withEnv(axisEnv) {
                 if((config.get("kubernetes") == null) && (image.nodeLabel == null)) {
@@ -691,11 +690,9 @@ String getChangedFilesList(config) {
 def buildDocker(image, config) {
 
     def img = image.url
-    def arch = image.arch
     // Vasily Ryabov: we need .toString() to make changed_files.contains(filename) work correctly
     // See https://stackoverflow.com/q/56829842/3648361
     def filename = image.filename.toString().trim()
-    def distro = image.name
     def extra_args = image.build_args
     def changed_files = config.get("cFiles")
 
@@ -871,7 +868,6 @@ def main() {
 
             def arch_distro_map = gen_image_map(config)
             for (def entry in entrySet(arch_distro_map)) {
-                def arch = entry.key
                 def images = entry.value
                 for (int j=0; j<images.size(); j++) {
                     def image = images[j]

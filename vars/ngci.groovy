@@ -34,5 +34,5 @@ def call(oneStep) {
     println("Calling ${actionName} with args=" + args)
     "$actionName"(args)
 
-    return;
+    return
 }
