@@ -24,10 +24,10 @@ registry_auth: swx-storage
 
 kubernetes:
   cloud: swx-k8s
-  nodeSelector: 'beta.kubernetes.io/os=linux'
 
 runs_on_dockers:
-  - {name: 'ubuntu16-4', tag: 'latest'}
+  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest'}
+  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest'}
 
 matrix:
   axes:
@@ -36,18 +36,39 @@ matrix:
       - '--prefix=/tmp/install'
     arch:
       - x86_64
-steps:
 
-  - name: Configure
+pipeline_start:
+  run: echo Starting new job
+
+pipeline_stop:
+  run: echo All done
+
+steps:
+  - name: Install mofed
+    run: |
+      echo Installing driver: ${driver} ...
+      sudo env build=$driver $mofed_installer_exe $mofed_installer_opt
+
+  - name: Build package
     run: |
       ./autogen.sh
       ./configure $flags
 
-  - name: Build
-    run: make -j 2 all
+  - name: Coverity
+    containerSelector: "{name:'centos7-7', variant:1}"
+    shell: action
+    module: dynamicAction
+    run: coverity.sh
+    args:
+      - "./autogen.sh;./configure;make -j 3 clean"
+      - "make -j 3"
+    archiveArtifacts: 'cov.log'
 
-  - name: Install
-    run: make -j 2 install
+  - name: Check package
+    run: .ci/check_package.sh
+
+  - name: Run tests
+    run: .ci/runtests.sh
      
 ```
 
