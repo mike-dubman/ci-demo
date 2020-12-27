@@ -237,7 +237,7 @@ def gen_image_map(config) {
                 dfile.url = "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
             } else {
                 Map vars = dfile.clone()
-                vars['registry_host'] = config.registry_host
+                vars += config
                 dfile.url = resolveTemplate(vars, dfile.url)
             }
             dfile.filename = "${dfile.file}"
@@ -657,6 +657,7 @@ def getMatrixTasks(image, config) {
 def buildImage(img, filename, extra_args, config) {
     if(filename == "") {
         config.logger.fatal("No docker filename specified, skipping build docker")
+        return
     }
     customImage = docker.build("${img}", "-f ${filename} ${extra_args} . ")
     customImage.push()

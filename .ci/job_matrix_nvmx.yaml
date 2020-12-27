@@ -6,7 +6,8 @@ registry_path: /swx-storage/nvmx
 registry_auth: swx-storage
 
 kubernetes:
-  cloud: swx-k8s
+#  cloud: swx-k8s
+  cloud: swx-k8s-spray	
 
 volumes:
   - {mountPath: /hpc/local, hostPath: /hpc/local}
