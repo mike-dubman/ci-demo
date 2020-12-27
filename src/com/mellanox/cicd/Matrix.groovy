@@ -237,7 +237,7 @@ def gen_image_map(config) {
                 dfile.url = "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
             } else {
                 Map vars = dfile.clone()
-                vars[registry_host] = ${config.registry_host}
+                vars['registry_host'] = ${config.registry_host}
                 dfile.url = resolveTemplate(vars, dfile.url)
             }
             dfile.filename = "${dfile.file}"
