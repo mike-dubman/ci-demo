@@ -2,6 +2,7 @@
 
 pre_cmd=$1
 build_cmd=$2
+ignore_list=$3
 
 topdir=$(git rev-parse --show-toplevel)
 cd $topdir
@@ -25,6 +26,10 @@ rm -rf $cov_build
 module load tools/cov
 
 cov-build --dir $cov_build $build_cmd all
+for item in ${ignore_list}; do
+	cov-manage-emit --dir ${cov_build} --tu-pattern "file(${item})" delete ||:
+done
+
 cov-analyze --jobs $ncpus $COV_OPT --security --concurrency --dir $cov_build
 cov-format-errors --dir $cov_build --emacs-style |& tee cov_${variant}.log
 
