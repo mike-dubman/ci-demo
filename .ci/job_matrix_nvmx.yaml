@@ -22,8 +22,8 @@ env:
   NVMX_LOGFILE_PATH: 'stderr'
 
 runs_on_dockers:
-  - {url: 'harbor.mellanox.com/swx-storage/$arch/centos75-nvme-snap-3.0', name: 'centos75', tag: 'latest'}
-  - {url: 'harbor.mellanox.com/swx-storage/$arch/ubuntu2004-nvme-snap-3.0', name: 'ubuntu2004', tag: 'latest'}
+  - {url: '$registry_host/swx-storage/$arch/centos75-nvme-snap-3.0', name: 'centos75', tag: 'latest'}
+  - {url: '$registry_host/swx-storage/$arch/ubuntu2004-nvme-snap-3.0', name: 'ubuntu2004', tag: 'latest'}
 
 matrix:
   axes:
