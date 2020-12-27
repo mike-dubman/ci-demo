@@ -1,0 +1,65 @@
+---
+job: nvmx
+
+registry_host: harbor.mellanox.com
+registry_path: /swx-storage/nvmx
+registry_auth: swx-storage
+
+kubernetes:
+  cloud: swx-k8s
+
+volumes:
+  - {mountPath: /hpc/local, hostPath: /hpc/local}
+  - {mountPath: /auto/sw_tools, hostPath: /auto/sw_tools}
+  - {mountPath: /auto/mtrswgwork, hostPath: /auto/mtrswgwork}
+  - {mountPath: /auto/sw/release/mlnx_ofed, hostPath: /auto/sw/release/mlnx_ofed}
+  - {mountPath: /auto/sw/release/sw_acceleration, hostPath: /auto/sw/release/sw_acceleration}
+
+env:
+  pulp_credentials: "jenkins-pulp"
+  swx_repos_credentials: "311997c9-cc1c-4d5d-8ba2-6eb43ba0a06d"
+  NVME_CONFIG: './src/json/mlnx_nvmx_config.json'
+  NVMX_LOGFILE_PATH: 'stderr'
+
+runs_on_dockers:
+  - {url: 'harbor.mellanox.com/swx-storage/$arch/centos75-nvme-snap-3.0', name: 'centos75', tag: 'latest'}
+  - {url: 'harbor.mellanox.com/swx-storage/$arch/ubuntu2004-nvme-snap-3.0', name: 'ubuntu2004', tag: 'latest'}
+
+matrix:
+  axes:
+    arch:
+      - x86_64
+      - aarch64
+
+
+
+
+# Fail job if one of the steps fails or continue
+failFast: false
+
+steps:
+
+  - name: Build
+    run: |
+      echo .ci/build.sh
+
+  - name: Upload deb
+    run: |
+      echo .ci/swx_repos_upload_deb.sh
+    containerSelector: "{name:'ubuntu2004', variant:1}"
+
+  - name: Upload rpm
+    run: |
+      echo .ci/swx_repos_upload_rep.sh
+    containerSelector: "{name:'centos75', variant:1}"
+
+  - name: Coverity scan  
+    shell: action
+    containerSelector: "{name:'centos75', variant:1}"
+    module: dynamicAction
+    run: coverity.sh
+    args:
+      - "./autogen.sh;./configure;make -j 3 clean"
+      - "make -j 3"
+      - "devx googletest tests"
+    archiveArtifacts: 'cov.log'
