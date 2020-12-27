@@ -25,7 +25,10 @@ class Logger {
 
     def fatal(String message) {
         this.ctx.echo this.cat + " FATAL: ${message}"
-        this.ctx.run_shell("exit 1", "Fatal error")
+        //this.ctx.run_shell("exit 1", "Fatal error")
+        stage("failing") {
+            sh("false")
+        }
     }
 
 
