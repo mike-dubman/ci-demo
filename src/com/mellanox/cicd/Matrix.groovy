@@ -225,9 +225,11 @@ def gen_image_map(config) {
             for (def entry in entrySet(env.getEnvironment())) {
                 vars[entry.key] = entry.value
             }
+            for (def entry in entrySet(dfile)) {
+                vars[entry.key] = entry.value
+            }
 
             vars += config
-            vars += dfile
 
             dfile.uri = resolveTemplate(vars, dfile.uri)
             dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
