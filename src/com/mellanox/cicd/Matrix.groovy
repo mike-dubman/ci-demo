@@ -23,12 +23,12 @@ class Logger {
         this.ctx.echo this.cat + " WARN: ${message}"
     }
 
-    def fatal(String message) {
+    def fatal(String message, Strung stageName=null) {
         this.ctx.echo this.cat + " FATAL: ${message}"
         //this.ctx.run_shell("exit 1", "Fatal error")
-        this.ctx.stage("failing") {
-            this.ctx.sh("false")
-        }
+//        this.ctx.stage(stageName ?: 'Fail') {
+            this.ctx.sh('false')
+//        }
     }
 
 
@@ -659,7 +659,7 @@ def getMatrixTasks(image, config) {
 
 def buildImage(img, filename, extra_args, config) {
     if(filename == "") {
-        config.logger.fatal("No docker filename specified, skipping build docker")
+        config.logger.fatal("No docker filename specified, skipping build docker", 'Build Image')
         return
     }
     customImage = docker.build("${img}", "-f ${filename} ${extra_args} . ")
@@ -783,7 +783,9 @@ def build_docker_on_k8(image, config) {
             onUnstash()
 
             container('docker') {
-                buildDocker(image, config)
+                stage ('Build Docker') {
+                    buildDocker(image, config)
+                }
             }
         }
     }
