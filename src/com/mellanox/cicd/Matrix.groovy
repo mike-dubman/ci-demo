@@ -221,7 +221,11 @@ def gen_image_map(config) {
             dfile.build_args ?: ''
             dfile.url ?: "${arch}/${dfile.name}"
             dfile.filename = "${dfile.file}"
-            def vars = env.getEnvironment()
+            def vars = [:]
+            for (def entry in entrySet(env.getEnvironment())) {
+                vars[entry.key] = entry.value
+            }
+
             vars += config
             vars += dfile
 
