@@ -234,7 +234,7 @@ def gen_image_map(config) {
             dfile.uri = resolveTemplate(vars, dfile.uri)
             dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
-            config.logger.debug("xxxxx vars=" + vars + " url=" + dfile.url)
+            config.logger.debug("xxxxx arch=" + vars.arch + " vars=" + vars + " url=" + dfile.url)
             dfile.url = resolveTemplate(vars, dfile.url)
             config.logger.debug("xxxxxyyy vars=" + vars + " url=" + dfile.url)
 
