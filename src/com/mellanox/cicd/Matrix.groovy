@@ -222,11 +222,7 @@ def gen_image_map(config) {
             dfile.url ?: "${arch}/${dfile.name}"
             dfile.filename = "${dfile.file}"
 
-            def envMap = env.getEnvironment()
-            dfile.each { key, value ->
-                envMap[key] = value
-            }
-            dfile.uri = resolveTemplate(envMap, dfile.uri)
+            dfile.uri = resolveTemplate(env, dfile.uri)
             dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
             Map vars = dfile.clone()
