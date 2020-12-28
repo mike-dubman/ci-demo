@@ -221,13 +221,13 @@ def gen_image_map(config) {
             dfile.build_args ?: ''
             dfile.url ?: "${arch}/${dfile.name}"
             dfile.filename = "${dfile.file}"
-            def envMap = env.getEnvironment()
+            def vars = env.getEnvironment()
+            vars += config
+            vars += dfile
 
-            dfile.uri = resolveTemplate(envMap, dfile.uri)
+            dfile.uri = resolveTemplate(vars, dfile.uri)
             dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
-            Map vars = dfile.clone()
-            vars += config
             config.logger.debug("xxxxx vars=" + vars + " url=" + dfile.url)
             dfile.url = resolveTemplate(vars, dfile.url)
             config.logger.debug("xxxxxyyy vars=" + vars + " url=" + dfile.url)
