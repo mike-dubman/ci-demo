@@ -658,7 +658,7 @@ def getMatrixTasks(image, config) {
 
 def buildImage(img, filename, extra_args, config) {
     if (filename == "") {
-        config.logger.fatal("No docker filename specified, skipping build docker", 'Build Image')
+        config.logger.fatal("No docker filename specified, skipping build docker")
         return
     }
     customImage = docker.build("${img}", "-f ${filename} ${extra_args} . ")
