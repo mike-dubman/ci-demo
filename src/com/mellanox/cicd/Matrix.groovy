@@ -489,7 +489,7 @@ def runK8(image, branchName, config, axis) {
     )
     {
         node(POD_LABEL) {
-            stage (branchName) {
+            stages (branchName) {
                 container(cname) {
                     runSteps(image, config, branchName, axis)
                 }
