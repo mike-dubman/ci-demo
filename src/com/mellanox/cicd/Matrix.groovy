@@ -220,7 +220,12 @@ def gen_image_map(config) {
             dfile.tag = dfile.tag ?: 'latest'
             dfile.build_args = dfile.build_args ?: ''
             dfile.url = dfile.url ?: "${arch}/${dfile.name}"
-            dfile.filename = "${dfile.file}"
+            dfile.filename = dfile.file
+            
+            def vars = [:]
+            vars += env.getEnvironment()
+            vars += dfile
+            /*
             def vars = [:]
             for (def entry in entrySet(env.getEnvironment())) {
                 vars[entry.key] = entry.value
@@ -228,7 +233,7 @@ def gen_image_map(config) {
             for (def entry in entrySet(dfile)) {
                 vars[entry.key] = entry.value
             }
-
+*/
             vars += config
 
             dfile.uri = resolveTemplate(vars, dfile.uri)
