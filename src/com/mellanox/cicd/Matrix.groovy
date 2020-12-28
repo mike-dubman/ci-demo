@@ -220,6 +220,7 @@ def gen_image_map(config) {
             dfile.tag ?: 'latest'
             dfile.build_args ?: ''
             dfile.url ?: "${arch}/${dfile.name}"
+            dfile.filename = "${dfile.file}"
 
             def envMap = env.getEnvironment()
             dfile.each { key, value ->
@@ -230,8 +231,9 @@ def gen_image_map(config) {
 
             Map vars = dfile.clone()
             vars += config
+            config.logger.debug("xxxxx vars=" + vars + " url=" + dfile.url)
             dfile.url = resolveTemplate(vars, dfile.url)
-            dfile.filename = "${dfile.file}"
+            config.logger.debug("xxxxxyyy vars=" + vars + " url=" + dfile.url)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
