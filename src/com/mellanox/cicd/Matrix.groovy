@@ -215,11 +215,11 @@ def gen_image_map(config) {
                 return
             }
 
-            dfile.arch ?: arch
-            dfile.file ?: ''
-            dfile.tag ?: 'latest'
-            dfile.build_args ?: ''
-            dfile.url ?: "${arch}/${dfile.name}"
+            dfile.arch = dfile.arch ?: arch
+            dfile.file = dfile.file ?: ''
+            dfile.tag = dfile.tag ?: 'latest'
+            dfile.build_args = dfile.build_args ?: ''
+            dfile.url = dfile.url ?: "${arch}/${dfile.name}"
             dfile.filename = "${dfile.file}"
             def vars = [:]
             for (def entry in entrySet(env.getEnvironment())) {
@@ -232,7 +232,7 @@ def gen_image_map(config) {
             vars += config
 
             dfile.uri = resolveTemplate(vars, dfile.uri)
-            dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
+            dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
             config.logger.debug("xxxxx arch=" + vars.arch + " vars=" + vars + " url=" + dfile.url)
             dfile.url = resolveTemplate(vars, dfile.url)
