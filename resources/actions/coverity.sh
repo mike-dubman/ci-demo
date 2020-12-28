@@ -25,7 +25,7 @@ rm -rf $cov_build
 
 module load tools/cov
 
-cov-build --dir $cov_build $build_cmd all
+cov-build --dir $cov_build $build_cmd all || exit 1
 for item in ${ignore_list}; do
 	cov-manage-emit --dir ${cov_build} --tu-pattern "file(${item})" delete ||:
 done
