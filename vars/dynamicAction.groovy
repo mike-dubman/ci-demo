@@ -1,14 +1,6 @@
 #!/usr/bin/env groovy
 
-@NonCPS
-def resolveTemplate(varsMap, str) {
-    GroovyShell shell = new GroovyShell(new Binding(varsMap))
-    def res = shell.evaluate('"' + str +'"')
-    return res
-}
-
-
-def call(oneStep) {
+def call(ctx, oneStep) {
 
     def args = oneStep.args
     def actionName = oneStep.run
@@ -22,7 +14,7 @@ def call(oneStep) {
     if (args != null) {
         for (int i=0; i<args.size(); i++) {
             arg = args[i]
-            arg = resolveTemplate(vars, arg)
+            arg = ctx.resolveTemplate(vars, arg)
             argList.add(arg)
         }
     }

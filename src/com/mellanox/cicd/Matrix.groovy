@@ -371,7 +371,7 @@ def run_step(image, config, title, oneStep, axis) {
             }
 
             config.logger.trace(4, "Running step action module=" + oneStep.module + " args=" + oneStep.args + " run=" + oneStep.run)
-            this."${oneStep.module}"(oneStep)
+            this."${oneStep.module}"(this, oneStep)
         } else {
             def String cmd = shell + "\n" + oneStep.run
             config.logger.trace(4, "Running step script=" + cmd)
