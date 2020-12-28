@@ -219,8 +219,9 @@ def gen_image_map(config) {
             dfile.file = dfile.file ?: ''
             dfile.tag = dfile.tag ?: 'latest'
             dfile.build_args = dfile.build_args ?: ''
-            dfile.url = dfile.url ?: "${arch}/${dfile.name}"
+            dfile.uri = dfile.uri ?: "${arch}/${dfile.name}"
             dfile.filename = dfile.file
+
             
             def vars = [:]
             vars += env.getEnvironment()

@@ -27,8 +27,6 @@ runs_on_dockers:
   - {url: '$registry_host/swx-storage/$arch/ubuntu2004-nvme-snap-3.0', name: 'ubuntu2004', arch: 'aarch64'}
   - {url: '$registry_host/swx-storage/ci-demo/centos7-7', name: 'coverity', arch: 'x86_64', category: 'tool'}
 
-# Fail job if one of the steps fails or continue
-failFast: false
 
 steps:
 
