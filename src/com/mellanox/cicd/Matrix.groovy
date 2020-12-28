@@ -896,6 +896,9 @@ def main() {
                         run_parallel_in_chunks(config, branches, bSize)
                     }
                 }
+            } catch (e) {
+                logger.debug("XXXX catch exception " + e)
+
             } finally {
                 if (config.pipeline_stop) {
                     def cmd = config.pipeline_stop.run
