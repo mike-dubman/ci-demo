@@ -33,18 +33,18 @@ failFast: false
 steps:
 
   - name: Build
-    containerSelector: "{name:'centos75', variant:1}"
     run: |
-      echo .ci/build.sh
+      .ci/build.sh
 
   - name: Upload deb
     containerSelector: "{name:'ubuntu2004', variant:1}"
     run: |
-      echo .ci/swx_repos_upload_deb.sh
+      .ci/swx_repos_upload_deb.sh
 
   - name: Upload rpm
+    containerSelector: "{name:'centos75', variant:1}"
     run: |
-      echo .ci/swx_repos_upload_rep.sh
+      .ci/swx_repos_upload_rep.sh
 
   - name: Coverity scan  
     containerSelector: "{category:'tool', name: 'coverity', variant:1}"
