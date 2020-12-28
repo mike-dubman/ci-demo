@@ -23,7 +23,7 @@ class Logger {
         this.ctx.echo this.cat + " WARN: ${message}"
     }
 
-    def fatal(String message, Strung stageName=null) {
+    def fatal(String message, String stageName=null) {
         this.ctx.echo this.cat + " FATAL: ${message}"
         //this.ctx.run_shell("exit 1", "Fatal error")
 //        this.ctx.stage(stageName ?: 'Fail') {
