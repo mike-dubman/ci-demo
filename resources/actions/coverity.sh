@@ -18,14 +18,14 @@ echo "==== Running coverity ===="
 ncpus=$(cat /proc/cpuinfo|grep processor|wc -l)
 export AUTOMAKE_JOBS=$ncpus
 
-eval $pre_cmd
+eval $pre_cmd || exit 1
 
 cov_build="cov_build"
 rm -rf $cov_build
 
 module load tools/cov
 
-cov-build --dir $cov_build $build_cmd all || exit 1
+cov-build --dir $cov_build $build_cmd all
 for item in ${ignore_list}; do
 	cov-manage-emit --dir ${cov_build} --tu-pattern "file(${item})" delete ||:
 done
