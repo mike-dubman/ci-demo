@@ -225,23 +225,11 @@ def gen_image_map(config) {
             def vars = [:]
             vars += env.getEnvironment()
             vars += dfile
-            /*
-            def vars = [:]
-            for (def entry in entrySet(env.getEnvironment())) {
-                vars[entry.key] = entry.value
-            }
-            for (def entry in entrySet(dfile)) {
-                vars[entry.key] = entry.value
-            }
-*/
             vars += config
 
             dfile.uri = resolveTemplate(vars, dfile.uri)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
-
-            config.logger.debug("xxxxx arch=" + vars.arch + " vars=" + vars + " url=" + dfile.url)
             dfile.url = resolveTemplate(vars, dfile.url)
-            config.logger.debug("xxxxxyyy vars=" + vars + " url=" + dfile.url)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
@@ -658,7 +646,7 @@ def getMatrixTasks(image, config) {
 
 def buildImage(img, filename, extra_args, config) {
     if (filename == "") {
-        config.logger.fatal("No docker filename specified, skipping build docker")
+        config.logger.warn("No docker filename specified, skipping build docker")
         return
     }
     customImage = docker.build("${img}", "-f ${filename} ${extra_args} . ")
