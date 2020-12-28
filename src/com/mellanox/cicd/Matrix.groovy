@@ -29,7 +29,7 @@ class Logger {
 
     def fatal(String message) {
         this.ctx.echo this.cat + " FATAL: ${message}"
-        this.ctx.run_shell('exit 1', 'Fatal error')
+        this.ctx.run_shell("false", "Fatal error")
     }
 
 
@@ -209,13 +209,13 @@ def gen_image_map(config) {
         config.runs_on_dockers.each { item ->
 
             def dfile = item.clone()
+            dfile.arch = dfile.arch ?: arch
 
             if (dfile.arch && dfile.arch != arch) {
                 config.logger.warn("skipped conf: " + arch + " name: " + dfile.name)
                 return
             }
 
-            dfile.arch = dfile.arch ?: arch
             dfile.file = dfile.file ?: ''
             dfile.tag = dfile.tag ?: 'latest'
             dfile.build_args = dfile.build_args ?: ''
@@ -685,9 +685,11 @@ String getChangedFilesList(config) {
 def buildDocker(image, config) {
 
     def img = image.url
+    def arch = image.arch
     // Vasily Ryabov: we need .toString() to make changed_files.contains(filename) work correctly
     // See https://stackoverflow.com/q/56829842/3648361
     def filename = image.filename.toString().trim()
+    def distro = image.name
     def extra_args = image.build_args
     def changed_files = config.get("cFiles")
 
@@ -770,9 +772,9 @@ def build_docker_on_k8(image, config) {
             onUnstash()
 
             container('docker') {
-                stage ('Build Docker') {
+ //               stage ('Build Docker') {
                     buildDocker(image, config)
-                }
+ //               }
             }
         }
     }
@@ -867,6 +869,7 @@ def main() {
 
             def arch_distro_map = gen_image_map(config)
             for (def entry in entrySet(arch_distro_map)) {
+                def arch = entry.key
                 def images = entry.value
                 for (int j=0; j<images.size(); j++) {
                     def image = images[j]
