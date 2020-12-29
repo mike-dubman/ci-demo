@@ -730,7 +730,7 @@ def build_docker_on_k8(image, config) {
 
     def listV = parseListV(config.volumes)
 
-    def cloudName = getConfigVal(config, ['kubernetes', 'cloud'], "")
+    def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], "")
 
     config.logger.trace(7, "Checking docker image availability for " + image)
 
