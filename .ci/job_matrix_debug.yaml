@@ -5,6 +5,11 @@ registry_host: harbor.mellanox.com
 registry_path: /swx-storage/ci-demo
 registry_auth: swx-storage
 
+credentials:
+  - {credentialsId: '311997c9-cc1c-4d5d-8ba2-6eb43ba0a06d', usernameVariable: 'SWX_REPOS_USER', passwordVariable: 'SWX_REPOS_PASS'}
+  - {credentialsId: 'jenkins-pulp', usernameVariable: 'pulp_usr', passwordVariable: 'pulp_pwd'}
+
+
 kubernetes:
   cloud: swx-k8s
   arch_table:
@@ -54,18 +59,11 @@ steps:
 
   - name: once
     containerSelector: "{name:'ubuntu16-4',variant:1}"
-    run: touch aaa
+    run: env
+    credentialsId: 'jenkins-pulp'
 
-  - name: Coverity scan
-    shell: action
-    module: dynamicAction
-    run: coverity.sh 
-    containerSelector: "{name:'centos7-7', variant:1}"
-    args:
-      - "./autogen.sh;./configure;make -j 3 clean"
-      - "make -j 3"
-    archiveArtifacts: 'cov.log'
 
+steps_disabled:
 
   - name: Blackduck scan source
     containerSelector: "{category:'tool', name: 'blackduck', variant:1}"
@@ -82,8 +80,6 @@ steps:
       scanMode: "source"
     env:
       SPRING_APPLICATION_JSON: '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
-
-steps_disabled:
 
   - name: Test failure
     run: |

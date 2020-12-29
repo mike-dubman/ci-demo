@@ -376,7 +376,15 @@ def run_step(image, config, title, oneStep, axis) {
         } else {
             def String cmd = shell + "\n" + oneStep.run
             config.logger.trace(4, "Running step script=" + cmd)
-            run_step_shell(cmd, title, oneStep, config)
+            if (oneStep.credentialsId) {
+                withCredentials([usernamePassword(credentialsId: oneStep.credentialsId,
+                                passwordVariable: 'pulp_usr',
+                                usernameVariable: 'pulp_pwd')]) {
+                        run_step_shell(cmd, title, oneStep, config)
+                    }
+            } else {
+                run_step_shell(cmd, title, oneStep, config)
+            }
         }
     }
 }
