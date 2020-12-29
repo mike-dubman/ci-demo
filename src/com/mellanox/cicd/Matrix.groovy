@@ -104,12 +104,11 @@ def run_step_shell(cmd, title, oneStep, config) {
     attachArtifacts(config, oneStep.archiveArtifacts)
 
     if (ret.rc != 0) {
-        currentBuild.result = 'FAILURE'
         def msg = "Step ${title} failed with exit code=${ret.rc}"
         if (ret.exception != null) {
             msg += " exception=${ret.exception}"
         }
-        error(msg)
+        reportFail(title, msg)
     }
 }
 
@@ -350,6 +349,11 @@ def check_skip_stage(image, config, title, oneStep, axis) {
     return false
 }
 
+void reportFail(String stage, String msg) {
+    currentBuild.result = 'FAILURE'
+    error(stage + " failed with msg: " + msg)
+}
+
 def run_step(image, config, title, oneStep, axis) {
 
     if (check_skip_stage(image, config, title, oneStep, axis)) {
@@ -371,7 +375,9 @@ def run_step(image, config, title, oneStep, axis) {
             }
 
             config.logger.trace(4, "Running step action module=" + oneStep.module + " args=" + oneStep.args + " run=" + oneStep.run)
-            this."${oneStep.module}"(this, oneStep)
+            if (this."${oneStep.module}"(this, oneStep) != 0) {
+                reportFail(oneStep.name, "error code reported")
+            }
         } else {
             def String cmd = shell + "\n" + oneStep.run
             config.logger.trace(4, "Running step script=" + cmd)
@@ -895,8 +901,7 @@ def main() {
                 }
             } catch (e) {
                 logger.debug("XXXX catch exception " + e)
-                currentBuild.result = 'FAILURE'
-                error("Failed with " + e)
+                reportFail('parallel task', e)
 
             } finally {
                 if (config.pipeline_stop) {

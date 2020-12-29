@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def call(ctx, oneStep) {
+int call(ctx, oneStep) {
 
     def args = oneStep.args
 
@@ -9,8 +9,7 @@ def call(ctx, oneStep) {
             remote: 'http://l-gerrit.mtl.labs.mlnx:8080/DevOps/Jenkins/ci_framework']))
 
     if (args.size() < 1) {
-        println('fatal: DynamicAction() expects at least 1 parameter')
-        sh(script: 'false', label: 'action failed', returnStatus: true)
+        ctx.reportFail(oneStep.name, 'fatal: DynamicAction() expects at least 1 parameter')
     }
 
     Map vars = [env: env]
