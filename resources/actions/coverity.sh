@@ -19,7 +19,16 @@ export AUTOMAKE_JOBS=$ncpus
 
 echo "==== Running Pre-commands ===="
 
-eval $pre_cmd || exit 1
+set +eE
+/bin/bash -c "$pre_cmd"
+rc=$?
+
+if [ $rc -ne 0 ]; then
+	echo pre-commands failed
+	exit 1
+fi
+
+set -eE
 
 cov_build="cov_build"
 rm -rf $cov_build
