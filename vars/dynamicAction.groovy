@@ -1,7 +1,6 @@
 #!/usr/bin/env groovy
 
 def call(ctx, oneStep) {
-
     def args = oneStep.args
     def actionName = oneStep.run
 
@@ -32,8 +31,10 @@ def call(ctx, oneStep) {
     def cmd = toFile
     if (args.size() > 1) {
         for (int i=0; i< args.size(); i++) {
-            cmd += " '" + args[i] + "'"
+            //cmd += " '" + args[i] + "'"
+            cmd += " " + args[i]
         }
     }
+    println("Running cmd: ${actionName} " + cmd)
     return sh(script: cmd, label: "Runing ${actionName}", returnStatus: true)
 }
