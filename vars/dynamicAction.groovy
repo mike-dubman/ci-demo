@@ -18,7 +18,7 @@ int call(ctx, oneStep) {
     }
 
     if (args.size() < 1) {
-        ctx.reportFail("fatal: DynamicAction() expects at least 1 parameter")
+        ctx.reportFail(oneStep.name, "fatal: DynamicAction() expects at least 1 parameter")
     }
 
     def actionScript = libraryResource "actions/${oneStep.run}"

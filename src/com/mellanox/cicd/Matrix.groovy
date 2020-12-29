@@ -27,12 +27,6 @@ class Logger {
         this.ctx.echo this.cat + " WARN: ${message}"
     }
 
-    def fatal(String message) {
-        this.ctx.echo this.cat + " FATAL: ${message}"
-        this.ctx.run_shell("false", "Fatal error")
-    }
-
-
     def debug(String message) {
         if (this.ctx.isDebugMode()) {
             this.ctx.echo this.cat + " DEBUG: ${message}"
@@ -191,7 +185,7 @@ def gen_image_map(config) {
             if (dfile.arch) {
                 image_map["${dfile.arch}"] = []
             } else {
-                config.logger.fatal("Please define tag 'arch' for image ${dfile.name} in 'runs_on_dockers' section of yaml file")
+                reportFail('config', "Please define tag 'arch' for image ${dfile.name} in 'runs_on_dockers' section of yaml file")
             }
         }
     }
@@ -371,12 +365,13 @@ def run_step(image, config, title, oneStep, axis) {
 
         if (shell == "action") {
             if (oneStep.module == null) {
-                config.logger.fatal("Step is type of action but has no 'module' defined")
+                reportFail(title, "Step is type of action but has no 'module' defined")
             }
 
             config.logger.trace(4, "Running step action module=" + oneStep.module + " args=" + oneStep.args + " run=" + oneStep.run)
-            if (this."${oneStep.module}"(this, oneStep) != 0) {
-                reportFail(oneStep.name, "error code reported")
+            int rc = this."${oneStep.module}"(this, oneStep)
+            if (rc != 0) {
+                reportFail(oneStep.name, "exit with error code=${rc}")
             }
         } else {
             def String cmd = shell + "\n" + oneStep.run
@@ -616,7 +611,7 @@ Map getTasks(axes, image, config, include, exclude) {
         tasks[branchName] = { ->
             withEnv(axisEnv) {
                 if ((config.get("kubernetes") == null) && (image.nodeLabel == null)) {
-                    config.logger.fatal("Please define kubernetes cloud name in yaml config file or define nodeLabel for docker")
+                    reportFail('config', "Please define kubernetes cloud name in yaml config file or define nodeLabel for docker")
                 }
                 if (image.nodeLabel) {
                     runDocker(image, config, branchName, axis, { pimage, pconfig -> runSteps(pimage, pconfig, branchName, axis) })
@@ -815,7 +810,7 @@ def loadConfigFile(filepath, logger) {
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
-            logger.fatal("matrix.include and matrix.exclude sections in config file=${filepath} are mutually exclusive. Please keep only one.")
+            reportFail('config', "matrix.include and matrix.exclude sections in config file=${filepath} are mutually exclusive. Please keep only one.")
         }
     }
     return config
@@ -841,7 +836,7 @@ def main() {
 
         files = findFiles(glob: "${env.conf_file}")
         if (!files.size()) {
-            logger.fatal("No conf_file found by ${env.conf_file}")
+            reportFail('config', "No conf_file found by ${env.conf_file}")
         }
 
 
@@ -900,7 +895,6 @@ def main() {
                     }
                 }
             } catch (e) {
-                logger.debug("XXXX catch exception " + e)
                 reportFail('parallel task', e)
 
             } finally {
