@@ -732,7 +732,6 @@ def build_docker_on_k8(image, config) {
 
     def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], "")
 
-    println("XXXXXXXXXXX ${cloudName}")
     config.logger.trace(7, "Checking docker image availability for " + image)
 
     def k8sArchConf = getArchConf(config, image.arch)
