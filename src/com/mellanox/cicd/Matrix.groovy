@@ -895,8 +895,8 @@ def main() {
                 }
             } catch (e) {
                 logger.debug("XXXX catch exception " + e)
+                currentBuild.result = 'FAILURE'
                 error("Failed with " + e)
-                currentBuild.result = 'FAILED'
 
             } finally {
                 if (config.pipeline_stop) {
