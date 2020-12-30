@@ -45,7 +45,7 @@ steps:
       .ci/swx_repos_upload_rep.sh
 
   - name: Coverity scan  
-    containerSelector: "{category:'tool', name: 'coverity', variant:1}"
+    containerSelector: "{name: 'coverity', variant:1}"
     archiveArtifacts: 'cov.log'
     shell: action
     module: dynamicAction
@@ -54,3 +54,20 @@ steps:
       - "./autogen.sh;./configure;make -j 3 clean"
       - "make -j 3"
       - "devx googletest tests"
+
+  - name: Blackduck scan source
+    containerSelector: "{name: 'blackduck', variant:1}"
+    shell: action
+    module: ngci
+    run: NGCIBlackDuckScan
+    args:
+      projectName: "NGCIBlackDuckScan"
+      projectVersion: "nvmx"
+      projectVersion: "1.0"
+      projectSrcPath: "${env.WORKSPACE}/src"
+      attachArtifact: true
+      reportName: "BlackDuck report"
+      scanMode: "source"
+    env:
+      SPRING_APPLICATION_JSON: '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
+
