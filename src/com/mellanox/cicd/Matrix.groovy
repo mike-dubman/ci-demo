@@ -106,7 +106,7 @@ def run_step_shell(cmd, title, oneStep, config) {
     }
 }
 
-def forceCleanup(String prefix="") {
+int forceCleanup(String prefix="") {
     env.WORKSPACE = pwd()
     def cmd = """
     set -eEx
@@ -118,7 +118,7 @@ def forceCleanup(String prefix="") {
 
 def forceCleanupWS() {
 
-    int rc = forceCleanup()
+    int rc = forceCleanup("")
 
     if (rc != 0) {
         rc = forceCleanup("sudo")
