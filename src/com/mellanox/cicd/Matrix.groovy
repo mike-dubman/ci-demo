@@ -106,7 +106,7 @@ def run_step_shell(cmd, title, oneStep, config) {
     }
 }
 
-int forceCleanup(prefix="") {
+def forceCleanup(prefix="") {
     env.WORKSPACE = pwd()
     
     def cmd = "set -eE;$prefix rm -rf ${env.WORKSPACE}/*;$prefix find ${env.WORKSPACE}/ -maxdepth 1 -name '.*' | xargs rm -rf"
@@ -115,7 +115,7 @@ int forceCleanup(prefix="") {
 
 def forceCleanupWS() {
 
-    int rc = forceCleanup("")
+    def rc = forceCleanup("")
 
     if (rc != 0) {
         rc = forceCleanup("sudo")
