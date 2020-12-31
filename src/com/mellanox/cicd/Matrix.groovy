@@ -106,13 +106,10 @@ def run_step_shell(cmd, title, oneStep, config) {
     }
 }
 
-int forceCleanup(String prefix="") {
+int forceCleanup(prefix="") {
     env.WORKSPACE = pwd()
-    def cmd = """
-    set -eEx
-    $prefix rm -rf ${env.WORKSPACE}/*
-    $prefix find ${env.WORKSPACE}/ -maxdepth 1 -name '.*' | xargs rm -rf
-    """
+    
+    def cmd = "set -eE;$prefix rm -rf ${env.WORKSPACE}/*;$prefix find ${env.WORKSPACE}/ -maxdepth 1 -name '.*' | xargs rm -rf"
     return run_shell(cmd, "Clean workspace $prefix")
 }
 
