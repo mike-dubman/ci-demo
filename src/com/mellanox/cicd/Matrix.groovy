@@ -546,6 +546,7 @@ def runDocker(image, config, branchName=null, axis=null, Closure func, runInDock
     config.logger.debug("Running docker on node: ${nodeName} branch: ${branchName}")
 
     node(nodeName) {
+        forceCleanupWS()
         unstash "${env.JOB_NAME}"
         onUnstash()
         stage(branchName) {
