@@ -109,18 +109,21 @@ def run_step_shell(cmd, title, oneStep, config) {
 def forceCleanup(prefix="") {
     env.WORKSPACE = pwd()
     
-    def cmd = "set -eE;$prefix rm -rf ${env.WORKSPACE}/*;$prefix find ${env.WORKSPACE}/ -maxdepth 1 -name '.*' | xargs rm -rf"
+    def cmd = "set -eE;$prefix bash -c 'rm -rf ${env.WORKSPACE}/*;find ${env.WORKSPACE}/ -maxdepth 1 -name '.*' | xargs rm -rf'"
     return run_shell(cmd, "Clean workspace $prefix")
 }
 
 def forceCleanupWS() {
+
+    run_shell("pwd;ls -al;ls -al $WORKSPACE", "xxx1")
 
     def rc = forceCleanup("")
 
     if (rc != 0) {
         rc = forceCleanup("sudo")
         if (rc != 0) {
-            reportFail('cleanup', "Unable to cleanup workspace")
+            run_shell("pwd;ls -al;ls -al $WORKSPACE", "xxx2")
+            reportFail('cleanup', "Unable to cleanup workspace rc=$rc")
         }
     }
 }
