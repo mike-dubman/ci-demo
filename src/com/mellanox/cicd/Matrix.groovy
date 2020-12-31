@@ -106,14 +106,26 @@ def run_step_shell(cmd, title, oneStep, config) {
     }
 }
 
-
-def forceCleanupWS() {
+def forceCleanup(String prefix="") {
     env.WORKSPACE = pwd()
     def cmd = """
-    rm -rf ${env.WORKSPACE}/*
-    find ${env.WORKSPACE}/ -maxdepth 1 -name '.*' | xargs rm -rf 
+    set -eEx
+    $prefix rm -rf ${env.WORKSPACE}/*
+    $prefix find ${env.WORKSPACE}/ -maxdepth 1 -name '.*' | xargs rm -rf
     """
-    run_shell(cmd, "Clean workspace")
+    return run_shell(cmd, "Clean workspace $prefix")
+}
+
+def forceCleanupWS() {
+
+    int rc = forceCleanup()
+
+    if (rc != 0) {
+        rc = forceCleanup("sudo")
+        if (rc != 0) {
+            reportFail('cleanup', "Unable to cleanup workspace")
+        }
+    }
 }
 
 
