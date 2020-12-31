@@ -122,7 +122,7 @@ def forceCleanupWS() {
     if (res.rc != 0) {
         res = forceCleanup("sudo")
         if (res.rc != 0) {
-            println("xxxxxx Unable to cleanup workspace rc=" + res)
+            reportFail('clean workspace', "Unable to cleanup workspace rc=" + res)
         }
     }
 }
