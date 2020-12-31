@@ -117,11 +117,11 @@ def forceCleanupWS() {
 
     run_shell("pwd;ls -al;ls -al $WORKSPACE", "xxx1")
 
-    def rc = forceCleanup("")
+    def res = forceCleanup("")
 
-    if (rc != 0) {
-        rc = forceCleanup("sudo")
-        if (rc != 0) {
+    if (res.rc != 0) {
+        res = forceCleanup("sudo")
+        if (res.rc != 0) {
             run_shell("pwd;ls -al;ls -al $WORKSPACE", "xxx2")
             reportFail('cleanup', "Unable to cleanup workspace rc=$rc")
         }
