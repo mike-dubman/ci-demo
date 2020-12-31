@@ -112,7 +112,6 @@ def forceCleanup(prefix="") {
     run_shell("pwd;ls -al;echo ${env.WORKSPACE}; ls -al ${env.WORKSPACE}", "xxx $prefix")
 
     def cmd = """
-    set -eE
     $prefix bash -c 'rm -rf ${env.WORKSPACE}/*'
     $prefix bash -c 'find ${env.WORKSPACE}/ -type f -o -type d | xargs rm -rf'
     """
@@ -122,11 +121,10 @@ def forceCleanup(prefix="") {
 def forceCleanupWS() {
 
     def res = forceCleanup("")
-
     if (res.rc != 0) {
         res = forceCleanup("sudo")
         if (res.rc != 0) {
-            reportFail('cleanup', "Unable to cleanup workspace rc=" + res)
+            println("xxxxxx Unable to cleanup workspace rc=" + res)
         }
     }
 }
