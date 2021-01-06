@@ -26,7 +26,7 @@ env:
 
 
 runs_on_dockers:
-  - {url: '$momo', name: 'coverity', arch: 'x86_64', category: 'tool'}
+  - {url: '$momo', name: 'coverity', arch: 'x86_64'}
 
 steps:
 
