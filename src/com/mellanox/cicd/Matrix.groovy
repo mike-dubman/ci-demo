@@ -543,7 +543,7 @@ def runK8(image, branchName, config, axis) {
 def resolveTemplate(varsMap, str, nestingLevel=3) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = str
-    for (int i=0; i<nestingLevel; i++)
+    for (int i=0; i<nestingLevel; i++) {
         res = shell.evaluate('"' + res +'"')
     }
     return res
