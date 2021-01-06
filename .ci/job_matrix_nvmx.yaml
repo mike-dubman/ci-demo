@@ -21,14 +21,21 @@ env:
   swx_repos_credentials: "311997c9-cc1c-4d5d-8ba2-6eb43ba0a06d"
   NVME_CONFIG: './src/json/mlnx_nvmx_config.json'
   NVMX_LOGFILE_PATH: 'stderr'
+  koko: '$registry_host/swx-storage/$arch/ubuntu2004-nvme-snap-3.0'
 
 runs_on_dockers:
-  - {url: '$registry_host/swx-storage/$arch/centos75-nvme-snap-3.0', name: 'centos75', arch: 'aarch64'}
-  - {url: '$registry_host/swx-storage/$arch/ubuntu2004-nvme-snap-3.0', name: 'ubuntu2004', arch: 'aarch64'}
+  - {url: '$koko', name: 'centos75', arch: 'aarch64'}
+  - {url: '$koko', name: 'ubuntu2004', arch: 'aarch64'}
   - {url: '$registry_host/swx-storage/ci-demo/centos7-7', name: 'coverity', arch: 'x86_64', category: 'tool'}
 
-
 steps:
+
+- name: Build
+  run: |
+    env
+
+
+xxx_steps:
 
   - name: Build
     run: |
