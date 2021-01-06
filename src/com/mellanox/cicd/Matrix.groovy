@@ -240,8 +240,8 @@ def gen_image_map(config) {
             def mergedMaps = [:]
             mergedMaps += vars + dfile
 
-            println ("XXXXXXXX moo url=${dfile.url} vars=" + mergedVars)
-            dfile.url = resolveTemplate(mergedVars, dfile.url, 1)
+            println ("XXXXXXXX moo url=${dfile.url} vars=" + mergedMaps)
+            dfile.url = resolveTemplate(mergedMaps, dfile.url, 1)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
