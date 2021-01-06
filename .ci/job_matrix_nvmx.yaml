@@ -22,9 +22,11 @@ env:
   NVME_CONFIG: './src/json/mlnx_nvmx_config.json'
   NVMX_LOGFILE_PATH: 'stderr'
   koko: '$registry_host/swx-storage/ci-demo/centos7-7'
+  momo: '$registry_host/toolbox/ngci-centos:7.9.2009'
+
 
 runs_on_dockers:
-  - {url: '$koko', name: 'coverity', arch: 'x86_64', category: 'tool'}
+  - {url: '$momo', name: 'coverity', arch: 'x86_64', category: 'tool'}
 
 steps:
 
