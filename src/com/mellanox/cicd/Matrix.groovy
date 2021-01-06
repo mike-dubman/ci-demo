@@ -236,7 +236,7 @@ def gen_image_map(config) {
 
             dfile.uri = resolveTemplate(vars + dfile, dfile.uri)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
-            dfile.url = resolveTemplate(vars + dfile, dfile.url)
+            dfile.url = resolveTemplate(vars + dfile, dfile.url, 1)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
@@ -535,9 +535,12 @@ def runK8(image, branchName, config, axis) {
 }
 
 @NonCPS
-def resolveTemplate(varsMap, str) {
+def resolveTemplate(varsMap, str, debug=0) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = shell.evaluate('"' + str +'"')
+    if (debug) {
+        println("XXXXXXXX str=${str} map=" + varsMap + " res=" + res)
+    }
     return res
 }
 
