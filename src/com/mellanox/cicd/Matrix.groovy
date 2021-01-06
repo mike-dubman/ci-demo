@@ -241,7 +241,7 @@ def gen_image_map(config) {
             mergedMaps += vars + dfile
 
             println ("XXXXXXXX moo url=${dfile.url} vars=" + mergedMaps)
-            dfile.url = resolveTemplate(mergedMaps, dfile.url, 1)
+            dfile.url = resolveTemplate(mergedMaps, dfile.url)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
@@ -540,12 +540,12 @@ def runK8(image, branchName, config, axis) {
 }
 
 @NonCPS
-def resolveTemplate(varsMap, str, debug=0) {
+def resolveTemplate(varsMap, str, nestingLevel=3) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
-    def res = shell.evaluate('"' + str +'"')
-    if (debug) {
-        println("XXXXXXXX str=${str} map=" + varsMap + " res=" + res)
-    }
+    def res = str
+    do {
+        res = shell.evaluate('"' + res +'"')
+    } while (--nestingLevel != 0)
     return res
 }
 
