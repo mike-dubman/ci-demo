@@ -57,26 +57,16 @@ steps:
       mofed_installer_opt='--user-space-only --without-fw-update --all -q --skip-unsupported-devices-check'
       sudo env build=$driver $mofed_installer_exe $mofed_installer_opt
 
-  - name: Build package
+  - name: Configure
     run: |
       ./autogen.sh
       ./configure $flags
 
-  - name: Coverity
-    containerSelector: "{name:'centos7-7', variant:1}"
-    shell: action
-    module: dynamicAction
-    run: coverity.sh
-    args:
-      - "./autogen.sh;./configure;make -j 3 clean"
-      - "make -j 3"
-    archiveArtifacts: 'cov.log'
+  - name: Build
+    run: make -j 2 all
 
-  - name: Check package
-    run: .ci/check_package.sh
-
-  - name: Run tests
-    run: .ci/runtests.sh
+  - name: Install
+    run: make -j 2 install
      
 ```
 
@@ -285,9 +275,9 @@ steps:
 # execution of matrix dimension
     containerSelector: '{category:tool, variant:1}'
     args:
-      - "coverity.sh"
-      - "./autogen.sh;./configure;make -j 3 clean"
-      - "make -j 3"
+      - "--pre_script './autogen.sh;./configure;make -j 3 clean'"
+      - "--build_script 'make -j 3'"
+      - "--ignore_files 'devx googletest tests'"
     archiveArtifacts: 'cov.log'
 # run this step in parallel with others
 # each non-parallel step is a barrier for previous group of parallel steps
