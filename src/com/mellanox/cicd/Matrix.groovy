@@ -689,7 +689,7 @@ def buildImage(img, filename, extra_args, config, image) {
     }
 
     def preBuild = null
-    preBuild = preBuild ?: getConfigVal(image, ['on_image_build', 'run'], null)
+    preBuild = preBuild ?: image.on_image_build
     preBuild = preBuild ?: getConfigVal(config, ['pipeline_on_image_build', 'run'], null)
 
     if (preBuild) {
