@@ -173,7 +173,7 @@ def getArchConf(config, arch) {
     ]
 
     k8sArchConfTable[arch].each { key, val ->
-        key = resolveTemplate(varsMap, val)
+        key = resolveTemplate(varsMap, val, config)
     }
 
     config.logger.trace(7, "getArchConf[${arch}] " + k8sArchConfTable[arch])
@@ -231,10 +231,9 @@ def gen_image_map(config) {
             vars += env.getEnvironment()
             vars += config
 
-            dfile.uri = resolveTemplate(vars + dfile, dfile.uri)
+            dfile.uri = resolveTemplate(vars + dfile, dfile.uri, config)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
-            println ("XXXXXXXX moo url=${dfile.url}")
             dfile.url = resolveTemplate(vars+dfile, dfile.url, config)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
@@ -618,7 +617,7 @@ Map getTasks(axes, image, config, include, exclude) {
         config.logger.info("Working on axis " + axis.toMapString())
 
         def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis.axis_index}")
-        def branchName = resolveTemplate(axis, tmpl)
+        def branchName = resolveTemplate(axis, tmpl, config)
 
         def canSkip = true
         for (int j = 0; j < config.steps.size(); j++) {
@@ -909,7 +908,7 @@ def main() {
                 for (int j=0; j<images.size(); j++) {
                     def image = images[j]
                     def tmpl = getConfigVal(config, ['taskNameSetupImage'], "Setup Image ${image.arch}/${image.name}")
-                    def branchName = resolveTemplate(image, tmpl)
+                    def branchName = resolveTemplate(image, tmpl, config)
 
                     parallelBuildDockers[branchName] = {
                         if (image.nodeLabel) {
