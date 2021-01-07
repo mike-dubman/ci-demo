@@ -234,7 +234,7 @@ def gen_image_map(config) {
             dfile.uri = resolveTemplate(vars + dfile, dfile.uri)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
-            println ("XXXXXXXX moo url=${dfile.url} vars=" + mergedMaps)
+            println ("XXXXXXXX moo url=${dfile.url}")
             dfile.url = resolveTemplate(vars+dfile, dfile.url, config)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
