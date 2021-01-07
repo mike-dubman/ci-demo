@@ -687,6 +687,14 @@ def buildImage(img, filename, extra_args, config) {
         config.logger.warn("No docker filename specified, skipping build docker")
         return
     }
+
+    def preBuild = null
+    preBuild = preBuild ?: getConfigVal(image, ['on_image_build', 'run'], null)
+    preBuild = preBuild ?: getConfigVal(config, ['pipeline_on_image_build', 'run'], null)
+
+    if (preBuild) {
+        run_shell(preBuild, "Image preparation script")
+    }
     customImage = docker.build("${img}", "-f ${filename} ${extra_args} . ")
     customImage.push()
 }
