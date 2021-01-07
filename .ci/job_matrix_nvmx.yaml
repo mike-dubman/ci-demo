@@ -21,7 +21,8 @@ env:
   swx_repos_credentials: "311997c9-cc1c-4d5d-8ba2-6eb43ba0a06d"
   NVME_CONFIG: './src/json/mlnx_nvmx_config.json'
   NVMX_LOGFILE_PATH: 'stderr'
-  koko: '$registry_host/swx-storage/ci-demo/centos7-7'
+
+defaults:
   momo: '$registry_host/toolbox/ngci-centos:7.9.2009'
 
 

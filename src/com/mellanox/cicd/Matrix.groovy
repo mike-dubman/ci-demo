@@ -230,18 +230,12 @@ def gen_image_map(config) {
             def vars = [:]
             vars += env.getEnvironment()
             vars += config
-            if (config.env) {
-                vars += config.env
-            }
 
             dfile.uri = resolveTemplate(vars + dfile, dfile.uri)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
-            def mergedMaps = [:]
-            mergedMaps += vars + dfile
-
             println ("XXXXXXXX moo url=${dfile.url} vars=" + mergedMaps)
-            dfile.url = resolveTemplate(mergedMaps, dfile.url)
+            dfile.url = resolveTemplate(vars+dfile, dfile.url, config)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
@@ -540,12 +534,13 @@ def runK8(image, branchName, config, axis) {
 }
 
 @NonCPS
-def resolveTemplate(varsMap, str, nestingLevel=3) {
+def resolveTemplate(varsMap, str, config=null) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = str
-    for (int i=0; i<nestingLevel; i++) {
-        res = shell.evaluate('"' + res +'"')
+    if (config && config.defaults) {
+        res = resolveTemplate(config.defaults, res, null)
     }
+    res = shell.evaluate('"' + res +'"')
     return res
 }
 
@@ -751,7 +746,6 @@ def buildDocker(image, config) {
             config.logger.info("Forcing building file per user request: ${filename} ... ")
             need_build++
         }
-        config.logger.debug("Dockerfile name: ${filename}")
         config.logger.debug("Changed files: ${changed_files}")
         if (changed_files.contains(filename)) {
             config.logger.info("Forcing building, file modified by commit: ${filename} ... ")
