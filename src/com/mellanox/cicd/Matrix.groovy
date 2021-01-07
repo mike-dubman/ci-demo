@@ -682,7 +682,7 @@ def getMatrixTasks(image, config) {
     return getTasks(axes, image, config, include, exclude)
 }
 
-def buildImage(img, filename, extra_args, config) {
+def buildImage(img, filename, extra_args, config, image) {
     if (filename == "") {
         config.logger.warn("No docker filename specified, skipping build docker")
         return
@@ -760,7 +760,7 @@ def buildDocker(image, config) {
         }
         if (need_build) {
             config.logger.info("Building - ${img} - ${filename}")
-            buildImage(img, filename, extra_args, config)
+            buildImage(img, filename, extra_args, config, image)
         }
     }
 }
