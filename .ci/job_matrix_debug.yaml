@@ -12,6 +12,14 @@ credentials:
 
 kubernetes:
   cloud: swx-k8s-spray
+  arch_table:
+    x86_64:
+      nodeSelector: 'kubernetes.io/arch=amd64'
+      jnlpImage: 'jenkins/inbound-agent:latest'
+    aarch64:
+      nodeSelector: 'kubernetes.io/arch=arm64'
+      jnlpImage: 'harbor.mellanox.com/${registry_jnlp_path}/jenkins-arm-agent-jnlp:latest'
+
 
 volumes:
   - {mountPath: /hpc/local, hostPath: /hpc/local}

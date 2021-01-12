@@ -133,18 +133,17 @@ def getArchConf(config, arch) {
     def k8sArchConfTable = [:]
 
     config.logger.trace(4, "getArchConf: arch=" + arch)
+
+    if (!config.registry_jnlp_path) {
+        def array = config.registry_path.split("/")
+        config.registry_jnlp_path = array[array.length - 2]
+    }
     
     k8sArchConfTable['x86_64']  = [
         nodeSelector: 'kubernetes.io/arch=amd64',
         jnlpImage: 'jenkins/inbound-agent:latest',
         dockerImage: 'docker:19.03'
     ]
-
-    if (!config.registry_jnlp_path) {
-        def array = config.registry_path.split("/")
-        config.registry_jnlp_path = array[array.length - 2]
-        println("XXXXXXXXX = " + config.registry_jnlp_path)
-    }
 
     k8sArchConfTable['aarch64'] = [
         nodeSelector: 'kubernetes.io/arch=arm64',
@@ -177,7 +176,7 @@ def getArchConf(config, arch) {
         key = resolveTemplate(varsMap, val, config)
     }
 
-    config.logger.trace(7, "getArchConf[${arch}] " + k8sArchConfTable[arch])
+    config.logger.trace(2, "getArchConf[${arch}] " + k8sArchConfTable[arch])
     return k8sArchConfTable[arch]
 }
 
