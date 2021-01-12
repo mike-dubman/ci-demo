@@ -143,6 +143,7 @@ def getArchConf(config, arch) {
     if (!config.registry_jnlp_path) {
         def array = config.registry_path.split("/")
         config.registry_jnlp_path = array[array.length - 2]
+        println("XXXXXXXXX = " + config.registry_jnlp_path)
     }
 
     k8sArchConfTable['aarch64'] = [
