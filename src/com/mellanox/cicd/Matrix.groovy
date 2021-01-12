@@ -166,6 +166,8 @@ def getArchConf(config, arch) {
         }
     }
 
+    println("XXXXXXX path=${config.registry_jnlp_path} k8sArchConfTable=" + k8sArchConfTable)
+
     def vars = ['arch':arch]
     k8sArchConfTable[arch].each { key, val ->
         k8sArchConfTable[arch][key] = resolveTemplate(vars, val, config)
