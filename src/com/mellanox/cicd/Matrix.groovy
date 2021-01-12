@@ -532,10 +532,11 @@ def runK8(image, branchName, config, axis) {
 
 @NonCPS
 def resolveTemplate(varsMap, str, config=null) {
+    println("YYY str=$str map="+varsMap + " conf=" + config)
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = str
     if (config && config.defaults) {
-        res = resolveTemplate(config.defaults + config, res, null)
+        res = resolveTemplate(config.defaults, res, null)
     }
     res = shell.evaluate('"' + res +'"')
     return res
