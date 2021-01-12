@@ -18,7 +18,7 @@ kubernetes:
       jnlpImage: 'jenkins/inbound-agent:latest'
     aarch64:
       nodeSelector: 'kubernetes.io/arch=arm64'
-      jnlpImage: 'harbor.mellanox.com/${registry_jnlp_path}/jenkins-arm-agent-jnlp:latest'
+      jnlpImage: 'harbor.mellanox.com/$registry_jnlp_path/jenkins-arm-agent-jnlp:latest'
 
 
 volumes:
