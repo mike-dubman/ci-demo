@@ -166,12 +166,9 @@ def getArchConf(config, arch) {
         }
     }
 
-    def koko = [:]
-    koko.registry_jnlp_path = config.registry_jnlp_path
-    
     k8sArchConfTable[arch].each { key, val ->
-        println("XXXXX1 key=$key val=$val ${config.registry_jnlp_path}")
-        k8sArchConfTable[arch][key] = resolveTemplate(koko, val, config)
+        println("XXXXX1 key=$key val=$val conf=${config.registry_jnlp_path} koko=" + koko)
+        k8sArchConfTable[arch][key] = resolveTemplate(config, val, config)
         println("XXXXX2 res=" + k8sArchConfTable[arch][key])
     }
 
@@ -536,7 +533,7 @@ def resolveTemplate(varsMap, str, config=null) {
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = str
     if (config && config.defaults) {
-        res = resolveTemplate(config.defaults, res, null)
+        res = resolveTemplate(config.defaults + config, res, null)
     }
     res = shell.evaluate('"' + res +'"')
     return res
