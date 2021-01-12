@@ -167,11 +167,8 @@ def getArchConf(config, arch) {
     }
 
     def vars = ['arch':arch]
-    vars += config
     k8sArchConfTable[arch].each { key, val ->
-        println("XXXXX1 key=$key val=$val conf=${config.registry_jnlp_path}")
         k8sArchConfTable[arch][key] = resolveTemplate(vars, val, config)
-        println("XXXXX2 res=" + k8sArchConfTable[arch][key])
     }
 
     config.logger.trace(2, "getArchConf[${arch}] " + k8sArchConfTable[arch])
@@ -226,13 +223,11 @@ def gen_image_map(config) {
 
             
             def vars = [:]
-            vars += env.getEnvironment()
-            vars += config
 
             dfile.uri = resolveTemplate(vars + dfile, dfile.uri, config)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
-            dfile.url = resolveTemplate(vars+dfile, dfile.url, config)
+            dfile.url = resolveTemplate(vars + dfile, dfile.url, config)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
@@ -531,13 +526,26 @@ def runK8(image, branchName, config, axis) {
 }
 
 @NonCPS
-def resolveTemplate(varsMap, str, config=null) {
-    println("YYY str=$str map="+varsMap + " conf=" + config)
-
+def resolveTemplate(vars, str, config) {
     def res = str
+    def varsMap = vars
+
+    if (config.defaults) {
+        res = res.replaceAll(/\$\{(\w+)\}/) { m, k -> config.defaults[k] }
+        res = res.replaceAll(/\$(\w+)/) { m, k -> config.defaults[k] }
+    }
+
+    if (config.env) {
+        varsMap += config.env
+    }
+
+    varsMap += config
+    varsMap += env.getEnvironment()
+
     res = res.replaceAll(/\$\{(\w+)\}/) { m, k -> varsMap[k] }
     res = res.replaceAll(/\$(\w+)/) { m, k -> varsMap[k] }
     return res
+
     /*
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
     def res = str
