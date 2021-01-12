@@ -166,14 +166,10 @@ def getArchConf(config, arch) {
         }
     }
     
-    def varsMap = [
-        registry_path:  config.registry_path,
-        registry_jnlp_path: config.registry_jnlp_path,
-        registry_host: config.registry_host
-    ]
-
     k8sArchConfTable[arch].each { key, val ->
-        key = resolveTemplate(varsMap, val, config)
+        println("XXXXX1 key=$key val=$val")
+        k8sArchConfTable[arch][key] = resolveTemplate(config, val, config)
+        println("XXXXX2 res=" + k8sArchConfTable[arch][key])
     }
 
     config.logger.trace(2, "getArchConf[${arch}] " + k8sArchConfTable[arch])
