@@ -535,7 +535,8 @@ def resolveTemplate(varsMap, str, config=null) {
     println("YYY str=$str map="+varsMap + " conf=" + config)
 
     def res = str
-    res.replaceAll(/\$\{(\w+)\}/) { m, k -> varsMap[k] }
+    res = res.replaceAll(/\$\{(\w+)\}/) { m, k -> varsMap[k] }
+    res = res.replaceAll(/\$(\w+)/) { m, k -> varsMap[k] }
     return res
     /*
     GroovyShell shell = new GroovyShell(new Binding(varsMap))
