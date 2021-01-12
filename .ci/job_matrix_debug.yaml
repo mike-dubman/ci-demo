@@ -36,7 +36,7 @@ defaults:
 
 runs_on_dockers:
 #  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64', nodeLabel: '(dockerserver || docker) && x86_64'}
-  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', category: 'tool'}
+#  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', category: 'tool'}
   - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest'}
   - {name: 'blackduck', url: '$blackduck_url', category: 'tool'}
   - {url: '$registry_host/swx-storage/$arch/centos75-nvme-snap-3.0', name: 'snap', arch: 'aarch64'}
@@ -51,7 +51,7 @@ pipeline_stop:
 pipeline_on_image_build:
   run: echo Building image
 
-matrix:
+matrix_off:
   axes:
     driver:
       - MLNX_OFED_LINUX-4.9-0.1.8.0
