@@ -135,8 +135,8 @@ def getArchConf(config, arch) {
     config.logger.trace(4, "getArchConf: arch=" + arch)
 
     if (!config.registry_jnlp_path) {
-        def array = config.registry_path.split("/")
-        config.registry_jnlp_path = array[array.length - 2]
+        def array = config.registry_path.tokenize('/')
+        config.registry_jnlp_path = array[0]
     }
     
     k8sArchConfTable['x86_64']  = [
