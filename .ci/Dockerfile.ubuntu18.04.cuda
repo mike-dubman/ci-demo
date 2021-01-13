@@ -1,0 +1,265 @@
+ARG CUDA_VER=11.1
+ARG ARCH=
+
+FROM nvidia/cuda${ARCH}:${CUDA_VER}-devel-ubuntu18.04 as build_stage
+LABEL maintainer="Vasily Ryabov <vryabov@nvidia.com>"
+
+ARG CUDA_VER=11.1
+ARG ARCH=
+ARG MOFED_VER=5.2-0.5.9.0
+ARG MDNS_LIB=apple
+ARG RMAX_APPS_VER=11.2.8.10
+# ARG CTEST_EXTRA_ARGS=
+
+ARG _HOME=/var/home
+
+USER root
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
+
+# W/A for libvma installation issue under docker environment
+RUN touch /etc/init.d/vma && chmod +x /etc/init.d/vma
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        sudo automake g++ git libcap2 libssl-dev openssl gnupg2 make udev \
+        curl lftp \
+        vim net-tools iputils-ping \
+        ethtool libnl-route-3-dev python3 libnl-3-dev lsof pciutils kmod libmnl0 \
+        libnuma1 libgfortran4 pkg-config debhelper gfortran libltdl-dev \
+        python3-pip python3-setuptools \
+        mesa-utils freeglut3-dev \
+        chrpath flex graphviz dpatch tcl bison tk swig \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    python3 -m pip install --upgrade pip && \
+    pip3 install --no-cache-dir wheel && \
+    pip3 install --no-cache-dir conan && \
+    pip3 install --no-cache-dir cmake
+
+RUN mkdir -p ${_HOME}
+
+RUN mkdir /tmp/ofed && cd /tmp/ofed && \
+    export ARCH=$(uname -m) && \
+    curl -I http://r-fserv-105.mtr.labs.mlnx/MLNX_OFED/MLNX_OFED_LINUX-${MOFED_VER}/MLNX_OFED_LINUX-${MOFED_VER}-ubuntu18.04-$ARCH/ && \
+    lftp -c mirror http://r-fserv-105.mtr.labs.mlnx/MLNX_OFED/MLNX_OFED_LINUX-${MOFED_VER}/MLNX_OFED_LINUX-${MOFED_VER}-ubuntu18.04-$ARCH/ && \
+    ls -lR ./ && \
+    cd MLNX_OFED_LINUX-${MOFED_VER}-ubuntu18.04-$ARCH/ && \
+    echo ${MOFED_VER} > .mlnx && \
+    echo $ARCH > .arch && \
+    test -d /etc/init.d && touch /etc/init.d/vma && \
+    perl ./mlnxofedinstall -q --force --upstream-libs --with-vma --user-space-only --without-fw-update && \
+    if [ "$ARCH" = "aarch64" ]; then \
+    dpkg -i ./DEBS/libvma_9.2.2-1_arm64.deb && \
+    dpkg -i ./DEBS/libvma-dev_9.2.2-1_arm64.deb ; \
+    fi && \
+    cd /tmp && rm -rf /tmp/ofed && \
+    sed -i -e 's#MLNX_OFED_LINUX-${MOFED_VER}#MLNX_OFED_LINUX-${MOFED_VER}#' /usr/bin/ofed_info && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY . ${_HOME}/nmos-cpp
+
+RUN if [ "$MDNS_LIB" = "apple" ] ; then \
+    cd ${_HOME}/nmos-cpp && \
+    tar -xzf mDNSResponder-878.200.35.tar.gz && \
+    rm mDNSResponder-878.200.35.tar.gz && \
+    patch -d mDNSResponder-878.200.35/ -p1 < ${_HOME}/nmos-cpp/Development/third_party/mDNSResponder/unicast.patch && \
+    patch -d mDNSResponder-878.200.35/ -p1 < ${_HOME}/nmos-cpp/Development/third_party/mDNSResponder/permit-over-long-service-types.patch && \
+    patch -d mDNSResponder-878.200.35/ -p1 < ${_HOME}/nmos-cpp/Development/third_party/mDNSResponder/poll-rather-than-select.patch && \
+    cd mDNSResponder-878.200.35/mDNSPosix && \
+    make os=linux && make os=linux install ; \
+    elif [ "$MDNS_LIB" = "avahi" ] ; then \
+    apt-get install -y --no-install-recommends avahi && \
+    apt-get install -y --no-install-recommends libavahi-compat-libdnssd-dev && \
+    # make avahi only respond on the "eth0" interface && \
+    sed -i 's/#*allow-interfaces=.*/allow-interfaces=eth0/g' /etc/avahi/avahi-daemon.conf && \
+    systemctl restart avahi-daemon ; \
+    fi
+
+RUN if [ "$ARCH" = "" ] ; then \
+    dpkg -i ${_HOME}/nmos-cpp/rivermax_${RMAX_APPS_VER}_amd64.deb ; \
+    elif [ "$ARCH" = "-arm64" ] ; then \
+    dpkg -i ${_HOME}/nmos-cpp/rivermax_${RMAX_APPS_VER}_arm64.deb ; \
+    fi
+
+# Install nmos-js dependencies
+RUN curl -sS -k "https://dl.yarnpkg.com/debian/pubkey.gpg" | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y --no-install-recommends yarn nodejs
+
+# Build Mellanox nmos-cpp from sources
+RUN export CUDAToolkit_ROOT=/usr/local/cuda-${CUDA_VER}/ && \
+    cd ${_HOME}/nmos-cpp/Development/ && \
+    mkdir -p build && \
+    cd build/ && \
+    cmake .. -DCMAKE_BUILD_TYPE:STRING="Release" && \
+    make -j4
+#     ctest --output-on-failure ${CTEST_EXTRA_ARGS}
+
+# --------------------------------------------------------------------------- #
+# Get Certificates and scripts from AMWA-TV/nmos-testing
+RUN cd ${_HOME} && mkdir certs && git config --global http.sslVerify false && \
+    git clone https://github.com/AMWA-TV/nmos-testing.git && \
+    mv ${_HOME}/nmos-testing/test_data/BCP00301/ca/* ${_HOME}/certs && \
+    rm -rf ${_HOME}/nmos-testing
+
+# Generate Example Certificates and position into correct locations
+RUN cd ${_HOME}/certs && mkdir run-certs && ./generateCerts registration1 nmos.tv query1.nmos.tv && \
+    cd ${_HOME}/certs/certs && \
+    cp ca.cert.pem ${_HOME}/certs/run-certs/ca.cert.pem && \
+    cd ${_HOME}/certs/intermediate/certs && \
+    mv ecdsa.registration1.nmos.tv.cert.chain.pem ${_HOME}/certs/run-certs/ecdsa.cert.chain.pem && \
+    mv rsa.registration1.nmos.tv.cert.chain.pem ${_HOME}/certs/run-certs/rsa.cert.chain.pem && \
+    cd ${_HOME}/certs/intermediate/private && \
+    mv ecdsa.registration1.nmos.tv.key.pem ${_HOME}/certs/run-certs/ecdsa.key.pem && \
+    mv rsa.registration1.nmos.tv.key.pem ${_HOME}/certs/run-certs/rsa.key.pem && \
+    cp dhparam.pem ${_HOME}/certs/run-certs/dhparam.pem
+
+# Create relevant configuration files for Sony Registry and Node
+RUN cd ${_HOME}/ && mkdir example-conf && mkdir admin
+ADD .ci/example-conf ${_HOME}/example-conf
+
+# Get and build source for Sony nmos-js
+RUN cd ${_HOME}/ && git config --global http.sslVerify false && \
+    git clone https://github.com/sony/nmos-js.git && cd ${_HOME}/nmos-js && \
+    git checkout 18f04f7a75601fa193da6b3ea5d1d7b79658d14f
+
+# Custom branding
+COPY .ci/NVIDIA_Logo_H_ForScreen_ForLightBG.png .ci/nmos-js.patch ${_HOME}/nmos-js/Development/src/assets/
+RUN cd ${_HOME}/ && \
+    mv ${_HOME}/nmos-js/Development/src/assets/nmos-js.patch ${_HOME}/ && \
+    patch -p0 <nmos-js.patch && \
+    ls -la ${_HOME}/ && \
+    rm -f ${_HOME}/nmos-js/Development/src/assets/sea-lion.png && \
+    rm -f ${_HOME}/nmos-js.patch
+
+# Build and install Sony nmos-js
+RUN cd ${_HOME}/nmos-js/Development && \
+    yarn install --network-timeout 1000000 && \
+    yarn build && \
+    cp -rf ${_HOME}/nmos-js/Development/build/* ${_HOME}/admin
+
+
+# Move executables, libraries and clean up container as much as possible
+RUN cd ${_HOME}/nmos-cpp/Development/build && \
+    cp nmos-cpp-node nmos-cpp-registry rivermax-node nmos-cpp-test ${_HOME} && \
+    cd ${_HOME} && rm -rf .git conan nmos-cpp nmos-js
+
+
+# =========================================================================== #
+# Re-build container for optimised runtime environment
+# =========================================================================== #
+FROM nvidia/cuda${ARCH}:${CUDA_VER}-devel-ubuntu18.04
+LABEL maintainer="Vasily Ryabov <vryabov@nvidia.com>"
+
+ARG CUDA_VER=11.1
+ARG ARCH=
+ARG MOFED_VER=5.2-0.5.9.0
+ARG MDNS_LIB=apple
+ARG RMAX_APPS_VER=11.2.8.10
+
+ARG _HOME=/var/home
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
+
+# Copy required files from build container
+COPY --from=build_stage ${_HOME}/admin ${_HOME}/admin
+COPY --from=build_stage ${_HOME}/certs ${_HOME}/certs
+COPY --from=build_stage ${_HOME}/example-conf ${_HOME}/example-conf
+COPY --from=build_stage ${_HOME}/nmos-cpp-node ${_HOME}/
+COPY --from=build_stage ${_HOME}/nmos-cpp-registry ${_HOME}/
+COPY --from=build_stage ${_HOME}/nmos-cpp-test ${_HOME}/
+COPY --from=build_stage ${_HOME}/rivermax-node ${_HOME}/
+
+# W/A for libvma installation issue under docker environment
+RUN touch /etc/init.d/vma && chmod +x /etc/init.d/vma
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        sudo automake g++ git libcap2 libssl-dev openssl gnupg2 make udev \
+        curl lftp \
+        vim net-tools iputils-ping \
+        ethtool libnl-route-3-dev python3 libnl-3-dev lsof pciutils kmod libmnl0 \
+        libnuma1 libgfortran4 pkg-config debhelper gfortran libltdl-dev \
+        python3-pip python3-setuptools \
+        mesa-utils freeglut3-dev \
+        chrpath flex graphviz dpatch tcl bison tk swig \
+        yasm nasm libglew-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    python3 -m pip install --upgrade pip && \
+    pip3 install --no-cache-dir wheel && \
+    pip3 install --no-cache-dir conan && \
+    pip3 install --no-cache-dir cmake
+# This is needed for media_sender/media_receiver: libglew-dev
+# This is needed for rivermax_player: yasm nasm
+# These packages are updated for security reasons: openssl
+
+RUN mkdir -p ${_HOME} && \
+    mkdir -p /opt/mellanox/rivermax && \
+    ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/lib/$(uname -m)-linux-gnu/libcuda.so.1
+
+RUN mkdir /tmp/ofed && cd /tmp/ofed && \
+    export ARCH=$(uname -m) && \
+    curl -I http://r-fserv-105.mtr.labs.mlnx/MLNX_OFED/MLNX_OFED_LINUX-${MOFED_VER}/MLNX_OFED_LINUX-${MOFED_VER}-ubuntu18.04-$ARCH/ && \
+    lftp -c mirror http://r-fserv-105.mtr.labs.mlnx/MLNX_OFED/MLNX_OFED_LINUX-${MOFED_VER}/MLNX_OFED_LINUX-${MOFED_VER}-ubuntu18.04-$ARCH/ && \
+    ls -lR ./ && \
+    cd MLNX_OFED_LINUX-${MOFED_VER}-ubuntu18.04-$ARCH/ && \
+    echo ${MOFED_VER} > .mlnx && \
+    echo $ARCH > .arch && \
+    test -d /etc/init.d && touch /etc/init.d/vma && \
+    perl ./mlnxofedinstall -q --force --upstream-libs --with-vma --user-space-only --without-fw-update && \
+    if [ "$ARCH" = "aarch64" ]; then \
+    dpkg -i ./DEBS/libvma_9.2.2-1_arm64.deb && \
+    dpkg -i ./DEBS/libvma-dev_9.2.2-1_arm64.deb ; \
+    fi && \
+    cd /tmp && rm -rf /tmp/ofed && \
+    sed -i -e 's#MLNX_OFED_LINUX-${MOFED_VER}#MLNX_OFED_LINUX-${MOFED_VER}#' /usr/bin/ofed_info && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY . ${_HOME}/nmos-cpp
+
+RUN rm -rf ${_HOME}/nmos-cpp/.ci/ && \
+    rm -rf ${_HOME}/nmos-cpp/.dockers/ && \
+    rm -f ${_HOME}/nmos-cpp/.dockerignore && \
+    rm -f ${_HOME}/nmos-cpp/.gitignore && \
+    rm -f ${_HOME}/nmos-cpp/CONTRIBUTING.md && \
+    rm -f ${_HOME}/nmos-cpp/rivermax_${RMAX_APPS_VER}_amd64.deb && \
+    if [ "$ARCH" = "" ] ; then \
+    rm -f ${_HOME}/nmos-cpp/rivermax_${RMAX_APPS_VER}_amd64.deb ; \
+    elif [ "$ARCH" = "-arm64" ] ; then \
+    rm -f ${_HOME}/nmos-cpp/rivermax_${RMAX_APPS_VER}_arm64.deb ; \
+    fi
+
+
+RUN if [ "$MDNS_LIB" = "apple" ] ; then \
+    cd ${_HOME}/nmos-cpp && \
+    tar -xzf mDNSResponder-878.200.35.tar.gz && \
+    rm mDNSResponder-878.200.35.tar.gz && \
+    patch -d mDNSResponder-878.200.35/ -p1 < ${_HOME}/nmos-cpp/Development/third_party/mDNSResponder/unicast.patch && \
+    patch -d mDNSResponder-878.200.35/ -p1 < ${_HOME}/nmos-cpp/Development/third_party/mDNSResponder/permit-over-long-service-types.patch && \
+    patch -d mDNSResponder-878.200.35/ -p1 < ${_HOME}/nmos-cpp/Development/third_party/mDNSResponder/poll-rather-than-select.patch && \
+    cd mDNSResponder-878.200.35/mDNSPosix && \
+    make os=linux && make os=linux install ; \
+    elif [ "$MDNS_LIB" = "avahi" ] ; then \
+    apt-get install -y --no-install-recommends avahi && \
+    apt-get install -y --no-install-recommends libavahi-compat-libdnssd-dev && \
+    # make avahi only respond on the "eth0" interface && \
+    sed -i 's/#*allow-interfaces=.*/allow-interfaces=eth0/g' /etc/avahi/avahi-daemon.conf && \
+    systemctl restart avahi-daemon ; \
+    fi
+
+ENV CUDAToolkit_ROOT=/usr/local/cuda-$CUDA_VER/
+
+# clean up GPL licensed packages as much as possible
+RUN apt-get remove -y lftp && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+SHELL ["/bin/bash"]
+
+WORKDIR ${_HOME}
+USER root
+ENTRYPOINT [ "/bin/bash", "--login", "--rcfile", "/etc/bashrc", "-c" ]
+CMD ulimit -l unlimited
+CMD /usr/sbin/mdnsd &

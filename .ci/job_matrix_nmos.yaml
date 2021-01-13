@@ -1,0 +1,111 @@
+---
+job: nmos-cpp
+
+registry_host: harbor.mellanox.com
+registry_path: /rivermax
+# rivermax user
+registry_auth: 65eb3652-9da0-4f39-8a4c-f61972fb65a1
+
+# registry_host: nvcr.io
+# registry_path: /egxdefault/helios
+# registry_auth: b687638c-34c4-42d9-a810-572653e0da64
+
+kubernetes:
+  cloud: swx-k8s
+  nodeSelector: 'beta.kubernetes.io/os=linux'
+
+volumes:
+  - {mountPath: /var/run/docker.sock, hostPath: /var/run/docker.sock}
+  - {mountPath: /hpc/local, hostPath: /hpc/local}
+  - {mountPath: /auto/sw_tools, hostPath: /auto/sw_tools}
+  - {mountPath: /auto/mtrswgwork, hostPath: /auto/mtrswgwork}
+  - {mountPath: /auto/sw/release/mlnx_ofed, hostPath: /auto/sw/release/mlnx_ofed}
+  - {mountPath: /auto/sw/release/sw_acceleration, hostPath: /auto/sw/release/sw_acceleration}
+
+env:
+    MLNX_OFED_VERSION: "5.2-0.5.9.0"
+    RIVERMAX_VERSION: "1.7.10"
+    RIVERMAX_APPS_VERSION: "11.2.8.10"
+
+defaults:
+  uri: '$RIVERMAX_VERSION/apps-$RIVERMAX_APPS_VERSION/nmos-cpp-$name-$cuda-mofed-$MLNX_OFED_VERSION-mdns-$mdns_lib'
+  build_args: '--network=host --rm --pull --no-cache --build-arg ARCH=-arm64 --build-arg RMAX_APPS_VER=$RIVERMAX_APPS_VERSION --build-arg CUDA_VER=11.1 --build-arg MOFED_VER=$MLNX_OFED_VERSION --build-arg MDNS_LIB=apple'
+
+# executed before each container image build phase
+# user can run any script to modify container image content
+# also, can define 'on_image_build: script' key in runs_on_dockers
+# section , per specific containers
+pipeline_on_image_build:
+  run: echo .ci/prepare_build_context.sh
+
+runs_on_dockers:
+  - {
+      file: '.ci/Dockerfile.ubuntu18.04.cuda', 
+      arch: 'aarch64', 
+      name: 'ubuntu18.04.cuda', 
+      uri: $uri, 
+      cuda: '11.1', 
+      mdns_lib: 'apple', 
+      tag: 'aarch64',
+      build_args: $build_args, 
+      cloud: 'swx-k8s-spray'
+    }
+
+
+# pipeline_stop:
+#   name: Push Multi-Arch Manifest
+#   run: |
+#     export DOCKER_CLI_EXPERIMENTAL=enabled
+#     export IMAGE_URL=nvcr.io/egxdefault/helios/nmos-cpp-ubuntu18.04-mofed-$MLNX_OFED_VERSION-cuda-11.1-mdns-apple
+#     # export IMAGE_URL=harbor.mellanox.com/rivermax/$RIVERMAX_VERSION/apps-$RIVERMAX_APPS_VERSION/nmos-cpp-ubuntu18.04-mofed-$MLNX_OFED_VERSION-cuda-11.1-mdns-apple
+#     docker --version
+#     docker manifest create $IMAGE_URL:manifest-latest --amend $IMAGE_URL:manifest-x86_64 --amend $IMAGE_URL:manifest-aarch64
+#     #docker manifest annotate $IMAGE_URL:manifest-latest $IMAGE_URL:manifest-aarch64 --os linux --arch arm
+#     docker manifest push $IMAGE_URL:manifest-latest
+
+
+# Fail job if one of the steps fails or continue
+failFast: false
+
+# Job timeout - fail job if it runs more than specified amount of minutes (default is 90 minutes)
+timeout_minutes: 180
+
+steps:
+
+  - name: Unit Tests
+    run: |
+      export ARCH=$(uname -m)
+      export RIVERMAX_VERSION=1.7.10
+      export RIVERMAX_APPS_VERSION=11.2.8.10
+      dpkg -i /auto/sw/release/sw_acceleration/rivermax/${RIVERMAX_VERSION}/Ubuntu.18.04/deb-dist/${ARCH}/rivermax_${RIVERMAX_APPS_VERSION}_amd64.deb
+      ./nmos-cpp-test
+
+  - name: Rivermax Apps Check
+    run: |
+      export RIVERMAX_VERSION=1.7.10
+      cp -v /auto/sw/release/sw_acceleration/rivermax/${RIVERMAX_VERSION}/packages/rivermax_ubuntu1804_${RIVERMAX_VERSION}.tar.gz .
+      tar -xvzf rivermax_ubuntu1804_${RIVERMAX_VERSION}.tar.gz
+      cd ${RIVERMAX_VERSION}/apps/
+      ./ffmpeg_setup.sh
+      if [[ -z "${CUDAToolkit_ROOT}" ]]; then
+        make VIEWER=y
+      else
+        make VIEWER=y CUDA=y
+      fi
+      make rivermax_player
+      ldd ./media_sender
+      ./media_sender --help
+      ldd ./media_receiver
+      ./media_receiver --help
+      ldd ./rivermax_player
+      ./rivermax_player --help
+
+  - name: Publish Binaries
+    run: |
+      echo "do_release='$do_release'"
+      if [ "$do_release" == "true" ]; then
+        
+        export VERSION=$(git describe)
+        echo "VERSION=$VERSION"
+        # /auto/sw/release/sw_acceleration/rivermax/$RIVERMAX_VERSION/
+      fi
