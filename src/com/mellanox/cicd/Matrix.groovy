@@ -153,9 +153,6 @@ def getArchConf(config, arch) {
         dockerImage: 'ppc64le/docker'
     ]
 
-    println("XXXXXXX default k8sArchConfTable[$arch]=" + k8sArchConfTable[arch])
-
-
     def aTable = getConfigVal(config, ['kubernetes', 'arch_table'], null)
     if (aTable != null && aTable.containsKey(arch)) {
         if (k8sArchConfTable[arch] != null) {
@@ -165,12 +162,9 @@ def getArchConf(config, arch) {
         }
     }
 
-    println("XXXXXXX path=${config.registry_jnlp_path} k8sArchConfTable[$arch]=" + k8sArchConfTable[arch])
-
     def vars = ['arch':arch]
     k8sArchConfTable[arch].each { key, val ->
         k8sArchConfTable[arch][key] = resolveTemplate(vars, val, config)
-        println("XXXXXX1 key=${key} old_val=${val} val=" + k8sArchConfTable[arch][key])
     }
 
     config.logger.trace(2, "getArchConf[${arch}] " + k8sArchConfTable[arch])
@@ -546,16 +540,6 @@ def resolveTemplate(vars, str, config) {
     res = res.replaceAll(/\$\{(\w+)\}/) { m, k -> varsMap[k] }
     res = res.replaceAll(/\$(\w+)/) { m, k -> varsMap[k] }
     return res
-
-    /*
-    GroovyShell shell = new GroovyShell(new Binding(varsMap))
-    def res = str
-    if (config && config.defaults) {
-        res = resolveTemplate(config.defaults, res, null)
-    }
-    res = shell.evaluate('"' + res +'"')
-    return res
-    */
 }
 
 def getDockerOpt(config) {
