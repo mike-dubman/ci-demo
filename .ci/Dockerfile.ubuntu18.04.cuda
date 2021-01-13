@@ -261,5 +261,4 @@ SHELL ["/bin/bash"]
 WORKDIR ${_HOME}
 USER root
 ENTRYPOINT [ "/bin/bash", "--login", "--rcfile", "/etc/bashrc", "-c" ]
-CMD ulimit -l unlimited
-CMD /usr/sbin/mdnsd &
+CMD (ulimit -l unlimited && /usr/sbin/mdnsd) &
