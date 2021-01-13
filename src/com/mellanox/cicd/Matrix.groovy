@@ -171,6 +171,7 @@ def getArchConf(config, arch) {
     def vars = ['arch':arch]
     k8sArchConfTable[arch].each { key, val ->
         k8sArchConfTable[arch][key] = resolveTemplate(vars, val, config)
+        println("XXXXXX1 key=${key} old_val=${val} val=" + k8sArchConfTable[arch][key])
     }
 
     config.logger.trace(2, "getArchConf[${arch}] " + k8sArchConfTable[arch])
