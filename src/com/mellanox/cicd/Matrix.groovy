@@ -133,12 +133,8 @@ def getArchConf(config, arch) {
     def k8sArchConfTable = [:]
 
     config.logger.trace(4, "getArchConf: arch=" + arch)
+    config.registry_jnlp_path = getConfigVal(config, ['registry_jnlp_path'], 'swx-infra')
 
-    if (!config.registry_jnlp_path) {
-        def array = config.registry_path.tokenize('/')
-        config.registry_jnlp_path = array[0]
-    }
-    
     k8sArchConfTable['x86_64']  = [
         nodeSelector: 'kubernetes.io/arch=amd64',
         jnlpImage: 'jenkins/inbound-agent:latest',
