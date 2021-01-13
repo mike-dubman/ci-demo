@@ -157,6 +157,9 @@ def getArchConf(config, arch) {
         dockerImage: 'ppc64le/docker'
     ]
 
+    println("XXXXXXX default k8sArchConfTable[$arch]=" + k8sArchConfTable[arch])
+
+
     def aTable = getConfigVal(config, ['kubernetes', 'arch_table'], null)
     if (aTable != null && aTable.containsKey(arch)) {
         if (k8sArchConfTable[arch] != null) {
