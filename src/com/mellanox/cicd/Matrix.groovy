@@ -542,8 +542,8 @@ def replaceVars(vars, str) {
         }
         def opts = ['$' + entry.key, '${' + entry.key + '}']
         for (int i=0; i<opts.size(); i++) {
-            if (res.contains(key)) {
-                res = res.replace(key, entry.value)
+            if (res.contains(opts[i])) {
+                res = res.replace(opts[i], entry.value)
                 break
             }
         }
