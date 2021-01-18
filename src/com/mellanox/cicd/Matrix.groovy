@@ -223,7 +223,11 @@ def gen_image_map(config) {
             dfile.uri = resolveTemplate(vars + dfile, dfile.uri, config)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
 
+            println("XXXXXXXX in " + dfile.url)
+
             dfile.url = resolveTemplate(vars + dfile, dfile.url, config)
+
+            println("XXXXXXXX out " + dfile.url)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
@@ -538,11 +542,13 @@ def resolveTemplate(vars, str, config) {
         varsMap += config.env
     }
 
+    println("YYYYY1 " + res)
     varsMap += config
     varsMap += env.getEnvironment()
 
     res = res.replaceAll(/\$\{(\w+)\}/) { m, k -> varsMap[k] }
     res = res.replaceAll(/\$(\w+)/) { m, k -> varsMap[k] }
+    println("YYYYY2 " + res)
     return res
 }
 
