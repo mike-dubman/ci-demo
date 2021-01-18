@@ -497,8 +497,8 @@ def runK8(image, branchName, config, axis) {
         }
     }
     def hostNetwork = image.hostNetwork ?: getConfigVal(config, ['kubernetes', 'hostNetwork'], true)
-    def runAsUser = image.runAsUser ?: getConfigVal(config, ['kubernetes', 'runAsUser'], 0)
-    def runAsGroup = image.runAsGroup ?: getConfigVal(config, ['kubernetes', 'runAsGroup'], 0)
+    def runAsUser = image.runAsUser ?: getConfigVal(config, ['kubernetes', 'runAsUser'], "0")
+    def runAsGroup = image.runAsGroup ?: getConfigVal(config, ['kubernetes', 'runAsGroup'], "0")
 
     podTemplate(
         cloud: cloudName,
