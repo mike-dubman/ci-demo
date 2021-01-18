@@ -216,18 +216,9 @@ def gen_image_map(config) {
             dfile.build_args = dfile.build_args ?: ''
             dfile.uri = dfile.uri ?: "${arch}/${dfile.name}"
             dfile.filename = dfile.file
-
-            
-            def vars = [:]
-
-            dfile.uri = resolveTemplate(vars + dfile, dfile.uri, config)
+            dfile.uri = resolveTemplate(dfile, dfile.uri, config)
             dfile.url = dfile.url ?: "${config.registry_host}${config.registry_path}/${dfile.uri}:${dfile.tag}"
-
-            println("XXXXXXXX in " + dfile.url)
-
-            dfile.url = resolveTemplate(vars + dfile, dfile.url, config)
-
-            println("XXXXXXXX out " + dfile.url)
+            dfile.url = resolveTemplate(dfile, dfile.url, config)
 
             config.logger.debug("Adding docker to image_map for " + dfile.arch + ' name: ' + dfile.name)
             images.add(dfile)
