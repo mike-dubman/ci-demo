@@ -169,7 +169,7 @@ registry_auth: swx-storage
 # k8 cloud name (must be defined in Jenkins server configuration)
 kubernetes:
 # cloud name to use for all containers
-# cloud tag can be specified per specific container in run_on_containers section
+# cloud tag can be specified per specific container in runs_on_containers section
   cloud: swx-k8s
 # Example how to use k8 node selector to request specific nodes for allocation
   nodeSelector: 'beta.kubernetes.io/os=linux'
@@ -204,6 +204,12 @@ volumes:
 env:
   mofed_installer_exe: /.autodirect/sw/release/mlnx_ofed/MLNX_OFED/mlnx_ofed_install
   mofed_installer_opt: --user-space-only --without-fw-update --all -q --skip-unsupported-devices-check
+
+
+# default variables and values that can be used in yaml file
+defaults:
+  var1: value1
+  var2: value2
 
 # list of dockers to use for the job, `file` key is optional, if defined but docker image 
 # does not exist in registry.
@@ -307,6 +313,13 @@ pipeline_start:
 # executed once, after steps are done
 pipeline_stop:
   run: echo All done
+
+# executed before each container image build phase
+# user can run any script to modify container image content
+# also, can define 'on_image_build: script' key in runs_on_containers
+# section , per specific containers
+pipeline_on_image_build:
+  run: echo Building image
 
 # List of artifacts to attach to Jenkins results page for build
 archiveArtifacts: config.log
