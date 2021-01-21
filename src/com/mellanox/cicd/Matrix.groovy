@@ -970,7 +970,9 @@ def main() {
                     if (cmd) {
                         logger.debug("Running pipeline_stop")
                         stage("Stop ${config.job}") {
-                            run_shell("${cmd}", "stop")
+                            withEnv(config.env) {
+                                run_shell("${cmd}", "stop")
+                            }
                         }
                         attachArtifacts(config, config.pipeline_stop.archiveArtifacts)
                     }

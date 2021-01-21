@@ -64,7 +64,7 @@ matrix_off:
     arch:
       - x86_64
 
-steps:
+no_steps:
   - name: Run on all containers
     run: touch aaa
 
@@ -137,7 +137,8 @@ pipeline_stop:
   archiveArtifacts: stop.log
   run: |
     echo All done
-    echo pipeline stopped > stop.log
+    env
+    env > stop.log
 
 archiveArtifacts: myenv.log
 failFast: false
