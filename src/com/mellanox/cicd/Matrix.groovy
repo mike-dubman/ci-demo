@@ -971,8 +971,17 @@ def main() {
                     def cmd = config.pipeline_stop.run
                     if (cmd) {
                         logger.debug("Running pipeline_stop")
+
+                        def axisEnv = []
+
+                        if (config.env) {
+                            config.env.each { k, v ->
+                                axisEnv.add("${k}=${v}")
+                            }
+                        }
+
                         stage("Stop ${config.job}") {
-                            withEnv(config.env) {
+                            withEnv(axisEnv) {
                                 run_shell("${cmd}", "stop")
                             }
                         }
