@@ -630,7 +630,9 @@ Map getTasks(axes, image, config, include, exclude) {
             continue
         }
 
-
+        if (!config.steps) {
+            continue
+        }
 
         axis.put("variant", serialNum)
         axis.put("axis_index", serialNum)
