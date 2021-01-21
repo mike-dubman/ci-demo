@@ -134,7 +134,10 @@ pipeline_start:
   run: echo Starting new job
 
 pipeline_stop:
-  run: echo All done
+  archiveArtifacts: stop.log
+  run: |
+  echo All done
+  echo pipeline stopped > stop.log
 
 archiveArtifacts: myenv.log
 failFast: false
