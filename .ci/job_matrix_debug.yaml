@@ -136,8 +136,8 @@ pipeline_start:
 pipeline_stop:
   archiveArtifacts: stop.log
   run: |
-  echo All done
-  echo pipeline stopped > stop.log
+    echo All done
+    echo pipeline stopped > stop.log
 
 archiveArtifacts: myenv.log
 failFast: false
