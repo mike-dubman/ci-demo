@@ -84,7 +84,7 @@ def run_shell(cmd, title, retOut=false) {
 
 def run_step_shell(cmd, title, oneStep, config) {
 
-    def vars = [:]
+    def vars = []
     vars += toEnvVars(config.env)
     vars += toEnvVars(oneStep.env)
 
