@@ -969,7 +969,7 @@ def main() {
             } finally {
                 if (config.pipeline_stop) {
                     if (config.pipeline_stop.run) {
-                        run_step(null, config, "pipeline stop", config.pipeline_stop, null) {
+                        run_step(null, config, "pipeline stop", config.pipeline_stop, null)
                     }
                 }
             }
