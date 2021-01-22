@@ -42,12 +42,6 @@ runs_on_dockers:
   - {url: '$registry_host/swx-storage/$arch/centos75-nvme-snap-3.0', name: 'snap', arch: 'aarch64'}
 
 
-pipeline_start:
-  run: echo Starting new job
-
-pipeline_stop:
-  run: echo All done
-
 pipeline_on_image_build:
   run: echo Building image
 
@@ -135,6 +129,8 @@ pipeline_start:
 
 pipeline_stop:
   archiveArtifacts: stop.log
+  env:
+    koko: 'momo'
   run: |
     echo All done
     env
