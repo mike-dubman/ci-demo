@@ -362,6 +362,10 @@ def run_step(image, config, title, oneStep, axis) {
             for (def entry in entrySet(config.env)) {
                 env[entry.key] = entry.value
             }
+            def names = ['registry_host', 'registry_path', 'job']
+            for (int i=0; names.size(); i++) {
+                env[names[i]] = config.get(names[i])
+            }
         }
 
         if (shell == "action") {
