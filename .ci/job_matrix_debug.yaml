@@ -132,10 +132,15 @@ pipeline_start:
 
 pipeline_stop:
   archiveArtifacts: stop.log
+#  shell: '#!/bin/bash'
   env:
     koko: 'momo'
   run: |
-    echo All done
+    ps -p $$ | awk '$1 != "PID" {print $(NF)}'
+    echo rc=$?
+    echo "registry_host=${registry_host}"
+    echo "registry_path=${registry_path}"
+    echo "uri_cuda_none=${uri_cuda_none}"
     env
     env > stop.log
 
