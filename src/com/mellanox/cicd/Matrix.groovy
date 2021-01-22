@@ -359,6 +359,9 @@ def run_step(image, config, title, oneStep, axis) {
             for (def entry in entrySet(oneStep.env)) {
                 env[entry.key] = entry.value
             }
+            for (def entry in entrySet(config.env)) {
+                env[entry.key] = entry.value
+            }
         }
 
         if (shell == "action") {
