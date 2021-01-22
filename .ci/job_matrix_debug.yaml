@@ -58,7 +58,7 @@ matrix_off:
     arch:
       - x86_64
 
-no_steps:
+steps:
   - name: Run on all containers
     run: touch aaa
 
@@ -67,6 +67,7 @@ no_steps:
     run: env
     credentialsId: 'jenkins-pulp'
 
+disabled_steps:
   - name: Coverity scan
     shell: action
     module: dynamicAction
@@ -125,6 +126,8 @@ no_steps:
 #shell: '#!/bin/bash -eEx'
 
 pipeline_start:
+  env:
+    momo: 'koko'
   run: echo Starting new job
 
 pipeline_stop:

@@ -921,12 +921,8 @@ def main() {
             config.put("cFiles", getChangedFilesList(config))
 
             if (config.pipeline_start) {
-                def cmd = config.pipeline_start.run
-                if (cmd) {
-                    logger.debug("Running pipeline_start")
-                    stage("Start ${config.job}") {
-                        run_shell("${cmd}", "start")
-                    }
+                if (config.pipeline_start.run) {
+                    run_step(null, config, "pipeline start", config.pipeline_start, null)
                 }
             }
 
