@@ -552,8 +552,8 @@ def resolveTemplate(vars, str, config) {
     def res = str
     def varsMap = vars
 
-    if (config.defaults) {
-        res = replaceVars(config.defaults, res)
+    if (config.env) {
+        res = replaceVars(config.env, res)
     }
 
     if (config.env) {
