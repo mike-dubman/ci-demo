@@ -337,18 +337,20 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
     if (selector && selector.size() > 0) {
 
-        for (int i=0; i<selector.size(); i++) {
-            def customSel;
-            if (selector.getClass() == List) {
-                customSel = toStringMap(selector[i])
-            } else {
-                customSel = toStringMap(selector)
-            }
-            println("XXXXXXX size=" + customSel.size() + " type=" + customSel.getClass() + " typeof: " + (customSel.getClass() == List) + " vals=" + customSel)
+        def customSel;
+        if (selector.getClass() == List) {
+            customSel = selector
+        } else {
+            customSel = [selector]
+        }
+
+        for (int i=0; i<customSel.size(); i++) {
+            def customSelEntry = toStringMap(customSel[i])
+            println("XXXXXXX size=" + customSelEntry.size() + " type=" + customSelEntry.getClass() + " typeof: " + (customSelEntry.getClass() == List) + " vals=" + customSelEntry)
 
             // no match - skip
-            if (!matchMapEntry([customSel], axis)) {
-                config.logger.trace(2, "Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
+            if (!matchMapEntry([customSelEntry], axis)) {
+                config.logger.trace(2, "Step '" + title + "' skipped as no match by containerSelector=" + customSelEntry + " for image with axis=" + axis)
                 return true
             }
         }
