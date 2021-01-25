@@ -345,7 +345,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         }
 
         // no match - skip
-        if (!matchMapEntry(customSel, axis) {
+        if (!matchMapEntry(customSel, axis)) {
             config.logger.trace(2, "Step '" + title + "' skipped as no match by containerSelector=" + customSelEntry + " for image with axis=" + axis)
             return true
         }
