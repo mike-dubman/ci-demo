@@ -11,9 +11,8 @@ int call(ctx, oneStep, config) {
         ctx.reportFail(oneStep.name, 'fatal: DynamicAction() expects at least 1 parameter')
     }
 
-    Map vars = [env: env]
     for (def entry in ctx.entrySet(args)) {
-        args[entry.key] = ctx.resolveTemplate(vars, entry.value, config)
+        args[entry.key] = ctx.resolveTemplate([:], entry.value + '', config)
     }
     println("Calling ${oneStep.run} with args=" + args)
 
