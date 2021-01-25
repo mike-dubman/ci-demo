@@ -87,7 +87,7 @@ steps:
       projectName: "NGCIBlackDuckScan"
       projectVersion: "ci-demo"
       projectVersion: "1.0"
-      projectSrcPath: "${env.WORKSPACE}/src"
+      projectSrcPath: "${WORKSPACE}/src"
       attachArtifact: true
       reportName: "BlackDuck report"
       scanMode: "source"
