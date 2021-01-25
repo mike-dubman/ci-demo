@@ -345,8 +345,8 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         }
 
         for (int i=0; i<customSel.size(); i++) {
-            def customSelEntry = toStringMap(customSel[i])
-            println("XXXXXXX size=" + customSelEntry.size() + " type=" + customSelEntry.getClass() + " typeof: " + (customSelEntry.getClass() == List) + " vals=" + customSelEntry)
+            println("XXXXXXX[${i}] size=" + customSel.size() + " type=" + customSel[i].getClass() + " vals=" + customSel[i]])
+            Map customSelEntry = toStringMap(customSel[i])
 
             // no match - skip
             if (!matchMapEntry([customSelEntry], axis)) {
