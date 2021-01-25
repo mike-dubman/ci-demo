@@ -335,7 +335,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
     def selector = oneStep.get("containerSelector")
 
-    if (selector.size() > 0) {
+    if (selector && selector.size() > 0) {
 
         for (int i=0; i<selector.size(); i++) {
             def customSel;
