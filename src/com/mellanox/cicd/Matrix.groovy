@@ -337,11 +337,13 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
     if (selector && selector.size() > 0) {
 
-        def customSel;
+        def customSel = [];
         if (selector.getClass() == String) {
-            customSel = [toStringMap(selector)]
+            customSel.add(toStringMap(selector))
         } else {
-            customSel = selector
+            for (int i=0; i<selector.size(); i++) {
+                customSel.add(toStringMap(selector[i].toString()))
+            }
         }
 
         // no match - skip
