@@ -12,7 +12,7 @@ int call(ctx, oneStep, config) {
     }
 
     for (def entry in ctx.entrySet(args)) {
-        args[entry.key] = ctx.resolveTemplate([:], entry.value.toString(), config)
+        args[entry.key] = ctx.resolveTemplate(['env':env], entry.value.toString(), config)
     }
     println("Calling ${oneStep.run} with args=" + args)
 
