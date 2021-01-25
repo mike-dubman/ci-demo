@@ -78,6 +78,8 @@ steps:
       - "--ignore_files 'devx googletest tests'"
     archiveArtifacts: 'cov.log'
 
+disabled:
+
   - name: Blackduck scan source
     containerSelector: "{category:'tool', name: 'blackduck', variant:1}"
     shell: action
@@ -94,7 +96,6 @@ steps:
     env:
       SPRING_APPLICATION_JSON: '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
 
-disabled:
   - name: Test failure
     run: |
       echo going to fail no
