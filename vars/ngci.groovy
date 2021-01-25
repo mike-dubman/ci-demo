@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-int call(ctx, oneStep) {
+int call(ctx, oneStep, config) {
     def args = oneStep.args
 
     library(identifier: 'ngci@ci_version-3.1',
@@ -13,7 +13,7 @@ int call(ctx, oneStep) {
 
     Map vars = [env: env]
     for (def entry in ctx.entrySet(args)) {
-        args[entry.key] = ctx.resolveTemplate(vars, entry.value)
+        args[entry.key] = ctx.resolveTemplate(vars, entry.value, config)
     }
     println("Calling ${oneStep.run} with args=" + args)
 
