@@ -113,9 +113,7 @@ def run_step_shell(cmd, title, oneStep, config) {
             if (ret.exception != null) {
                 msg += " exception=${ret.exception}"
             }
-            if (config.failFast) {
-                reportFail(title, msg)
-            }
+            reportFail(title, msg)
         }
     }
 }
@@ -369,8 +367,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
 void reportFail(String stage, String msg) {
     currentBuild.result = 'FAILURE'
-    //error(stage + " failed with msg: " + msg)
-    throw new Exception(msg)
+    error(stage + " failed with msg: " + msg)
 }
 
 def toEnvVars(vars) {
