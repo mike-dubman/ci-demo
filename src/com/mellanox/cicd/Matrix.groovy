@@ -113,7 +113,9 @@ def run_step_shell(cmd, title, oneStep, config) {
             if (ret.exception != null) {
                 msg += " exception=${ret.exception}"
             }
-            reportFail(title, msg)
+            if (config.failFast) {
+                reportFail(title, msg)
+            }
         }
     }
 }
