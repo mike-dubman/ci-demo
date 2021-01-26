@@ -367,7 +367,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
 void reportFail(String stage, String msg) {
     currentBuild.result = 'FAILURE'
-    error(stage + " failed with msg: " + msg)
+    //error(stage + " failed with msg: " + msg)
 }
 
 def toEnvVars(vars) {
