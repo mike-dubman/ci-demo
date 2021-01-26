@@ -45,7 +45,7 @@ runs_on_dockers:
 pipeline_on_image_build:
   run: echo Building image
 
-matrix_off:
+matrix:
   axes:
     driver:
       - MLNX_OFED_LINUX-4.9-0.1.8.0
@@ -60,10 +60,10 @@ matrix_off:
 
 steps:
   - name: Run on all containers
-    run: touch aaa
+    run: touch once
 
   - name: Run twice
-    run: touch aaa
+    run: touch twice
     containerSelector:
       - "{name:'centos7-7', variant:1}"
       - "{name:'centos7-7', variant:3}"
@@ -88,6 +88,7 @@ steps:
 
   - name: Blackduck scan source
     containerSelector: "{category:'tool', name: 'blackduck', variant:1}"
+    enable: false
     shell: action
     module: ngci
     run: NGCIBlackDuckScan
