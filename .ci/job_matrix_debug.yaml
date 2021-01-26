@@ -78,10 +78,10 @@ steps:
   - name: succ1
     run: env
   
-- name: fail
+  - name: fail
     run: exit 1
 
-- name: succ2
+  - name: succ2
     run: env
   
   - name: Coverity scan
