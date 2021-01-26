@@ -18,7 +18,9 @@ kubernetes:
       jnlpImage: 'jenkins/inbound-agent:latest'
     aarch64:
       nodeSelector: 'kubernetes.io/arch=arm64'
-      jnlpImage: 'harbor.mellanox.com/${registry_jnlp_path}/jenkins-arm-agent-jnlp:latest'
+      jnlpImage: '${registry_host}/${registry_jnlp_path}/jenkins-arm-agent-jnlp:latest'
+
+
 
 
 volumes:
@@ -134,23 +136,10 @@ disable:
 #shell: '#!/bin/bash -eEx'
 
 pipeline_start:
-  env:
-    momo: 'koko'
   run: echo Starting new job
 
 pipeline_stop:
-  archiveArtifacts: stop.log
-#  shell: '#!/bin/bash'
-  env:
-    koko: 'momo'
-  run: |
-    ps -p $$ | awk '$1 != "PID" {print $(NF)}'
-    echo rc=$?
-    echo "registry_host=${registry_host}"
-    echo "registry_path=${registry_path}"
-    echo "uri_cuda_none=${uri_cuda_none}"
-    env
-    env > stop.log
+  run: echo All done
 
 archiveArtifacts: myenv.log
 failFast: false

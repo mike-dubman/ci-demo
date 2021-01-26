@@ -341,6 +341,10 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         if (selector.getClass() == String) {
             customSel.add(toStringMap(selector))
         } else {
+            // groovy casts yaml Map definition to LinkedHashMap type
+            // which is not serializable and causes Jenkins pipeline to fail
+            // on non-serializable error, this is a reason for ugle hack to
+            // convert LinkedHashMap to Map which is serializable
             for (int i=0; i<selector.size(); i++) {
                 customSel.add(toStringMap(selector[i].toString()))
             }
@@ -352,7 +356,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             return true
         }
 
-        config.logger.debug("Step '" + title + "' will use axis=" + axis)
+        config.logger.trace(2, "Step '" + title + "' will use axis=" + axis)
 
     } else if (axis['category'] == 'tool') {
             config.logger.trace(2, "Step '" + title + "' skipped for image category=tool")
