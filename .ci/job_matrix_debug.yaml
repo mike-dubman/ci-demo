@@ -62,6 +62,12 @@ steps:
   - name: Run on all containers
     run: touch aaa
 
+  - name: Run twice
+    run: touch aaa
+    containerSelector:
+      - "{name:'centos7-7', variant:1}"
+      - "{name:'centos7-7', variant:3}"
+
   - name: once
     containerSelector: "{name:'ubuntu16-4',variant:1}"
     run: env
