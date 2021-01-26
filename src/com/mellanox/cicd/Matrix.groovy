@@ -368,6 +368,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 void reportFail(String stage, String msg) {
     currentBuild.result = 'FAILURE'
     //error(stage + " failed with msg: " + msg)
+    throw new Exception(msg)
 }
 
 def toEnvVars(vars) {
@@ -986,12 +987,8 @@ def main() {
                 def timeout_min = getConfigVal(config, ['timeout_minutes'], "90")
                 timeout(time: timeout_min, unit: 'MINUTES') {
                     timestamps {
-                        //catchError(buildResult: 'SUCCESS', message: 'Branch Failed', stageResult: 'UNSTABLE') {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-
-                            run_parallel_in_chunks(config, parallelBuildDockers, bSize)
-                            run_parallel_in_chunks(config, branches, bSize)
-                        }
+                        run_parallel_in_chunks(config, parallelBuildDockers, bSize)
+                        run_parallel_in_chunks(config, branches, bSize)
                     }
                 }
             } catch (e) {
