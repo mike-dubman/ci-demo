@@ -986,8 +986,8 @@ def main() {
                 def timeout_min = getConfigVal(config, ['timeout_minutes'], "90")
                 timeout(time: timeout_min, unit: 'MINUTES') {
                     timestamps {
-                        catchError(buildResult: 'SUCCESS', message: 'Branch Failed', stageResult: 'UNSTABLE') {
-                        //catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                        //catchError(buildResult: 'SUCCESS', message: 'Branch Failed', stageResult: 'UNSTABLE') {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
 
                             run_parallel_in_chunks(config, parallelBuildDockers, bSize)
                             run_parallel_in_chunks(config, branches, bSize)
