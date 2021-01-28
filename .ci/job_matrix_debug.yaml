@@ -22,8 +22,10 @@ kubernetes:
   yaml: |
 spec:
   containers:
-    - name: jnlp
-
+  - securityContext:
+    resources:
+      limits:
+        hugepages-2Mi: 100Mi 
 
 
 volumes:
@@ -81,9 +83,6 @@ steps:
   - name: succ1
     run: env
   
-  - name: fail
-    run: exit 1
-
   - name: succ2
     run: env
   
