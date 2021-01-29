@@ -19,12 +19,6 @@ kubernetes:
     aarch64:
       nodeSelector: 'kubernetes.io/arch=arm64'
       jnlpImage: '${registry_host}/${registry_jnlp_path}/jenkins-arm-agent-jnlp:latest'
-  yaml: |
-    spec:
-      containers:
-      - securityContext:
-        resources:
-          limits:
 #  yaml: |
 #    spec:
 #      containers:
