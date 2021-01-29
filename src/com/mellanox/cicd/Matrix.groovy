@@ -527,7 +527,7 @@ def runK8(image, branchName, config, axis) {
     def runAsUser = image.runAsUser ?: getConfigVal(config, ['kubernetes', 'runAsUser'], "0")
     def runAsGroup = image.runAsGroup ?: getConfigVal(config, ['kubernetes', 'runAsGroup'], "0")
     def privileged = image.privileged ?: getConfigVal(config, ['kubernetes', 'privileged'], false)
-    def yaml = image.yaml ?: getConfigVal(config, ['kubernetes', 'yaml'], null)
+    def yaml = image.yaml ?: getConfigVal(config, ['kubernetes', 'yaml'], '')
 
     podTemplate(
         cloud: cloudName,
@@ -859,7 +859,7 @@ def build_docker_on_k8(image, config) {
     def runAsUser = image.runAsUser ?: getConfigVal(config, ['kubernetes', 'runAsUser'], "0")
     def runAsGroup = image.runAsGroup ?: getConfigVal(config, ['kubernetes', 'runAsGroup'], "0")
     def privileged = image.privileged ?: getConfigVal(config, ['kubernetes', 'privileged'], false)
-    def yaml = image.yaml ?: getConfigVal(config, ['kubernetes', 'yaml'], null)
+    def yaml = image.yaml ?: getConfigVal(config, ['kubernetes', 'yaml'], '')
 
     podTemplate(
         cloud: cloudName,
