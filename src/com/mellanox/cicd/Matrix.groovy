@@ -671,7 +671,7 @@ Map getTasks(axes, image, config, include, exclude) {
         axis.put("axis_index", serialNum)
         serialNum++
 
-        config.logger.info("Working on axis " + axis.toMapString())
+        config.logger.debug("Working on axis " + axis.toMapString())
 
         def tmpl = getConfigVal(config, ['taskName'], "${axis.arch}/${image.name} v${axis.axis_index}")
         def branchName = resolveTemplate(axis, tmpl, config)
@@ -915,7 +915,7 @@ def loadConfigFile(filepath, logger) {
 
     def config = readYaml(text: rawFile, charset: 'UTF-8')
 
-    logger.debug("loadConfigFile:\n" + rawFile)
+    logger.info("loadConfigFile:\n" + rawFile)
 
     if (config.get("matrix")) {
         if (config.matrix.include != null && config.matrix.exclude != null) {
