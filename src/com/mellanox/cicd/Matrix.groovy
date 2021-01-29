@@ -538,7 +538,6 @@ spec:
         requests: ${requests}
 """
 
-
     podTemplate(
         cloud: cloudName,
         runAsUser: runAsUser,
