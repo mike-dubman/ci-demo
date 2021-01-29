@@ -527,7 +527,17 @@ def runK8(image, branchName, config, axis) {
     def runAsUser = image.runAsUser ?: getConfigVal(config, ['kubernetes', 'runAsUser'], "0")
     def runAsGroup = image.runAsGroup ?: getConfigVal(config, ['kubernetes', 'runAsGroup'], "0")
     def privileged = image.privileged ?: getConfigVal(config, ['kubernetes', 'privileged'], false)
-    def yaml = image.yaml ?: getConfigVal(config, ['kubernetes', 'yaml'], '')
+    def limits = image.yaml ?: getConfigVal(config, ['kubernetes', 'limits'], "")
+    def requests = image.yaml ?: getConfigVal(config, ['kubernetes', 'requests'], "")
+    def yaml = """
+spec:
+  containers:
+    - name: ${cname}
+      resources:
+        limits: ${limits}
+        requests: ${requests}
+"""
+
 
     podTemplate(
         cloud: cloudName,
@@ -536,6 +546,8 @@ def runK8(image, branchName, config, axis) {
         runAsGroup: runAsGroup,
         nodeSelector: nodeSelector,
         hostNetwork: hostNetwork,
+        yamlMergeStrategy: merge(),
+        yaml: yaml,
         containers: [
             containerTemplate(privileged: privileged, name: 'jnlp', image: k8sArchConf.jnlpImage, args: '${computer.jnlpmac} ${computer.name}'),
             containerTemplate(privileged: privileged, name: cname, image: image.url, ttyEnabled: true, alwaysPullImage: true, command: 'cat')
@@ -859,11 +871,9 @@ def build_docker_on_k8(image, config) {
     def runAsUser = image.runAsUser ?: getConfigVal(config, ['kubernetes', 'runAsUser'], "0")
     def runAsGroup = image.runAsGroup ?: getConfigVal(config, ['kubernetes', 'runAsGroup'], "0")
     def privileged = image.privileged ?: getConfigVal(config, ['kubernetes', 'privileged'], false)
-    def yaml = image.yaml ?: getConfigVal(config, ['kubernetes', 'yaml'], '')
 
     podTemplate(
         cloud: cloudName,
-        yaml: yaml,
         runAsUser: runAsUser,
         runAsGroup: runAsGroup,
         nodeSelector: nodeSelector,
