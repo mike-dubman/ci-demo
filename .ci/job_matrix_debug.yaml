@@ -25,7 +25,13 @@ kubernetes:
       - securityContext:
         resources:
           limits:
-            hugepages-2Mi: 100Mi 
+#  yaml: |
+#    spec:
+#      containers:
+#      - securityContext:
+#        resources:
+#          limits:
+#            hugepages-2Mi: 100Mi 
 
 
 volumes:
