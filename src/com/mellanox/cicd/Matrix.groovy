@@ -541,7 +541,6 @@ spec:
 
     podTemplate(
         cloud: cloudName,
-        yaml: yaml,
         runAsUser: runAsUser,
         runAsGroup: runAsGroup,
         nodeSelector: nodeSelector,
