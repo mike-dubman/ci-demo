@@ -1011,7 +1011,7 @@ def main() {
                         if (config.pipeline_start.containerSelector) {
                             if (matchMapEntry(stringToList(config.pipeline_start.containerSelector), image)) {
                                 println("XXXXXXXXXXXXXXX: sel=" + config.pipeline_start.containerSelector + " image="+image)
-                                runK8(image, "pipline start", config, [:], [config.pipeline_start])
+                                runK8(image, "pipline start", config, image, [config.pipeline_start])
                                 pdone = true
                             }
                         } else {
