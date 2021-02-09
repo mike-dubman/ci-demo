@@ -517,7 +517,7 @@ def parseListV(volumes) {
     return listV
 }
 
-def runK8(image, branchName, config, axis) {
+def runK8(image, branchName, config, axis, steps=config.steps) {
 
     def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], "")
 
@@ -577,7 +577,7 @@ spec:
         node(POD_LABEL) {
             stage (branchName) {
                 container(cname) {
-                    runSteps(image, config, branchName, axis)
+                    runSteps(image, config, branchName, axis, steps)
                 }
             }
         }
