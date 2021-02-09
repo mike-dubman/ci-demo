@@ -997,9 +997,11 @@ def main() {
                     def tmpl = getConfigVal(config, ['taskNameSetupImage'], "Setup Image ${imgName}")
                     def branchName = resolveTemplate(image, tmpl, config)
 
+                    println("XXXXXXXXXXXXXXX: checking image="+image)
 
                     if (config.pipeline_start && !pdone) {
                         if (config.pipeline_start.containerSelector) {
+                            println("XXXXXXXXXXXXXXX: sel=" + config.pipeline_start.containerSelector + " image="+image)
                             if (matchMapEntry(config.pipeline_start.containerSelector, image)) {
                                 runK8(image, "pipline start", config, [:], [config.pipeline_start])
                                 pdone = true
