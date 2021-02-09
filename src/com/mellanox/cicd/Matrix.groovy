@@ -337,6 +337,26 @@ Map toStringMap(String param) {
     return ret
 }
 
+def stringToList(selector) {
+
+    def customSel = [];
+
+    if (selector && selector.size() > 0) {
+
+        if (selector.getClass() == String) {
+            customSel.add(toStringMap(selector))
+        } else {
+            // groovy casts yaml Map definition to LinkedHashMap type
+            // which is not serializable and causes Jenkins pipeline to fail
+            // on non-serializable error, this is a reason for ugle hack to
+            // convert LinkedHashMap to Map which is serializable
+            for (int i=0; i<selector.size(); i++) {
+                customSel.add(toStringMap(selector[i].toString()))
+            }
+        }
+    }
+    return customSel
+}
 
 def check_skip_stage(image, config, title, oneStep, axis) {
 
@@ -349,19 +369,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
     if (selector && selector.size() > 0) {
 
-        def customSel = [];
-        if (selector.getClass() == String) {
-            customSel.add(toStringMap(selector))
-        } else {
-            // groovy casts yaml Map definition to LinkedHashMap type
-            // which is not serializable and causes Jenkins pipeline to fail
-            // on non-serializable error, this is a reason for ugle hack to
-            // convert LinkedHashMap to Map which is serializable
-            for (int i=0; i<selector.size(); i++) {
-                customSel.add(toStringMap(selector[i].toString()))
-            }
-        }
-
+        def customSel = stringToList(selector)
         // no match - skip
         if (!matchMapEntry(customSel, axis)) {
             config.logger.trace(2, "Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
@@ -1001,8 +1009,8 @@ def main() {
 
                     if (config.pipeline_start && !pdone) {
                         if (config.pipeline_start.containerSelector) {
-                            println("XXXXXXXXXXXXXXX: sel=" + config.pipeline_start.containerSelector + " image="+image)
-                            if (matchMapEntry(config.pipeline_start.containerSelector, image)) {
+                            if (matchMapEntry(stringToList(config.pipeline_start.containerSelector), image)) {
+                                println("XXXXXXXXXXXXXXX: sel=" + config.pipeline_start.containerSelector + " image="+image)
                                 runK8(image, "pipline start", config, [:], [config.pipeline_start])
                                 pdone = true
                             }
