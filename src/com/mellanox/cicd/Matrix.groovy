@@ -981,7 +981,7 @@ def main() {
 
             if (config.pipeline_start) {
                 if (config.pipeline_start.run) {
-                    runK8(image, branchName, config, axis)
+                    //runK8(image, branchName, config, axis)
 
                     run_step(null, config, "pipeline start", config.pipeline_start, null)
                 }
