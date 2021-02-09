@@ -979,13 +979,6 @@ def main() {
             config.put("logger", logger)
             config.put("cFiles", getChangedFilesList(config))
 
-            if (config.pipeline_start) {
-                if (config.pipeline_start.run) {
-                    //runK8(image, branchName, config, axis)
-
-                    run_step(null, config, "pipeline start", config.pipeline_start, null)
-                }
-            }
 
 // prepare MAP in format:
 // $arch -> List[$docker, $docker, $docker]
@@ -993,6 +986,7 @@ def main() {
 
 
             def parallelBuildDockers = [:]
+            pdone = false
 
             def arch_distro_map = gen_image_map(config)
             for (def entry in entrySet(arch_distro_map)) {
@@ -1002,6 +996,19 @@ def main() {
                     def imgName = "${image.arch}/${image.name}/${j}"
                     def tmpl = getConfigVal(config, ['taskNameSetupImage'], "Setup Image ${imgName}")
                     def branchName = resolveTemplate(image, tmpl, config)
+
+
+                    if (config.pipeline_start && !pdone) {
+                        if (config.pipeline_start.containerSelector) {
+                            if (matchMapEntry(config.pipeline_start.containerSelector, image)) {
+                                runK8(image, "pipline start", config, [:], [config.pipeline_start])
+                                pdone = true
+                            }
+                        } else {
+                            run_step(null, config, "pipeline start", config.pipeline_start, null)
+                            pdone = true
+                        }
+                    }
 
                     parallelBuildDockers[branchName] = {
                         if (image.nodeLabel) {
