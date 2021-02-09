@@ -441,15 +441,15 @@ def run_step(image, config, title, oneStep, axis) {
     }
 }
 
-def runSteps(image, config, branchName, axis) {
+def runSteps(image, config, branchName, axis, steps=config.steps) {
     forceCleanupWS()
     // fetch .git from server and unpack
     unstash "${env.JOB_NAME}"
     onUnstash()
 
     def parallelNestedSteps = [:]
-    for (int i = 0; i < config.steps.size(); i++) {
-        def one = config.steps[i]
+    for (int i = 0; i < steps.size(); i++) {
+        def one = steps[i]
         def par = one["parallel"]
         def oneStep = one
         // collect parallel steps (if any) and run it when non-parallel step discovered or last element.
@@ -457,7 +457,7 @@ def runSteps(image, config, branchName, axis) {
             def stepName = branchName + "->" + one.name
             parallelNestedSteps[stepName] = { run_step(image, config, stepName, oneStep, axis) }
             // last element - run and flush
-            if (i == config.steps.size() - 1) {
+            if (i == steps.size() - 1) {
                 parallel(parallelNestedSteps)
                 parallelNestedSteps = [:]
             }
@@ -981,6 +981,8 @@ def main() {
 
             if (config.pipeline_start) {
                 if (config.pipeline_start.run) {
+                    runK8(image, branchName, config, axis)
+
                     run_step(null, config, "pipeline start", config.pipeline_start, null)
                 }
             }
