@@ -140,9 +140,11 @@ disable:
 #shell: '#!/bin/bash -eEx'
 
 pipeline_start:
+  containerSelector: "{name: 'blackduck'}"
   run: echo Starting new job
 
 pipeline_stop:
+  containerSelector: "{name: 'blackduck'}"
   run: echo All done
 
 archiveArtifacts: myenv.log
