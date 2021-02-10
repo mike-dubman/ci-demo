@@ -994,7 +994,6 @@ def main() {
 
 
             def parallelBuildDockers = [:]
-            pdone = false
 
             def arch_distro_map = gen_image_map(config)
             for (def entry in entrySet(arch_distro_map)) {
@@ -1005,18 +1004,19 @@ def main() {
                     def tmpl = getConfigVal(config, ['taskNameSetupImage'], "Setup Image ${imgName}")
                     def branchName = resolveTemplate(image, tmpl, config)
 
-                    println("XXXXXXXXXXXXXXX: checking image="+image)
-
-                    if (config.pipeline_start && !pdone) {
+                    if (config.pipeline_start && !config.pipeline_start.image) {
                         if (config.pipeline_start.containerSelector) {
                             if (matchMapEntry(stringToList(config.pipeline_start.containerSelector), image)) {
-                                println("XXXXXXXXXXXXXXX: sel=" + config.pipeline_start.containerSelector + " image="+image)
-                                runK8(image, "pipline start", config, image, [config.pipeline_start])
-                                pdone = true
+                                config.pipeline_start.image = image
                             }
-                        } else {
-                            run_step(null, config, "pipeline start", config.pipeline_start, null)
-                            pdone = true
+                        }
+                    }
+
+                    if (config.pipeline_stop && !config.pipeline_stop.image) {
+                        if (config.pipeline_stop.containerSelector) {
+                            if (matchMapEntry(stringToList(config.pipeline_stop.containerSelector), image)) {
+                                config.pipeline_stop.image = image
+                            }
                         }
                     }
 
@@ -1037,6 +1037,14 @@ def main() {
                 timeout(time: timeout_min, unit: 'MINUTES') {
                     timestamps {
                         run_parallel_in_chunks(config, parallelBuildDockers, bSize)
+                        if (config.pipeline_start) {
+                            if (config.pipeline_start.image) {
+                                image = config.pipeline_start.image
+                                runK8(image, "pipline start on ${image.name}", config, image, [config.pipeline_start])
+                            } else {
+                                run_step(null, config, "pipeline start", config.pipeline_start, null)
+                            }
+                        }
                         run_parallel_in_chunks(config, branches, bSize)
                     }
                 }
@@ -1045,7 +1053,10 @@ def main() {
 
             } finally {
                 if (config.pipeline_stop) {
-                    if (config.pipeline_stop.run) {
+                    if (config.pipeline_stop.image) {
+                        image = config.pipeline_stop.image
+                        runK8(image, "pipline stop on ${image.name}", config, image, [config.pipeline_stop])
+                    } else {
                         run_step(null, config, "pipeline stop", config.pipeline_stop, null)
                     }
                 }
