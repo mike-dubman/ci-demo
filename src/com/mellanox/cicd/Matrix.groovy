@@ -816,7 +816,7 @@ String getChangedFilesList(config) {
     return cFiles
 }
 
-def buildImage(config, img) {
+def buildImage(config, image) {
 
     // Vasily Ryabov: we need .toString() to make changed_files.contains(filename) work correctly
     // See https://stackoverflow.com/q/56829842/3648361
@@ -824,6 +824,7 @@ def buildImage(config, img) {
     def extra_args = image.build_args
     def changed_files = config.get("cFiles")
     def need_build = 0
+    def img = image.url
 
     try {
         config.logger.info("Pulling image - ${img}")
@@ -852,10 +853,10 @@ def buildImage(config, img) {
 def buildDocker(image, config) {
     if (image.url.contains(config.registry_host)) {
         docker.withRegistry("https://${config.registry_host}", config.registry_auth) {
-            buildImage(config, image.url)
+            buildImage(config, image)
         }
     } else {
-        buildImage(config, image.url)
+        buildImage(config, image)
     }
 }
 
