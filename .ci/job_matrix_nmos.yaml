@@ -33,8 +33,8 @@ env:
 # user can run any script to modify container image content
 # also, can define 'on_image_build: script' key in runs_on_dockers
 # section , per specific containers
-pipeline_on_image_build:
-  run: .ci/prepare_build_context.sh
+#pipeline_on_image_build:
+#  run: .ci/prepare_build_context.sh
 
 runs_on_dockers:
   - {
