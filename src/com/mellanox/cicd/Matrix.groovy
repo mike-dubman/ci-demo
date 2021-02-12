@@ -399,7 +399,7 @@ def toEnvVars(vars) {
     def map = []
     if (vars) {
         for (def entry in entrySet(vars)) {
-            map.add("${entry.key}=${entry.value}")
+            map.add("${entry.key}='${entry.value}'")
         }
     }
     return map
