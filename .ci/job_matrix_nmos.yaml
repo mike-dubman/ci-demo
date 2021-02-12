@@ -66,3 +66,8 @@ steps:
   - name: Env
     run: |
       env
+
+pipeline_stop:
+  run: |
+    echo failing
+    exit 1
