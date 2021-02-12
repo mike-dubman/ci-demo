@@ -26,7 +26,7 @@ env:
   MLNX_OFED_VERSION: "5.2-0.5.9.0"
   RIVERMAX_VERSION: "1.7.10"
   RIVERMAX_APPS_VERSION: "11.2.8.10"
-  common_build_args: '--rm --no-cache --build-arg RMAX_APPS_VER=${RIVERMAX_APPS_VERSION} --build-arg MOFED_VER=${MLNX_OFED_VERSION} --build-arg MDNS_LIB=apple'
+  common_build_args: '--rm --no-cache --build-arg RMAX_APPS_VER=$RIVERMAX_APPS_VERSION --build-arg MOFED_VER=${MLNX_OFED_VERSION} --build-arg MDNS_LIB=apple'
   uri_cuda_none: ${RIVERMAX_VERSION}/apps-${RIVERMAX_APPS_VERSION}/nmos-cpp-${NMOS_VERSION}-ubuntu18.04-mofed-${MLNX_OFED_VERSION}-mdns-apple
   uri_cuda_11_1: ${RIVERMAX_VERSION}/apps-${RIVERMAX_APPS_VERSION}/nmos-cpp-${NMOS_VERSION}-ubuntu18.04.cuda-11.1-mofed-${MLNX_OFED_VERSION}-mdns-apple
   blackduck_url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009'
