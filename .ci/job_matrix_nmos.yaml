@@ -26,10 +26,8 @@ env:
     MLNX_OFED_VERSION: "5.2-0.5.9.0"
     RIVERMAX_VERSION: "1.7.10"
     RIVERMAX_APPS_VERSION: "11.2.8.10"
-
-defaults:
-  uri: '$RIVERMAX_VERSION/apps-$RIVERMAX_APPS_VERSION/nmos-cpp-$name-$cuda-mofed-$MLNX_OFED_VERSION-mdns-$mdns_lib'
-  build_args: '--network=host --rm --pull --no-cache --build-arg ARCH=-arm64 --build-arg RMAX_APPS_VER=$RIVERMAX_APPS_VERSION --build-arg CUDA_VER=11.1 --build-arg MOFED_VER=$MLNX_OFED_VERSION --build-arg MDNS_LIB=apple'
+    uri: '$RIVERMAX_VERSION/apps-$RIVERMAX_APPS_VERSION/nmos-cpp-$name-$cuda-mofed-$MLNX_OFED_VERSION-mdns-$mdns_lib'
+    build_args: '--network=host --rm --pull --no-cache --build-arg ARCH=-arm64 --build-arg RMAX_APPS_VER=$RIVERMAX_APPS_VERSION --build-arg CUDA_VER=11.1 --build-arg MOFED_VER=$MLNX_OFED_VERSION --build-arg MDNS_LIB=apple'
 
 # executed before each container image build phase
 # user can run any script to modify container image content

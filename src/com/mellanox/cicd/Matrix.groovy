@@ -604,6 +604,9 @@ def replaceVars(vars, str) {
                 break
             }
         }
+        if (res.contains('$$')) {
+            println("XXXXXXXXXXXXXXXXX=" + res)
+        }
     }
     return res
 }
