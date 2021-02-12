@@ -618,9 +618,6 @@ def resolveTemplate(vars, str, config) {
 
     if (config.env) {
         res = replaceVars(config.env, res)
-    }
-
-    if (config.env) {
         varsMap += config.env
     }
 
@@ -628,6 +625,9 @@ def resolveTemplate(vars, str, config) {
     varsMap += env.getEnvironment()
 
     res = replaceVars(varsMap, res)
+    if (res.contains('$$')) {
+        println("XXXXXXXsXXXXXXXXXX=" + res)
+    }
 
     return res
 }
