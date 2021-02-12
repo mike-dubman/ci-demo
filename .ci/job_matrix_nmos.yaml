@@ -70,4 +70,4 @@ steps:
 pipeline_stop:
   run: |
     echo failing
-    exit 1
+    exit 127
