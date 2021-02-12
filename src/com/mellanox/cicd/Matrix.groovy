@@ -88,11 +88,6 @@ def run_step_shell(cmd, title, oneStep, config) {
     vars += toEnvVars(config.env)
     vars += toEnvVars(oneStep.env)
 
-    println("xxxxxx1: " + config.env)
-    println("xxxxxx2: " + oneStep.env)
-    println("xxxxxx3: " + vars)
-
-
     def names = ['registry_host', 'registry_path', 'job']
     for (int i=0; i<names.size(); i++) {
         vars.add(names[i] + "=" + config.get(names[i]) ?: '')
