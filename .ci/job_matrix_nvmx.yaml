@@ -1,81 +1,22 @@
 ---
-job: nvmx
+job: baremetal
 
 registry_host: harbor.mellanox.com
 registry_path: /swx-storage/nvmx
 registry_auth: swx-storage
 
 kubernetes:
-#  cloud: swx-k8s
   cloud: swx-k8s-spray	
-
-volumes:
-  - {mountPath: /hpc/local, hostPath: /hpc/local}
-  - {mountPath: /auto/sw_tools, hostPath: /auto/sw_tools}
-  - {mountPath: /auto/mtrswgwork, hostPath: /auto/mtrswgwork}
-  - {mountPath: /auto/sw/release/mlnx_ofed, hostPath: /auto/sw/release/mlnx_ofed}
-  - {mountPath: /auto/sw/release/sw_acceleration, hostPath: /auto/sw/release/sw_acceleration}
 
 env:
   pulp_credentials: "jenkins-pulp"
   swx_repos_credentials: "311997c9-cc1c-4d5d-8ba2-6eb43ba0a06d"
-  NVME_CONFIG: './src/json/mlnx_nvmx_config.json'
-  NVMX_LOGFILE_PATH: 'stderr'
 
-defaults:
-  momo: '$registry_host/toolbox/ngci-centos:7.9.2009'
-
-
-runs_on_dockers:
-  - {url: '$momo', name: 'coverity', arch: 'x86_64'}
+runs_on_agents:
+  - nodeLabel: '(dockerserver || docker) && x86_64'
 
 steps:
 
 - name: Build
   run: |
     env
-
-
-xxx_steps:
-
-  - name: Build
-    run: |
-      .ci/build.sh
-
-  - name: Upload deb
-    containerSelector: "{name:'ubuntu2004', variant:1}"
-    run: |
-      .ci/swx_repos_upload_deb.sh
-
-  - name: Upload rpm
-    containerSelector: "{name:'centos75', variant:1}"
-    run: |
-      .ci/swx_repos_upload_rep.sh
-
-  - name: Coverity scan  
-    containerSelector: "{name: 'coverity', variant:1}"
-    archiveArtifacts: 'cov.log'
-    shell: action
-    module: dynamicAction
-    run: coverity.sh
-    args:
-      - "./autogen.sh;./configure;make -j 3 clean"
-      - "make -j 3"
-      - "devx googletest tests"
-
-  - name: Blackduck scan source
-    containerSelector: "{name: 'blackduck', variant:1}"
-    shell: action
-    module: ngci
-    run: NGCIBlackDuckScan
-    args:
-      projectName: "NGCIBlackDuckScan"
-      projectVersion: "nvmx"
-      projectVersion: "1.0"
-      projectSrcPath: "${env.WORKSPACE}/src"
-      attachArtifact: true
-      reportName: "BlackDuck report"
-      scanMode: "source"
-    env:
-      SPRING_APPLICATION_JSON: '{"blackduck.url":"https://blackduck.mellanox.com/","blackduck.api.token":"ODMwOWYwMzEtODA2ZC00MzBjLWI1ZDEtNmFiMjBkYzQzMzkwOjNmNjExN2M1LWE2ZmEtNDZlYS1hZjRiLTZlNDgwNjAwOTVjNw=="}'
-
