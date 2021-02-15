@@ -644,7 +644,7 @@ def getDockerOpt(config) {
 def runDocker(image, config, branchName=null, axis=null, Closure func, runInDocker=true) {
     def nodeName = image.nodeLabel
 
-    config.logger.debug("Running docker on node: ${nodeName} branch: ${branchName}")
+    config.logger.debug("Running docker on node: ${nodeName} branch: ${branchName} - docker: " + runInDocker)
 
     node(nodeName) {
         forceCleanupWS()
@@ -1075,7 +1075,6 @@ def main() {
                     }
                 }
             } catch (e) {
-                e.printStackTrace()
                 reportFail('parallel task', e.toString())
 
             } finally {
