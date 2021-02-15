@@ -5,13 +5,6 @@ registry_host: harbor.mellanox.com
 registry_path: /swx-storage/nvmx
 registry_auth: swx-storage
 
-kubernetes:
-  cloud: swx-k8s-spray	
-
-env:
-  pulp_credentials: "jenkins-pulp"
-  swx_repos_credentials: "311997c9-cc1c-4d5d-8ba2-6eb43ba0a06d"
-
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
 

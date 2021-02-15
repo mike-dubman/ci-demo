@@ -739,7 +739,8 @@ Map getTasks(axes, image, config, include, exclude) {
                     reportFail('config', "Please define kubernetes cloud name in yaml config file or define nodeLabel for docker")
                 }
                 if (image.nodeLabel) {
-                    runDocker(image, config, branchName, axis, { pimage, pconfig -> runSteps(pimage, pconfig, branchName, axis) })
+                    runBareMetal = true if (image.url == null) else false
+                    runDocker(image, config, branchName, axis, { pimage, pconfig -> runSteps(pimage, pconfig, branchName, axis) }, runBareMetal)
                 } else {
                     runK8(image, branchName, config, axis)
                 }
@@ -766,7 +767,7 @@ def getMatrixTasks(image, config) {
         axes.add(image)
     }
 
-    config.logger.debug("Filters include size: " + include.size() + " exclude size: " + exclude.size())
+    config.logger.trace(2, "Filters include size: " + include.size() + " exclude size: " + exclude.size())
     return getTasks(axes, image, config, include, exclude)
 }
 
