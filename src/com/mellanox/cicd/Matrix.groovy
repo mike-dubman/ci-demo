@@ -926,6 +926,10 @@ def build_docker_on_k8(image, config) {
 
 def run_parallel_in_chunks(config, myTasks, depth) {
 
+    if (myTasks.size() == 0) {
+        return
+    }
+
     int bSize = depth
 
     if (bSize <= 0) {
