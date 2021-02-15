@@ -739,7 +739,11 @@ Map getTasks(axes, image, config, include, exclude) {
                     reportFail('config', "Please define kubernetes cloud name in yaml config file or define nodeLabel for docker")
                 }
                 if (image.nodeLabel) {
-                    runBareMetal = true if (image.url == null) else false
+                    if (image.url == null) {
+                        runBareMetal = true
+                    } else {
+                        runBareMetal = false
+                    }
                     runDocker(image, config, branchName, axis, { pimage, pconfig -> runSteps(pimage, pconfig, branchName, axis) }, runBareMetal)
                 } else {
                     runK8(image, branchName, config, axis)
