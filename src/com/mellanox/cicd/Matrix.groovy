@@ -189,6 +189,10 @@ def gen_image_map(config) {
 
     def arch_list = getConfigVal(config, ['matrix', 'axes', 'arch'], null, false)
 
+    if (!config.runs_on_dockers) {
+        config.runs_on_dockers = []
+    }
+    
     if (arch_list) {
         for (int i=0; i<arch_list.size(); i++) {
             def arch = arch_list[i]
