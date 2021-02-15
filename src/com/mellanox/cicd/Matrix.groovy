@@ -192,7 +192,7 @@ def gen_image_map(config) {
     if (!config.runs_on_dockers) {
         config.runs_on_dockers = []
     }
-    
+
     if (arch_list) {
         for (int i=0; i<arch_list.size(); i++) {
             def arch = arch_list[i]
@@ -1038,6 +1038,11 @@ def main() {
                 }
             }
         
+            for (int i=0; i<config.runs_on_agents.size();i++) {
+                println("XXXXXXX=" + config.runs_on_agengs[i] + " YYY=" + config.runs_on_agents)
+
+            }
+
             try {
                 def bSize = getConfigVal(config, ['batchSize'], 0)
                 def timeout_min = getConfigVal(config, ['timeout_minutes'], "90")
