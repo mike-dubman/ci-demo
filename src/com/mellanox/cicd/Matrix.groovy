@@ -1075,6 +1075,7 @@ def main() {
                     }
                 }
             } catch (e) {
+                e.PrintStackTrace()
                 reportFail('parallel task', e.toString())
 
             } finally {
