@@ -1041,6 +1041,8 @@ def main() {
             if (config.runs_on_agents) {
                 for (int a=0; a<config.runs_on_agents.size();a++) {
                     image = config.runs_on_agents[a]
+                    image.name = image.nodeLabel
+                    image.arch = 'x86_64'
                     branches += getMatrixTasks(image, config)
                 }
             }
