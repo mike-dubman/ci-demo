@@ -1039,7 +1039,7 @@ def main() {
             }
         
             for (int a=0; a<config.runs_on_agents.size();a++) {
-                println("XXXXXXX=" + config.runs_on_agengs[a] + " YYY=" + config.runs_on_agents)
+                println("XXXXXXX=" + config.runs_on_agents[a] + " YYY=" + config.runs_on_agents)
 
             }
 
