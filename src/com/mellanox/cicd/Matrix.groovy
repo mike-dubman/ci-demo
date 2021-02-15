@@ -1038,9 +1038,11 @@ def main() {
                 }
             }
         
-            for (int a=0; a<config.runs_on_agents.size();a++) {
-                println("XXXXXXX=" + config.runs_on_agents[a] + " YYY=" + config.runs_on_agents)
-
+            if (config.runs_on_agents) {
+                for (int a=0; a<config.runs_on_agents.size();a++) {
+                    image = config.runs_on_agents[a]
+                    branches += getMatrixTasks(image, config)
+                }
             }
 
             try {
