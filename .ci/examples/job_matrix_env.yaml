@@ -15,8 +15,8 @@ env:
   cidemo_mydir: '$WORKSPACE'
   blackduck_url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009'
 
-runs_on_dockers:
-  - {name: 'blackduck', url: '$blackduck_url', arch: 'x86_64'}
+#runs_on_dockers:
+#  - {name: 'blackduck', url: '$blackduck_url', arch: 'x86_64'}
 
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
