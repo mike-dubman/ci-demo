@@ -22,3 +22,13 @@ steps:
   agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
   run: |
     ls
+
+pipeline_start:
+  run: |
+    echo Starting pipeline
+    env
+
+pipeline_stop:
+  run: 
+    echo All done
+    done
