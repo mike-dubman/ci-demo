@@ -641,10 +641,10 @@ def getDockerOpt(config) {
     return opts
 }
 
-def runDocker(image, config, branchName=null, axis=null, Closure func, runInDocker=true) {
+def runAgent(image, config, branchName=null, axis=null, Closure func, runInDocker=true) {
     def nodeName = image.nodeLabel
 
-    config.logger.debug("Running docker on node: ${nodeName} branch: ${branchName} - docker: " + runInDocker)
+    config.logger.debug("Running on agent with label: ${nodeName} branch: ${branchName} - docker: " + runInDocker)
 
     node(nodeName) {
         forceCleanupWS()
@@ -739,14 +739,14 @@ Map getTasks(axes, image, config, include, exclude) {
                     reportFail('config', "Please define kubernetes cloud name in yaml config file or define nodeLabel for docker")
                 }
                 if (image.nodeLabel) {
-                    runInDocker = true
+                    runBareMetal = true
                     if (image.url == null) {
                         runBareMetal = false
                     }
                     def callback = {pimage, pconfig, pname, paxis ->
                         runSteps(pimage, pconfig, pname, paxis)
                     }
-                    runDocker(image, config, branchName, axis, callback, runInDocker)
+                    runAgent(image, config, branchName, axis, callback, runBareMetal)
                 } else {
                     runK8(image, branchName, config, axis)
                 }
@@ -1043,7 +1043,7 @@ def main() {
                             def callback = { pimage, pconfig, pname=null, paxis=null ->
                                 buildDocker(pimage, pconfig)
                             }
-                            runDocker(image, config, "Preparing image ${imgName}", null, callback, false)
+                            runAgent(image, config, "Preparing image ${imgName}", null, callback, false)
                         } else {
                             build_docker_on_k8(image, config)
                         }
