@@ -7,9 +7,10 @@ registry_auth: swx-storage
 
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
+  - nodeLabel: 'hpc-test-node-inbox'
 
 steps:
 
 - name: Build
   run: |
-    env
+    hostname
