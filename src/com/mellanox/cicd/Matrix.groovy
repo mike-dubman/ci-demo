@@ -535,7 +535,7 @@ def runK8(image, branchName, config, axis, steps=config.steps) {
 
     def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
     if (!cloudName) {
-        reportFail('config', "kubernets run requested but kubernetes.cloud name is not defined in yaml file")
+        reportFail('config', "kubernetes run requested but kubernetes.cloud name is not defined in yaml file")
     }
 
     config.logger.trace(2, "Using kubernetes ${cloudName}, axis=" + axis)
@@ -889,7 +889,10 @@ def build_docker_on_k8(image, config) {
 
     def listV = parseListV(config.volumes)
 
-    def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], "")
+    def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
+    if (!cloudName) {
+        reportFail('config', "kubernetes run requested but kubernetes.cloud name is not defined in yaml file")
+    }
 
     config.logger.trace(7, "Checking docker image availability for " + image)
 
