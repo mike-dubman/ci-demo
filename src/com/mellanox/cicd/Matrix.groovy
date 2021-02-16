@@ -654,10 +654,10 @@ def runDocker(image, config, branchName=null, axis=null, Closure func, runInDock
             if (runInDocker) {
                 def opts = getDockerOpt(config)
                 docker.image(image.url).inside(opts) {
-                    func(image, config)
+                    func(image, config, branchName, axis)
                 }
             } else {
-                func(image, config)
+                func(image, config, branchName, axis)
             }
         }
     }
@@ -743,7 +743,10 @@ Map getTasks(axes, image, config, include, exclude) {
                     if (image.url == null) {
                         runBareMetal = false
                     }
-                    runDocker(image, config, branchName, axis, { pimage, pconfig -> runSteps(pimage, pconfig, branchName, axis) }, runInDocker)
+                    def callback = {pimage, pconfig, pname, paxis ->
+                        runSteps(pimage, pconfig, pname, paxis)
+                    }
+                    runDocker(image, config, branchName, axis, callback, runInDocker)
                 } else {
                     runK8(image, branchName, config, axis)
                 }
@@ -1037,7 +1040,10 @@ def main() {
 
                     parallelBuildDockers[branchName] = {
                         if (image.nodeLabel) {
-                            runDocker(image, config, "Preparing image ${imgName}", null, { pimage, pconfig -> buildDocker(pimage, pconfig) }, false)
+                            def callback = { pimage, pconfig, pname=null, paxis=null ->
+                                buildDocker(pimage, pconfig)
+                            }
+                            runDocker(image, config, "Preparing image ${imgName}", null, callback, false)
                         } else {
                             build_docker_on_k8(image, config)
                         }
