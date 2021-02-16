@@ -31,4 +31,4 @@ pipeline_start:
 pipeline_stop:
   run: 
     echo All done
-    done
+    env
