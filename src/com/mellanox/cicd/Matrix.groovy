@@ -401,6 +401,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
 void reportFail(String stage, String msg) {
     currentBuild.result = 'FAILURE'
+    env.pipeline_status = 'FAILURE'
     error(stage + " failed with msg: " + msg)
 }
 
@@ -1098,6 +1099,8 @@ def main() {
                         run_parallel_in_chunks(config, branches, bSize)
                     }
                 }
+                env.pipeline_status = 'SUCCESS'
+
             } catch (e) {
                 reportFail('parallel task', e.toString())
 
