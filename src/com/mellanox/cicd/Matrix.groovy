@@ -362,7 +362,7 @@ def stringToList(selector) {
     return customSel
 }
 
-def checkSelector(oneStep, sName) {
+def checkSelector(image, config, title, oneStep, axis, sName) {
     def selector = oneStep.get(sName)
 
     if (selector && selector.size() > 0) {
@@ -383,11 +383,11 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         return true
     }
 
-    if (checkSelector(oneStep, 'containerSelector')) {
+    if (checkSelector(image, config, title, oneStep, axis, 'containerSelector')) {
         return true
     }
 
-    if (checkSelector(oneStep, 'agentSelector')) {
+    if (checkSelector(image, config, title, oneStep, axis, 'agentSelector')) {
         return true
     }
 
