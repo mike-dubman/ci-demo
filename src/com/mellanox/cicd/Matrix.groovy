@@ -533,7 +533,10 @@ def parseListV(volumes) {
 
 def runK8(image, branchName, config, axis, steps=config.steps) {
 
-    def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], "")
+    def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
+    if (!cloudName) {
+        reportFail('config', "kubernets run requested but kubernetes.cloud name is not defined in yaml file")
+    }
 
     config.logger.trace(2, "Using kubernetes ${cloudName}, axis=" + axis)
 
