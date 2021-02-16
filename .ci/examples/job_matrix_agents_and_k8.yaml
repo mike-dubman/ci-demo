@@ -1,9 +1,9 @@
 ---
 job: baremetal
 
-registry_host: harbor.mellanox.com
-registry_path: /swx-storage/ci-demo
-registry_auth: swx-storage
+#registry_host: harbor.mellanox.com
+#registry_path: /swx-storage/ci-demo
+#registry_auth: swx-storage
 
 kubernetes:
   cloud: swx-k8s-spray
@@ -25,7 +25,7 @@ steps:
   run: |
     env
 
-- name: run once on agent and no limit on containers
+- name: run once
   agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
   run: |
     ls

@@ -871,7 +871,7 @@ def buildImage(config, image) {
 }
 
 def buildDocker(image, config) {
-    if (image.url.contains(config.registry_host)) {
+    if (config.registry_host && image.url.contains(config.registry_host)) {
         docker.withRegistry("https://${config.registry_host}", config.registry_auth) {
             buildImage(config, image)
         }
