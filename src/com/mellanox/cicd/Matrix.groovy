@@ -401,7 +401,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
     }
 
     if (axis['category'] == 'tool') {
-        config.logger.trace(2, "Step '" + title + "' skipped for image category=tool")
+        config.logger.trace(2, "$title - Step '" + oneStep.name + "' skipped for image category=tool")
         return true
     }
 
