@@ -233,7 +233,7 @@ def gen_image_map(config) {
                 parts = dfile.url.tokenize('/').last().tokenize(':')
                 if (parts.size() == 2) {
                     dfile.tag = parts[-1]
-                    tail = tag.size() + 2
+                    tail = dfile.tag.size() + 2
                     dfile.uri = str[0..-tail]
                 } else {
                     dfile.tag = 'latest'
