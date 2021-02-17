@@ -381,13 +381,15 @@ def checkSelector(image, config, title, oneStep, axis, selector) {
         def customSel = stringToList(selector)
         println("YYYYYY customSel="+customSel)
         println("YYYYYY axis="+axis)
-        // no match - skip
-        if (!matchMapEntry(customSel, axis)) {
+        // match - no skip
+        if (matchMapEntry(customSel, axis)) {
             config.logger.trace(2, "Step '" + title + "' skipped as no match by customSel=" + customSel + " for image with axis=" + axis)
-            return true
+            return false
         }
+    } else {
+        return false
     }
-    return false
+    return true
 }
 
 def check_skip_stage(image, config, title, oneStep, axis) {
