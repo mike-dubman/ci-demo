@@ -401,7 +401,6 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
 void reportFail(String stage, String msg) {
     currentBuild.result = 'FAILURE'
-    env.pipeline_status = 'FAILURE'
     error(stage + " failed with msg: " + msg)
 }
 

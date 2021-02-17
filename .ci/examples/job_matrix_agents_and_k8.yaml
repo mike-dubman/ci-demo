@@ -17,7 +17,6 @@ steps:
 - name: step2
   run: |
     env
-    exit 10
 
 - name: run once
   agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
@@ -31,5 +30,6 @@ pipeline_start:
 
 pipeline_stop:
   run: 
-    echo All done, pipeline_status=$pipeline_status
+    echo pipeline_status=$pipeline_status
+    echo all done
 
