@@ -2,7 +2,7 @@
 job: baremetal
 
 runs_on_dockers:
-  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', tag: '7.9.2009', cloud: 'swx-k8s-spray', arch: 'x86_64'}
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', cloud: 'swx-k8s-spray', arch: 'x86_64'}
 
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
