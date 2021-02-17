@@ -393,7 +393,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         return true
     }
 
-    if (oneStep.containerSelector,size()) {
+    if (oneStep.containerSelector.size()) {
         println("XXXXXXX=" + oneStep.containerSelector + " size=" +  oneStep.containerSelector.size())
     }
     if (checkSelector(image, config, title, oneStep, axis, oneStep.containerSelector)) {
