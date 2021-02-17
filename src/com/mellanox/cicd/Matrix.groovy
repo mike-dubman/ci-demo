@@ -395,6 +395,8 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             if (matchMapEntry(customSel, axis)) {
                 config.logger.trace(2, "Step '" + oneStep.name + " matched, selecting")
                 skip = false
+            } else {
+                skip = true
             }
         }
     }
