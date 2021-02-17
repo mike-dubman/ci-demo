@@ -235,7 +235,7 @@ def gen_image_map(config) {
                     dfile.tag = parts[1]
                     tag_size = dfile.tag.size() + 1
                     len = dfile.url.size() - tag_size
-                    dfile.uri = dfile.url.substring(0,len]
+                    dfile.uri = dfile.url.substring(0,len)
                 } else {
                     dfile.tag = 'latest'
                 }
