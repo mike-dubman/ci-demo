@@ -230,7 +230,7 @@ def gen_image_map(config) {
 
             dfile.file = dfile.file ?: ''
             if (dfile.url) {
-                ​def parts = dfile.url.tokenize('/').last().tokenize(':')
+                parts = dfile.url.tokenize('/').last().tokenize(':')
                 if (parts.size() == 2) {
                     dfile.tag = parts[-1]
                     tail = tag.size() + 2
