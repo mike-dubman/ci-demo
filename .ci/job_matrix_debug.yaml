@@ -12,13 +12,6 @@ credentials:
 
 kubernetes:
   cloud: swx-k8s-spray
-  arch_table:
-    x86_64:
-      nodeSelector: 'kubernetes.io/arch=amd64'
-      jnlpImage: 'jenkins/inbound-agent:latest'
-    aarch64:
-      nodeSelector: 'kubernetes.io/arch=arm64'
-      jnlpImage: '${registry_host}/${registry_jnlp_path}/jenkins-arm-agent-jnlp:latest'
 
 volumes:
   - {mountPath: /hpc/local, hostPath: /hpc/local}
@@ -30,16 +23,14 @@ env:
   mofed_installer_exe: /.autodirect/sw/release/mlnx_ofed/MLNX_OFED/mlnx_ofed_install
   mofed_installer_opt: --user-space-only --without-fw-update --all -q --skip-unsupported-devices-check
   blackduck_url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009'
-  var1: 12
-  var2: '${var1}-1'
 
 runs_on_dockers:
 #  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64', nodeLabel: '(dockerserver || docker) && x86_64'}
-  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', tag: 'latest', arch: 'x86_64', category: 'tool'}
-  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', tag: 'latest', arch: 'x86_64'}
-  - {name: 'blackduck', url: '$blackduck_url', category: 'tool', arch: 'x86_64', build_args: 'bobo=$var2'}
+  - {file: '.ci/Dockerfile.centos7.7.1908', name: 'centos7-7', arch: 'x86_64', category: 'tool'}
+  - {file: '.ci/Dockerfile.ubuntu16-4', name: 'ubuntu16-4', arch: 'x86_64'}
+  - {name: 'blackduck', url: '$blackduck_url', category: 'tool', arch: 'x86_64'}
   - {url: '$registry_host/swx-storage/$arch/centos75-nvme-snap-3.0', name: 'snap', arch: 'aarch64'}
-  - {name: 'ubuntu20.10.buildah', url: 'ubuntu:20.10', tag: '20.10', arch: 'x86_64', category: 'tool'}
+  - {name: 'ubuntu20.10.buildah', url: 'ubuntu:20.10', arch: 'x86_64', category: 'tool'}
 
 pipeline_on_image_build:
   run: echo Building image
