@@ -371,16 +371,15 @@ def stringToList(selector) {
     return customSel
 }
 
-def checkSelector(image, config, title, oneStep, axis, sName) {
+def checkSelector(image, config, title, oneStep, axis, selector) {
 
-    def selector = oneStep.get(sName)
-    config.logger.trace(2, "checkSelector($sName) for image=" + image + " step=" + oneStep + " selector= " + selector)
+    config.logger.trace(2, "checkSelector() for image=" + image + " step=" + oneStep + " selector= " + selector)
 
     if (selector && selector.size() > 0) {
         def customSel = stringToList(selector)
         // no match - skip
         if (!matchMapEntry(customSel, axis)) {
-            config.logger.trace(2, "Step '" + title + "' skipped as no match by ${sName}=" + customSel + " for image with axis=" + axis)
+            config.logger.trace(2, "Step '" + title + "' skipped as no match by customSel=" + customSel + " for image with axis=" + axis)
             return true
         }
     }
@@ -394,11 +393,11 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         return true
     }
 
-    if (checkSelector(image, config, title, oneStep, axis, 'containerSelector')) {
+    if (checkSelector(image, config, title, oneStep, axis, oneStep.containerSelector)) {
         return true
     }
 
-    if (checkSelector(image, config, title, oneStep, axis, 'agentSelector')) {
+    if (checkSelector(image, config, title, oneStep, axis, oneStep.agentSelector)) {
         return true
     }
 
