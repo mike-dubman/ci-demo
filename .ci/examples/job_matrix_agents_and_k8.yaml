@@ -17,6 +17,7 @@ steps:
 - name: step2
   run: |
     env
+    exit 10
 
 - name: run once
   agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
