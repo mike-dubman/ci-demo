@@ -372,7 +372,9 @@ def stringToList(selector) {
 }
 
 def checkSelector(image, config, title, oneStep, axis, sName) {
+
     def selector = oneStep.get(sName)
+    config.trace(3, "checkSelector($sName) for image=" + image + " selector= " + selector)
 
     if (selector && selector.size() > 0) {
         def customSel = stringToList(selector)
@@ -400,7 +402,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         return true
     }
 
-    if (axis['category'] == 'tool') {
+    if (image['category'] == 'tool') {
         config.logger.trace(2, "$title - Step '" + oneStep.name + "' skipped for image category=tool")
         return true
     }
