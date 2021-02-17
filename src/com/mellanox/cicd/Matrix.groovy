@@ -374,7 +374,7 @@ def stringToList(selector) {
 def checkSelector(image, config, title, oneStep, axis, sName) {
 
     def selector = oneStep.get(sName)
-    config.logger.trace(2, "checkSelector($sName) for image=" + image + " selector= " + selector)
+    config.logger.trace(2, "checkSelector($sName) for image=" + image + " step=" + oneStep + " selector= " + selector)
 
     if (selector && selector.size() > 0) {
         def customSel = stringToList(selector)
