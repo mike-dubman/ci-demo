@@ -229,7 +229,16 @@ def gen_image_map(config) {
             }
 
             dfile.file = dfile.file ?: ''
-            dfile.tag = dfile.tag ?: 'latest'
+            if (dfile.url) {
+                ​def parts = dfile.url.tokenize('/').last().tokenize(':')
+                if (parts.size() == 2) {
+                    dfile.tag = parts[-1]
+                    tail = tag.size() + 2
+                    dfile.uri = str[0..-tail]
+                } else {
+                    dfile.tag = 'latest'
+                }
+            }
             dfile.build_args = dfile.build_args ?: ''
             dfile.build_args = resolveTemplate(dfile, dfile.build_args, config)
             dfile.uri = dfile.uri ?: "${arch}/${dfile.name}"
