@@ -352,7 +352,7 @@ Map toStringMap(String param) {
 
 def stringToList(selector) {
 
-    def customSel = [];
+    def customSel = []
 
     if (selector && selector.size() > 0) {
 
@@ -378,6 +378,7 @@ def checkSelector(image, config, title, oneStep, axis, selector) {
     if (selector && selector.size() > 0) {
         def customSel = stringToList(selector)
         println("YYYYYY customSel="+customSel)
+        println("YYYYYY axis="+axis)
         // no match - skip
         if (!matchMapEntry(customSel, axis)) {
             config.logger.trace(2, "Step '" + title + "' skipped as no match by customSel=" + customSel + " for image with axis=" + axis)
