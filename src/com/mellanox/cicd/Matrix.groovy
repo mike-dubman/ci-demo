@@ -373,25 +373,6 @@ def stringToList(selector) {
     return customSel
 }
 
-def checkSelector(image, config, title, oneStep, axis, selector) {
-
-    config.logger.trace(2, "checkSelector() for image=" + image + " step=" + oneStep + " selector= " + selector)
-
-    if (selector && selector.size() > 0) {
-        def customSel = stringToList(selector)
-        println("YYYYYY customSel="+customSel)
-        println("YYYYYY axis="+axis)
-        // match - no skip
-        if (matchMapEntry(customSel, axis)) {
-            config.logger.trace(2, "Step '" + title + "' skipped as no match by customSel=" + customSel + " for image with axis=" + axis)
-            return false
-        }
-    } else {
-        return false
-    }
-    return true
-}
-
 def check_skip_stage(image, config, title, oneStep, axis) {
 
     if (oneStep.get("enable") != null && !oneStep.enable) {
@@ -399,23 +380,27 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         return true
     }
 
-    if (oneStep.containerSelector && oneStep.containerSelector.size()) {
-        println("XXXXXXX=" + oneStep.containerSelector + " size=" +  oneStep.containerSelector.size())
-    }
-    if (checkSelector(image, config, title, oneStep, axis, oneStep.containerSelector)) {
-        return true
-    }
-
-    if (checkSelector(image, config, title, oneStep, axis, oneStep.agentSelector)) {
-        return true
-    }
+    def selectors = [oneStep.containerSelector, oneStep.agentSelector]
+    def skip = false
 
     if (image['category'] == 'tool') {
-        config.logger.trace(2, "$title - Step '" + oneStep.name + "' skipped for image category=tool")
-        return true
+        skip = true
     }
 
-    return false
+    for (int i=0; i<selectors.size(); i++) {
+        selector = selectors[i]        
+        if (selector && selector.size() > 0) {
+            def customSel = stringToList(selector)
+            // no match - skip
+            if (matchMapEntry(customSel, axis)) {
+                config.logger.trace(2, "Step '" + oneStep.name + " matched, selecting")
+                skip = false
+            }
+        }
+    }
+
+    config.logger.trace(2, "$title - Step '" + oneStep.name + "' skip=" + skip)
+    return skip
 }
 
 void reportFail(String stage, String msg) {
