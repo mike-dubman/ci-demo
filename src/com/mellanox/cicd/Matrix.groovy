@@ -1020,10 +1020,13 @@ def main() {
             def file = files[i]
             def branches = [:]
             def config = loadConfigFile(file.path, logger)
-            logger.info("New Job: " + config.job + " file: " + file.path)
+            logger.info("New Job: '" + config.job + "'' file: " + file.path)
 
             config.put("logger", logger)
             config.put("cFiles", getChangedFilesList(config))
+            if (!config.env) {
+                config.put("env", [:])
+            }
 
 
 // prepare MAP in format:
