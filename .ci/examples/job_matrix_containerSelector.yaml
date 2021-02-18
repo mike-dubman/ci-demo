@@ -29,6 +29,12 @@ steps:
   run: |
     ls
 
+- name: run once on blackduck and hpc-test-node-inbox
+  containerSelector: "{name: 'blackduck'}"
+  agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
+  run: |
+    ls
+
 pipeline_start:
   run: |
     echo Starting pipeline
