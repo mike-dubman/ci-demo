@@ -386,7 +386,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
     }
 
     for (int i=0; i<selectors.size(); i++) {
-        selector = selectors[i]        
+        selector = selectors[i]
         if (selector && selector.size() > 0) {
             def customSel = stringToList(selector)
             if (matchMapEntry(customSel, axis)) {
