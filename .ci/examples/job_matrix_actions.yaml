@@ -11,7 +11,7 @@ volumes:
   - {mountPath: /.autodirect/sw/release, hostPath: /.autodirect/sw/release}
 
 runs_on_dockers:
-  - {name: 'toolkit', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', category: 'tool', arch: 'x86_64'}
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', category: 'tool', arch: 'x86_64'}
   - {name: 'coverity', url: 'harbor.mellanox.com/swx-storage/ci-demo/x86_64/centos7-7:latest', category: 'tool', arch: 'x86_64'}
 
 
@@ -29,7 +29,7 @@ steps:
     archiveArtifacts: 'cov.log'
 
   - name: Blackduck scan source
-    containerSelector: "{name: 'toolkit'}"
+    containerSelector: "{name: 'blackduck'}"
     shell: action
     module: ngci
     run: NGCIBlackDuckScan

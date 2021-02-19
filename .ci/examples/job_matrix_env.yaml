@@ -2,38 +2,30 @@
 job: baremetal
 
 kubernetes:
-  cloud: swx-k8s-spray
+  cloud: 'swx-k8s-spray'
 
-registry_host: harbor.mellanox.com
-registry_path: /swx-storage/ci-demo
-registry_auth: swx-storage
+runs_on_dockers:
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', category: 'tool', arch: 'x86_64'}
 
 env:
-  cidemo_var1: '777'
-  cidemo_var2: '${cidemo_var1}-888'
-  cidemo_var3: '${cidemo_var2}-999'
-  cidemo_mydir: '$WORKSPACE'
-  blackduck_url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009'
-
-#runs_on_dockers:
-#  - {name: 'blackduck', url: '$blackduck_url', arch: 'x86_64'}
-
-runs_on_agents:
-  - nodeLabel: '(dockerserver || docker) && x86_64'
-  - nodeLabel: 'hpc-test-node-inbox'
+  cidemo_var1: 'false'
+#  cidemo_var2: false
+#  cidemo_var3: enabled
 
 steps:
 
 - name: step1
   run: |
     hostname
-    env|egrep cidemo_
+    env|grep ci_demo
 
-- name: step2
+pipeline_start:
   run: |
-    env
+    echo Starting pipeline
+    env|grep ci_demo
 
-- name: run once
-  agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
-  run: |
-    env
+pipeline_stop:
+  run: 
+    echo pipeline_status=$pipeline_status
+    echo all done
+
