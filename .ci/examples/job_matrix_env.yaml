@@ -21,14 +21,3 @@ steps:
   run: |
     hostname
     env
-
-pipeline_start:
-  run: |
-    echo Starting pipeline
-    env | grep ci_demo
-
-pipeline_stop:
-  run: 
-    echo pipeline_status=$pipeline_status
-    echo all done
-
