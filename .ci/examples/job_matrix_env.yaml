@@ -25,7 +25,7 @@ steps:
 pipeline_start:
   run: |
     echo Starting pipeline
-    env|grep ci_demo
+    env | grep ci_demo
 
 pipeline_stop:
   run: 
