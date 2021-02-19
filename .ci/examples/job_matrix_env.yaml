@@ -5,7 +5,7 @@ kubernetes:
   cloud: 'swx-k8s-spray'
 
 runs_on_dockers:
-  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', category: 'tool', arch: 'x86_64'}
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', arch: 'x86_64'}
 
 env:
   cidemo_var1: false
@@ -25,7 +25,7 @@ steps:
 pipeline_start:
   run: |
     echo Starting pipeline
-    env
+    env|grep ci_demo
 
 pipeline_stop:
   run: 
