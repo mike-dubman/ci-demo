@@ -9,15 +9,18 @@ runs_on_dockers:
 
 env:
   cidemo_var1: false
-#  cidemo_var2: false
-#  cidemo_var3: enabled
+  cidemo_var2: 'false'
+  cidemo_var3: enabled
+  cidemo_var4: 'enabled'
+  cidemo_var5: 5
+  cidemo_var6: '5'
 
 steps:
 
 - name: step1
   run: |
     hostname
-    env
+    env | grep cidemo_
 
 pipeline_start:
   run: |
