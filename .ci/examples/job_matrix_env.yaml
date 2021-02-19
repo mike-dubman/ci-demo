@@ -8,7 +8,7 @@ runs_on_dockers:
   - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', category: 'tool', arch: 'x86_64'}
 
 env:
-  cidemo_var1: 'false'
+  cidemo_var1: false
 #  cidemo_var2: false
 #  cidemo_var3: enabled
 
