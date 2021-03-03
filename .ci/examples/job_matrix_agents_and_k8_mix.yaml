@@ -8,8 +8,17 @@ registry_auth: swx-storage
 # build container on k8 cloud, run on baremetal nodeLabel with jenkins docker plugin
 # because it is part of runs_on_dockers section
 
+env:
+  build_dockers: true
+
 runs_on_dockers:
-  - {file: '.ci/Dockerfile.ubuntu18-4', name: 'ubuntu18-4', cloud: 'swx-k8s', nodeLabel: 'hpc-test-node-inbox', arch: 'x86_64'}
+  - {
+    file: '.ci/Dockerfile.ubuntu18-4', 
+    name: 'ubuntu18-4', 
+    cloud: 'swx-k8s', 
+    nodeLabel: 'swx-clx01 || swx-clx02', 
+    arch: 'x86_64'
+    }
   
 
 steps:
