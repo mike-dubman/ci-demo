@@ -1072,9 +1072,12 @@ def main() {
                     parallelBuildDockers[branchName] = {
 
                         def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
+                        println("xxxxxxxx $cloudName -- ${image.nodeLabel}")
                         if (cloudName) {
+                            println("xxxxxxx1")
                             build_docker_on_k8(image, config)
                         } else if (image.nodeLabel) {
+                            println("xxxxxxx2")
                             def callback = { pimage, pconfig, pname=null, paxis=null ->
                                 buildDocker(pimage, pconfig)
                             }
