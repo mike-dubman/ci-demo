@@ -9,7 +9,7 @@ registry_auth: swx-storage
 # because it is part of runs_on_dockers section
 
 runs_on_dockers:
-  - {file: '.ci/Dockerfile.ubuntu18-4', name: 'ubuntu18-4', cloud: 'swx-k8s', nodeLabel: 'hpc-test-node-inbox'}
+  - {file: '.ci/Dockerfile.ubuntu18-4', name: 'ubuntu18-4', cloud: 'swx-k8s', nodeLabel: 'hpc-test-node-inbox', arch: 'x86_64'}
   
 
 steps:
