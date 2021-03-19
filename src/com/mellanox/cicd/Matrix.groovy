@@ -804,8 +804,8 @@ def getMatrixTasks(image, config) {
 
     if (config.get("matrix")) {
         axes = getMatrixAxes(config.matrix.axes).findAll()
-        exclude = getConfigVal(config, ['matrix', 'exclude'], [])
-        include = getConfigVal(config, ['matrix', 'include'], [])
+        exclude = getConfigVal(config, ['matrix', 'exclude'], [], false)
+        include = getConfigVal(config, ['matrix', 'include'], [], false)
     } else {
         axes.add(image)
     }
