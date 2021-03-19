@@ -308,7 +308,7 @@ def attachJunit(config, args) {
 def attachTap(config, args) {
     if (args != null) {
         try {
-            step([$class: "TapPublisher", testResults: args])
+            step([$class: "TapPublisher", failedTestsMarkBuildAsFailure: true, planRequired: false, testResults: args])
         } catch (e) {
             config.logger.warn("Failed to add tap results: " + args + " reason: " + e)
         }
