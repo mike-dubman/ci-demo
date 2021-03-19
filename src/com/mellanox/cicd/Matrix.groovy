@@ -529,6 +529,7 @@ def getConfigVal(config, list, defaultVal=null, toString=true) {
 
     def ret
     if (toString && (val instanceof ArrayList) && (val.size() == 1)) {
+        config.logger.trace(5, "getConfigVal: arraylist hack "+ val[0])
         ret = val[0]
     } else {
         ret = val
