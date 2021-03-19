@@ -13,4 +13,6 @@ steps:
   run: |
     echo ok 1 > test1.tap
     echo ok 2 > test2.tap
-  archiveTap: '*.tap'
+  archiveTap: 'test2.tap'    
+
+archiveTap: 'test1.tap'
