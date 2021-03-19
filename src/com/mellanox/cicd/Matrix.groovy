@@ -108,7 +108,7 @@ def run_step_shell(cmd, title, oneStep, config) {
 
         attachArtifacts(config, oneStep.archiveArtifacts)
         attachJunit(config, oneStep.archiveJunit)
-        attachTap(config, config.archiveTap)
+        attachTap(config, oneStep.archiveTap)
 
         if (ret.rc != 0) {
             def msg = "Step ${title} failed with exit code=${ret.rc}"
