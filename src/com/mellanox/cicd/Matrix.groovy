@@ -809,7 +809,12 @@ def getMatrixTasks(image, config) {
         axes.add(image)
     }
 
-    config.logger.trace(2, "Filters include size: " + include.size() + " exclude size: " + exclude.size())
+    config.logger.trace(2, "Filters: include[" + 
+                            include.size() + "] = " + 
+                            include + " exclude[" + 
+                            exclude.size() + 
+                            "] = " + exclude
+                            )
     return getTasks(axes, image, config, include, exclude)
 }
 
