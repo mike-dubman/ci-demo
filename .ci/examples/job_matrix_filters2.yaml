@@ -35,6 +35,7 @@ matrix:
       - aarch64
   include:
     - {cuda: 'dev/cuda11.0', arch: 'x86_64'}
+    - {cuda: 'dev/cuda11.2', arch: 'x86_64'}
 
 
 steps:
