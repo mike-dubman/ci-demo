@@ -9,10 +9,10 @@ runs_on_dockers:
 
 steps:
 
-- name: create tap files
+- name: create tap file
   run: |
-    echo ok 1 > test1.tap
-    echo ok 2 > test2.tap
-  archiveTap: 'test2.tap'    
+    echo 1..2 > test.tap
+    echo ok 1 - this is test1 >> test.tap
+    echo ok 2 - this is test2 >> test.tap
 
-archiveTap: 'test1.tap'
+archiveTap: 'test.tap'
