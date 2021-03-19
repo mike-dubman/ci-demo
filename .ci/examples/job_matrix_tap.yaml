@@ -1,0 +1,20 @@
+---
+job: baremetal
+
+kubernetes:
+  cloud: 'swx-k8s-spray'
+
+runs_on_dockers:
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', arch: 'x86_64'}
+
+runs_on_dockers:
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', arch: 'x86_64'}
+
+
+steps:
+
+- name: create tap files
+  run: |
+    echo ok 1 > test1.tap
+    echo ok 2 > test2.tap
+  attachTap: '*.tap'
