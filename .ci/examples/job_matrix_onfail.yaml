@@ -25,7 +25,7 @@ steps:
     run: |
       echo ok 1 - this is test > test.tap
       echo Failing here
-      exit 1
+      exit 0
     onfail: 'env > onfail_myenv.log'
     always: env > always_myenv.log
     archiveArtifacts-onfail: 'onfail_myenv.log'
