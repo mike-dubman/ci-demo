@@ -106,7 +106,7 @@ def run_step_shell(cmd, title, oneStep, config) {
             run_shell(oneStep.always, "always command for ${title}")
         }
 
-        attachResults(config, oneStep, rc)
+        attachResults(config, oneStep, ret)
 
         if (ret.rc != 0) {
             def msg = "Step ${title} failed with exit code=${ret.rc}"
