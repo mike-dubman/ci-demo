@@ -23,10 +23,10 @@ steps:
       env
   - name: Failure
     run: |
-      env
+      echo ok 1 - this is test > test.tap
       echo Failing here
       exit 1
-    onfail: 
-      run: 'env > onfail_myenv.log'
-      archiveArtifacts: 'onfail_myenv.log'
+    onfail: 'env > onfail_myenv.log'
     always: env > always_myenv.log
+    archiveArtifacts-onfail: 'onfail_myenv.log'
+    archiveTap-onfail: '**/*.tap'
