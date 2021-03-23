@@ -318,13 +318,13 @@ def attachResults(config, oneStep=null, res=null) {
     def obj = oneStep? oneStep : config
 
     if (res && res.rc != 0) {
-        attachArtifacts(config, obj.archiveArtifacts-onfail)
-        attachJunit(config, obj.archiveJunit-onfail)
-        attachTap(config, obj.archiveTap-onfail)
+        attachArtifacts(config, obj["archiveArtifacts-onfail"])
+        attachJunit(config, obj["archiveJunit-onfail"])
+        attachTap(config, obj["archiveTap-onfail"])
     }
-    attachArtifacts(config, obj.archiveArtifacts)
-    attachJunit(config, obj.archiveJunit)
-    attachTap(config, obj.archiveTap)
+    attachArtifacts(config, obj["archiveArtifacts"])
+    attachJunit(config, obj["archiveJunit"])
+    attachTap(config, obj["archiveTap"])
 }
 
 @NonCPS
