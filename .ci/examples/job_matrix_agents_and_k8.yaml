@@ -18,23 +18,29 @@ steps:
 - name: step1
   run: |
     hostname
+    echo pwd=$PWD -- ws=$WORKSPACE
 
 - name: step2
   run: |
     env
+    echo pwd=$PWD -- ws=$WORKSPACE
 
 - name: run once
   agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
   run: |
     ls
+    echo pwd=$PWD -- ws=$WORKSPACE
+
 
 pipeline_start:
   run: |
     echo Starting pipeline
+    echo pwd=$PWD -- ws=$WORKSPACE
     env
 
 pipeline_stop:
   run: 
     echo pipeline_status=$pipeline_status
+    echo pwd=$PWD -- ws=$WORKSPACE
     echo all done
 

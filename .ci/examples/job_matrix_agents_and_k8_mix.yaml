@@ -9,7 +9,7 @@ registry_auth: swx-storage
 # because it is part of runs_on_dockers section
 
 env:
-  build_dockers: true
+  build_dockers: false
 
 runs_on_dockers:
   - {
