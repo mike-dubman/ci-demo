@@ -5,10 +5,13 @@ registry_host: harbor.mellanox.com
 registry_path: /swx-storage/ci-demo
 registry_auth: swx-storage
 
+kubernetes:
+  cloud: 'swx-k8s-spray'
 
 runs_on_dockers:
-  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', cloud: 'swx-k8s-spray', arch: 'x86_64'}
-  - {file: '.ci/Dockerfile.ubuntu18-4', name: 'ubuntu18-4', tag: 'latest'}
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:latest', arch: 'x86_64'}
+  - {file: '.ci/Dockerfile.ubuntu18-4', name: 'ubuntu18-4', tag: 'latest', arch: 'x86_64'}
+  
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
   - nodeLabel: 'hpc-test-node-inbox'
