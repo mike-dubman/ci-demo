@@ -446,7 +446,7 @@ def run_step(image, config, title, oneStep, axis) {
         return
     }
 
-    println("XXXX ws=${env.WORKSPACE} pwd=" + pwd())
+    println("XXXX ws=${env.WORKSPACE} pwd=" + pwd() + " WS=${WORKSPACE}")
 //    env.WORKSPACE = pwd()
 
 
