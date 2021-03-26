@@ -11,10 +11,21 @@ kubernetes:
 runs_on_dockers:
   - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:latest', arch: 'x86_64'}
   - {file: '.ci/Dockerfile.ubuntu18-4', name: 'ubuntu18-4', tag: 'latest', arch: 'x86_64'}
-  
+  - {name: 'rhel8.3', url: 'harbor.mellanox.com/hpcx/x86_64/rhel8.3/builder:mofed-5.2-0.5.3.0', arch: 'x86_64'}
+  - {name: 'sl15sp2', url: 'harbor.mellanox.com/swx-infra/x86_64/sles15sp2/builder:mofed-5.2-2.2.0.0', arch: 'x86_64'}
+  - {name: 'fc31',    url: 'harbor.mellanox.com/swx-infra/x86_64/fedora31/builder:mofed-5.1-1.0.7.0', arch: 'x86_64'}
+  - {name: 'ub20.04', url: 'harbor.mellanox.com/swx-infra/x86_64/ubuntu20.04/builder:mofed-5.2-2.2.0.0', arch: 'x86_64'}
+  - {name: 'ub20.04', url: 'harbor.mellanox.com/swx-infra/aarch64/ubuntu20.04/builder:mofed-5.2-1.0.4.0', arch: 'aarch64'}
+  - {name: 'rhel8.3', url: 'harbor.mellanox.com/hpcx/x86_64/rhel8.3/builder:inbox', arch: 'x86_64'}
+  - {name: 'rhel8.3', url: 'harbor.mellanox.com/hpcx/aarch64/rhel8.3/builder:inbox', arch: 'aarch64'}
+  - {name: 'rhel7.6', url: 'harbor.mellanox.com/hpcx/x86_64/rhel7.6/builder:mofed-5.1-0.6.6.0', arch: 'x86_64'}
+  - {name: 'rhel7.6', url: 'harbor.mellanox.com/hpcx/x86_64/rhel7.6/builder:inbox', arch: 'x86_64'}
+
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
   - nodeLabel: 'hpc-test-node-inbox'
+  - nodeLabel: 'r-aa-zorro014'
+  
 
 steps:
 
