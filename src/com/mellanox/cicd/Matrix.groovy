@@ -445,7 +445,7 @@ def run_step(image, config, title, oneStep, axis) {
     if ((image != null) && (axis != null) && check_skip_stage(image, config, title, oneStep, axis)) {
         return
     }
-    env.WORKSPACE = pwd()
+//    env.WORKSPACE = pwd()
 
 
     stage("${title}") {
