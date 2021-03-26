@@ -36,6 +36,14 @@ steps:
       echo XXX found
       exit 1
     fi
+    echo '#!/bin/bash' > aa
+    echo 'echo AAA pwd=$PWD -- ws=$WORKSPACE oldpwd=$OLDPWD' >> aa
+    echo 'WORKSPACE=${WORKSPACE:=$PWD}' >> aa
+    echo 'echo AAA WS=$WORKSPACE' >> aa
+
+    echo env >> aa
+    chmod 755 aa
+    env KOKO=MOMO ./aa
 
 - name: step2
   run: |
