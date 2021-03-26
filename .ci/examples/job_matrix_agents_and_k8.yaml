@@ -68,7 +68,7 @@ pipeline_start:
     fi
 
 pipeline_stop:
-  run: 
+  run: |
     echo pipeline_status=$pipeline_status
     if [ "$(pwd)" != "$WORKSPACE" ]; then
       echo XXX found
