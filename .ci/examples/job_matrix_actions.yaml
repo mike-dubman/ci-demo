@@ -22,6 +22,9 @@ steps:
     containerSelector: "{name: 'coverity'}"
     run: |
       echo Running action script:
+      ./autogen.sh
+      ./configure
+      make -j 3 clean ||:
       .ci/actions/coverity.sh --build_script 'make -j 3' --ignore_files 'devx googletest tests'
 
   - name: Coverity scan
@@ -37,6 +40,7 @@ steps:
 
   - name: Blackduck scan source
     containerSelector: "{name: 'blackduck'}"
+    enable: false
     shell: action
     module: ngci
     run: NGCIBlackDuckScan
