@@ -107,6 +107,9 @@ def run_step_shell(cmd, title, oneStep, config) {
         }
 
         attachResults(config, oneStep, ret)
+        if (oneStep.publishHTML) {
+            publishHTML()
+        }
 
         if (ret.rc != 0) {
             def msg = "Step ${title} failed with exit code=${ret.rc}"
@@ -313,6 +316,16 @@ def attachTap(config, args) {
     }
 }
 
+def publishHTML() {
+    publishHTML (target : [allowMissing: false,
+    alwaysLinkToLastBuild: true,
+    keepAll: true,
+    reportDir: 'cov_build/output/errors/',
+    reportFiles: 'index.html',
+    reportName: 'Coverity Report',
+    reportTitles: 'The Coverity Report'])
+}
+
 def attachResults(config, oneStep=null, res=null) {
 
     def obj = oneStep? oneStep : config
@@ -325,6 +338,7 @@ def attachResults(config, oneStep=null, res=null) {
     attachArtifacts(config, obj["archiveArtifacts"])
     attachJunit(config, obj["archiveJunit"])
     attachTap(config, obj["archiveTap"])
+
 }
 
 @NonCPS
