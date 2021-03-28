@@ -19,6 +19,7 @@ steps:
 
   - name: Coverity embed
     resource: actions/coverity.sh
+    containerSelector: "{name: 'coverity'}"
     run: |
       echo Running action script:
       .ci/actions/coverity.sh --build_script 'make -j 3' --ignore_files 'devx googletest tests'
