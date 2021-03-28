@@ -16,7 +16,13 @@ runs_on_dockers:
 
 
 steps:
-  
+
+  - name: Coverity embed
+    resource: actions/coverity.sh
+    run: |
+      echo Running action script:
+      .ci/actions/coverity.sh --build_script 'make -j 3' --ignore_files 'devx googletest tests'
+
   - name: Coverity scan
     shell: action
     module: dynamicAction

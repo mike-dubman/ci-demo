@@ -452,6 +452,16 @@ def run_step(image, config, title, oneStep, axis) {
     stage("${title}") {
         def shell = getDefaultShell(config, oneStep)
 
+        if (oneStep.resource) {
+            def actionScript = libraryResource "${oneStep.resource}"
+            def idx = oneStep.resource.lastIndexOf('/')
+            def dirname = '.ci/' + ${oneStep.resource}.substring(0, idx)
+            def filename = oneStep.resource.substring(idx+1)
+            def toFile = "${dirname}/${filename}"
+            sh(script: "mkdir -p $dirname", label: "Create action dir", returnStatus: true)
+            writeFile(file: toFile, text: actionScript)
+            sh(script: "chmod +x " + toFile, label: "Set script permissions", returnStatus: true)
+        }
 
         if (shell == "action") {
             if (oneStep.module == null) {
@@ -855,7 +865,7 @@ String getChangedFilesList(config) {
 
     try {
         def dcmd
-        if (env.GIT_COMMIT != null && env.GIT_PREV_COMMIT != null) {
+        if (env.GIT_COMMIT != "" && env.GIT_PREV_COMMIT != "") {
             dcmd = "git diff --name-only ${env.GIT_PREV_COMMIT} ${env.GIT_COMMIT}"
         } else {
             def br  = env.ghprbTargetBranch? env.ghprbTargetBranch : "master"
