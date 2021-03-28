@@ -11,7 +11,7 @@ volumes:
   - {mountPath: /.autodirect/sw/release, hostPath: /.autodirect/sw/release}
 
 runs_on_dockers:
-  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009.2', category: 'tool', arch: 'x86_64'}
+  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:latest', category: 'tool', arch: 'x86_64'}
   - {name: 'coverity', url: 'harbor.mellanox.com/swx-storage/ci-demo/x86_64/centos7-7:latest', category: 'tool', arch: 'x86_64'}
 
 
@@ -40,7 +40,6 @@ steps:
 
   - name: Blackduck scan source
     containerSelector: "{name: 'blackduck'}"
-    enable: false
     shell: action
     module: ngci
     run: NGCIBlackDuckScan
