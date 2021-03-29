@@ -319,23 +319,18 @@ def attachHTML(oneStep) {
 
     def reportDir,reportFiles,reportName
 
-    println("XXXXX Checking ${oneStep.name} : " + oneStep)
-
     if (oneStep.publishHTML) {
         reportDir = oneStep.publishHTML.reportDir
         reportFiles = oneStep.publishHTML.reportFiles
         reportName = oneStep.publishHTML.reportName
     } else if (oneStep.run == 'coverity.sh' || oneStep.resource == 'actions/coverity.sh') {
-        println("XXXXX found cv action")
         reportDir = 'cov_build/output/errors/'
         reportFiles = 'index.html'
         reportName = 'Coverity Report'
     } else {
-        println("XXXXX skipping ${oneStep.name}")
         return
     }
 
-    println("XXXX publishing $reportName -- $reportFiles -- $reportDir")
     publishHTML (target : [allowMissing: false,
     alwaysLinkToLastBuild: true,
     keepAll: true,
