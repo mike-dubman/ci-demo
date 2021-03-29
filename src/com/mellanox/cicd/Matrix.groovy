@@ -107,9 +107,7 @@ def run_step_shell(cmd, title, oneStep, config) {
         }
 
         attachResults(config, oneStep, ret)
-        if (oneStep.publishHTML) {
-            publishHTML()
-        }
+        publishHTML(oneStep)
 
         if (ret.rc != 0) {
             def msg = "Step ${title} failed with exit code=${ret.rc}"
@@ -316,14 +314,29 @@ def attachTap(config, args) {
     }
 }
 
-def publishHTML() {
-    publishHTML (target : [allowMissing: false,
+
+def publishHTML(oneStep) {
+
+    def reportDir,reportFiles,reportName
+    if (oneStep.publishHTML) {
+        reportDir = oneStep.publishHTML.reportDir
+        reportFiles = oneStep.publishHTML.reportFiles
+        reportName = oneStep.publishHTML.reportName
+    } else if (oneStep.run == "coverity.sh") || oneStep.resource == "actions/coverity.sh") {
+        reportDir = 'cov_build/output/errors/'
+        reportFiles = 'index.html'
+        reportName = 'Coverity Report'
+    } else {
+        return
+    }
+
+    publishHTML (target : [allowMissing: true,
     alwaysLinkToLastBuild: true,
     keepAll: true,
-    reportDir: 'cov_build/output/errors/',
-    reportFiles: 'index.html',
-    reportName: 'Coverity Report',
-    reportTitles: 'The Coverity Report'])
+    reportDir: reportDir,
+    reportFiles: reportFiles,
+    reportName: reportName,
+    ])
 }
 
 def attachResults(config, oneStep=null, res=null) {

@@ -20,7 +20,6 @@ steps:
   - name: Coverity embed
     resource: actions/coverity.sh
     containerSelector: "{name: 'coverity'}"
-    publishHTML: koko
     run: |
       echo Running action script:
       ./autogen.sh
