@@ -107,7 +107,7 @@ def run_step_shell(cmd, title, oneStep, config) {
         }
 
         attachResults(config, oneStep, ret)
-        publishHTML(oneStep)
+        attachHTML(oneStep)
 
         if (ret.rc != 0) {
             def msg = "Step ${title} failed with exit code=${ret.rc}"
@@ -315,11 +315,11 @@ def attachTap(config, args) {
 }
 
 
-def publishHTML(oneStep) {
+def attachHTML(oneStep) {
 
     def reportDir,reportFiles,reportName
 
-    println("XXXXX Checking ${oneStep.name}")
+    println("XXXXX Checking ${oneStep.name} : " + oneStep)
 
     if (oneStep.publishHTML) {
         reportDir = oneStep.publishHTML.reportDir
@@ -335,8 +335,8 @@ def publishHTML(oneStep) {
         return
     }
 
-    println("XXXX $reportName -- $reportFiles -- $reportDir")
-    publishHTML (target : [allowMissing: true,
+    println("XXXX publishing $reportName -- $reportFiles -- $reportDir")
+    publishHTML (target : [allowMissing: false,
     alwaysLinkToLastBuild: true,
     keepAll: true,
     reportDir: reportDir,
