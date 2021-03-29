@@ -26,43 +26,43 @@ runs_on_agents:
   - nodeLabel: 'hpc-test-node-inbox'
   - nodeLabel: 'r-aa-zorro014'
   
-
+matrix:
+  axes:
+    flags:
+      - default
+      - extra
+    arch:
+      - x86_64
+      - aarch64
+      
 steps:
 
 - name: step1
   run: |
-    echo pwd=$PWD -- ws=$WORKSPACE
-    if [ "$(pwd)" != "$WORKSPACE" ]; then
-      echo XXX found
-      exit 1
-    fi
-    echo '#!/bin/bash' > aa
-    echo 'echo AAA pwd=$PWD -- ws=$WORKSPACE oldpwd=$OLDPWD' >> aa
-    echo 'WORKSPACE=${WORKSPACE:=$PWD}' >> aa
-    echo 'echo AAA WS=$WORKSPACE' >> aa
-
-    echo env >> aa
-    chmod 755 aa
-    env KOKO=MOMO ./aa
+    echo pwd=$PWD -- ws=$WORKSPACE -- $(pwd)
+    cd $WORKSPACE
+    ./autogen.sh
+    ./configure
+    make
 
 - name: step2
   run: |
     env
-    echo pwd=$PWD -- ws=$WORKSPACE
-    if [ "$(pwd)" != "$WORKSPACE" ]; then
-      echo XXX found
-      exit 1
-    fi
+    echo pwd=$PWD -- ws=$WORKSPACE -- $(pwd)
+    cd $WORKSPACE
+    ./autogen.sh
+    ./configure
+    make
 
 - name: run once
   agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
   run: |
     ls
-    echo pwd=$PWD -- ws=$WORKSPACE
-    if [ "$(pwd)" != "$WORKSPACE" ]; then
-      echo XXX found
-      exit 1
-    fi
+    echo pwd=$PWD -- ws=$WORKSPACE -- $(pwd)
+    cd $WORKSPACE
+    ./autogen.sh
+    ./configure
+    make
 
 
 pipeline_start:
@@ -70,17 +70,9 @@ pipeline_start:
     echo Starting pipeline
     env
     echo pwd=$PWD -- ws=$WORKSPACE
-    if [ "$(pwd)" != "$WORKSPACE" ]; then
-      echo XXX found
-      exit 1
-    fi
 
 pipeline_stop:
   run: |
     echo pipeline_status=$pipeline_status
-    if [ "$(pwd)" != "$WORKSPACE" ]; then
-      echo XXX found
-      exit 1
-    fi
     echo all done
 
