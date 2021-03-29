@@ -322,7 +322,7 @@ def publishHTML(oneStep) {
         reportDir = oneStep.publishHTML.reportDir
         reportFiles = oneStep.publishHTML.reportFiles
         reportName = oneStep.publishHTML.reportName
-    } else if (oneStep.run == "coverity.sh") || oneStep.resource == "actions/coverity.sh") {
+    } else if (oneStep.run == 'coverity.sh' || oneStep.resource == 'actions/coverity.sh') {
         reportDir = 'cov_build/output/errors/'
         reportFiles = 'index.html'
         reportName = 'Coverity Report'
