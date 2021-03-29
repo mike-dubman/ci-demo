@@ -31,6 +31,7 @@ steps:
     shell: action
     module: dynamicAction
     run: coverity.sh 
+    enable: false
     containerSelector: "{name: 'coverity'}"
     args:
       - "--pre_script './autogen.sh;./configure;make -j 3 clean'"
