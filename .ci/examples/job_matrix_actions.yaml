@@ -31,7 +31,6 @@ steps:
     shell: action
     module: dynamicAction
     run: coverity.sh 
-    enable: false
     containerSelector: "{name: 'coverity'}"
     args:
       - "--pre_script './autogen.sh;./configure;make -j 3 clean'"
@@ -44,6 +43,7 @@ steps:
     shell: action
     module: ngci
     run: NGCIBlackDuckScan
+    enable: false
     args:
       projectName: "NGCIBlackDuckScan"
       projectVersion: "ci-demo"
