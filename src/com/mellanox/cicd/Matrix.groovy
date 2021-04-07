@@ -661,7 +661,7 @@ spec:
         yamlMergeStrategy: merge(),
         yaml: yaml,
         containers: [
-            containerTemplate(privileged: privileged, name: 'jnlp', image: k8sArchConf.jnlpImage, args: '${computer.jnlpmac} ${computer.name}'),
+            containerTemplate(name: 'jnlp', image: k8sArchConf.jnlpImage, args: '${computer.jnlpmac} ${computer.name}'),
             containerTemplate(privileged: privileged, name: cname, image: image.url, ttyEnabled: true, alwaysPullImage: true, command: 'cat')
         ],
         volumes: listV
@@ -929,6 +929,7 @@ def buildImage(config, image) {
     // See https://stackoverflow.com/q/56829842/3648361
     def filename = image.filename.toString().trim()
     def extra_args = image.build_args
+    extra_args += getConfigVal(config, ['build_args'], ' --network=host')
     def changed_files = config.get("cFiles")
     def need_build = 0
     def img = image.url
@@ -1009,18 +1010,14 @@ def build_docker_on_k8(image, config) {
     config.logger.trace(2, "build_docker_on_k8 for image ${image.name} | nodeSelector: ${nodeSelector}")
 
     def hostNetwork = image.hostNetwork ?: getConfigVal(config, ['kubernetes', 'hostNetwork'], true)
-    def runAsUser = image.runAsUser ?: getConfigVal(config, ['kubernetes', 'runAsUser'], "0")
-    def runAsGroup = image.runAsGroup ?: getConfigVal(config, ['kubernetes', 'runAsGroup'], "0")
     def privileged = image.privileged ?: getConfigVal(config, ['kubernetes', 'privileged'], false)
 
     podTemplate(
         cloud: cloudName,
-        runAsUser: runAsUser,
-        runAsGroup: runAsGroup,
         nodeSelector: nodeSelector,
         hostNetwork: hostNetwork,
         containers: [
-            containerTemplate(privileged: privileged, name: 'jnlp', image: k8sArchConf.jnlpImage, args: '${computer.jnlpmac} ${computer.name}'),
+            containerTemplate(name: 'jnlp', image: k8sArchConf.jnlpImage, args: '${computer.jnlpmac} ${computer.name}'),
             containerTemplate(privileged: privileged, name: 'docker', image: k8sArchConf.dockerImage, ttyEnabled: true, alwaysPullImage: true, command: 'cat')
         ],
         volumes: listV
