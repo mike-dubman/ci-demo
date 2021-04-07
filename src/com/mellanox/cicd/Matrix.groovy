@@ -427,7 +427,9 @@ def stringToList(selector) {
 
 def check_skip_stage(image, config, title, oneStep, axis) {
 
-    if (oneStep.get("enable") != null && !oneStep.enable) {
+    def stepEnabled = getConfigVal(oneStep, ['enable'], true)
+
+    if (stepEnabled) {
         config.logger.trace(2, "Step '${oneStep.name}' is disabled in project yaml file, skipping")
         return true
     }
@@ -478,11 +480,11 @@ def run_step(image, config, title, oneStep, axis) {
         return
     }
 
-    env.WORKSPACE = pwd()
 
 
     stage("${title}") {
         def shell = getDefaultShell(config, oneStep)
+        env.WORKSPACE = pwd()
 
         if (oneStep.resource) {
             def actionScript = libraryResource "${oneStep.resource}"
