@@ -7,9 +7,9 @@ kubernetes:
 runs_on_dockers:
   - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', arch: 'x86_64'}
 
-runs_on_agents:
-  - nodeLabel: '(dockerserver || docker) && x86_64'
-  - nodeLabel: 'hpc-test-node-inbox'
+#runs_on_agents:
+#  - nodeLabel: '(dockerserver || docker) && x86_64'
+#  - nodeLabel: 'hpc-test-node-inbox'
 
 env:
   cidemo_var1: '777'
