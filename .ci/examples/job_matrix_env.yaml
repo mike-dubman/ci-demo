@@ -22,6 +22,7 @@ env:
   cidemo_var7: 'enabled'
   cidemo_var8: 5
   cidemo_var9: '5'
+  step2_enable: 'true'
 
 
 runs_on_agents:
@@ -31,6 +32,11 @@ runs_on_agents:
 steps:
 
 - name: step1
+  run: |
+    hostname
+    env
+- name: step2
+  enable: ${step2_enable}
   run: |
     hostname
     env
