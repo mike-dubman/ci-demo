@@ -5,7 +5,7 @@ kubernetes:
   cloud: 'swx-k8s-spray'
 
 runs_on_dockers:
-  - {name: 'blackduck', url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009', arch: 'x86_64'}
+  - {name: 'centos7-6', arch: 'x86_64'}
 
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
@@ -16,7 +16,6 @@ env:
   cidemo_var2: '${cidemo_var1}-888'
   cidemo_var3: '${cidemo_var2}-999'
   cidemo_mydir: '$WORKSPACE'
-  blackduck_url: 'harbor.mellanox.com/toolbox/ngci-centos:7.9.2009'
   cidemo_var4: false
   cidemo_var5: 'false'
   cidemo_var6: enabled
