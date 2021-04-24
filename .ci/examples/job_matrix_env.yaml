@@ -1,6 +1,11 @@
 ---
 job: baremetal
 
+registry_host: harbor.mellanox.com
+registry_path: /swx-storage/clusterkit
+registry_auth: swx-storage
+
+
 kubernetes:
   cloud: 'swx-k8s-spray'
 
