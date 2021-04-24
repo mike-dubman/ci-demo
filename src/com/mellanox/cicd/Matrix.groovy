@@ -131,9 +131,9 @@ def forceCleanup(prefix='', redirect='') {
 
 def forceCleanupWS() {
 
-    def res = forceCleanup(redirect: '&>/dev/null')
+    def res = forceCleanup('','&>/dev/null')
     if (res.rc != 0) {
-        res = forceCleanup(prefix: 'sudo')
+        res = forceCleanup('sudo','')
         if (res.rc != 0) {
             reportFail('clean workspace', "Unable to cleanup workspace rc=" + res)
         }
