@@ -904,7 +904,7 @@ String getChangedFilesList(config) {
 
     try {
         def dcmd
-        if (0 && (env.GIT_COMMIT != null) && (env.GIT_PREV_COMMIT != null)) {
+        if ((env.GIT_COMMIT != null) && (env.GIT_PREV_COMMIT != null)) {
             dcmd = "git diff --name-only ${env.GIT_PREV_COMMIT} ${env.GIT_COMMIT}"
         } else {
             def br
@@ -912,7 +912,6 @@ String getChangedFilesList(config) {
                 br = env.ghprbTargetBranch
             } else {
                 def ret = run_shell('git ls-remote -q | grep -q refs/heads/master', 'detecting branch name')
-                println("xxxxxxx " + ret.rc)
                 // master or main?
                 if (ret.rc == 0) {
                     br = 'master'
