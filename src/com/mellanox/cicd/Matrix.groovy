@@ -911,7 +911,7 @@ String getChangedFilesList(config) {
             if (env.ghprbTargetBranch) {
                 br = env.ghprbTargetBranch
             } else {
-                def ret = run_shell('git ls-remote -q \| grep -q refs/heads/master', 'detecting branch name')
+                def ret = run_shell('git ls-remote -q | grep -q refs/heads/master', 'detecting branch name')
                 println("xxxxxxx " + ret.rc)
                 // master or main?
                 if (ret.rc == 0) {
