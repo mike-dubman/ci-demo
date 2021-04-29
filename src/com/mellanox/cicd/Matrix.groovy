@@ -911,8 +911,14 @@ String getChangedFilesList(config) {
             if (env.ghprbTargetBranch) {
                 br = env.ghprbTargetBranch
             } else {
+
+                def rc = run_shell('git ls-remote -q | grep -q refs/heads/master', 'detecting branch name')
                 // master or main?
-                br = run_shell('git symbolic-ref --short HEAD', 'detecting branch name', true)
+                if (ret.rc == 0) {
+                    br = 'master'
+                } else {
+                    br = 'main'
+                }
             }
             def sha = env.ghprbActualCommit? env.ghprbActualCommit : "HEAD"
             dcmd = "git diff --name-only origin/${br}..${sha}"
