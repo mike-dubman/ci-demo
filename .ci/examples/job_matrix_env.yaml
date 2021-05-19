@@ -11,9 +11,16 @@ kubernetes:
 
 runs_on_dockers:
   - {name: 'centos7-6', arch: 'x86_64'}
+  - {name: 'centos7-3', arch: 'x86_64'}
+  - {name: 'centos7-2', arch: 'x86_64'}
+  - {name: 'centos7-4', arch: 'x86_64'}
+  - {name: 'centos7-5', arch: 'x86_64'}
+  - {name: 'centos7-6', arch: 'x86_64'}
+  - {name: 'ubuntu18-4', arch: 'x86_64'}
+  - {name: 'centos7-7', arch: 'x86_64'}
 
-runs_on_agents:
-  - nodeLabel: '(dockerserver || docker) && x86_64'
+#runs_on_agents:
+#  - nodeLabel: '(dockerserver || docker) && x86_64'
 #  - nodeLabel: 'hpc-test-node-inbox'
 
 env:

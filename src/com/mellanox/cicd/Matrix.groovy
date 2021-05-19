@@ -82,7 +82,7 @@ def run_shell(cmd, title, retOut=false) {
     return ['text': text, 'rc': rc, 'exception': err]
 }
 
-def run_step_shell(cmd, title, oneStep, config) {
+def run_step_shell(image, cmd, title, oneStep, config) {
 
     def vars = []
     vars += toEnvVars(config, config.env)
@@ -107,7 +107,7 @@ def run_step_shell(cmd, title, oneStep, config) {
         }
 
         attachResults(config, oneStep, ret)
-        attachHTML(oneStep)
+        attachHTML(image, config, oneStep)
 
         if (ret.rc != 0) {
             def msg = "Step ${title} failed with exit code=${ret.rc}"
@@ -319,23 +319,25 @@ def attachTap(config, args) {
 }
 
 
-def attachHTML(oneStep) {
+def attachHTML(image, config, oneStep) {
 
-    def reportDir,reportFiles,reportName
+    def reportDir, reportFiles, reportName, allowMissing
 
     if (oneStep.publishHTML) {
-        reportDir = oneStep.publishHTML.reportDir
-        reportFiles = oneStep.publishHTML.reportFiles
-        reportName = oneStep.publishHTML.reportName
+        reportDir = resolveTemplate(image, oneStep.publishHTML.reportDir, config)
+        reportFiles = resolveTemplate(image, oneStep.publishHTML.reportFiles, config)
+        reportName = resolveTemplate(image, oneStep.publishHTML.reportName, config)
+        allowMissing = oneStep.publishHTML.allowMissing
     } else if (oneStep.run == 'coverity.sh' || oneStep.resource == 'actions/coverity.sh') {
         reportDir = 'cov_build/output/errors/'
         reportFiles = 'index.html'
         reportName = 'Coverity Report'
+        allowMissing = false
     } else {
         return
     }
 
-    publishHTML (target : [allowMissing: false,
+    publishHTML (target : [allowMissing: allowMissing,
     alwaysLinkToLastBuild: true,
     keepAll: true,
     reportDir: reportDir,
@@ -525,10 +527,10 @@ def run_step(image, config, title, oneStep, axis) {
                 withCredentials([usernamePassword(credentialsId: oneStep.credentialsId,
                                 passwordVariable: found.passwordVariable,
                                 usernameVariable: found.usernameVariable)]) {
-                        run_step_shell(cmd, title, oneStep, config)
+                        run_step_shell(image, cmd, title, oneStep, config)
                     }
             } else {
-                run_step_shell(cmd, title, oneStep, config)
+                run_step_shell(image, cmd, title, oneStep, config)
             }
         }
     }
@@ -1160,15 +1162,19 @@ def main() {
                     parallelBuildDockers[branchName] = {
 
                         def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
-                        if (cloudName) {
-                            build_docker_on_k8(image, config)
-                        } else if (image.nodeLabel) {
-                            def callback = { pimage, pconfig, pname=null, paxis=null ->
-                                buildDocker(pimage, pconfig)
+                        def needPrepDocker = false
+                        if (needPrepDocker) {
+                            if (cloudName) {
+                                build_docker_on_k8(image, config)
+                            } else if (image.nodeLabel) {
+                                def callback = { pimage, pconfig, pname=null, paxis=null ->
+                                    buildDocker(pimage, pconfig)
+                                }
+                                runAgent(image, config, "Preparing image ${imgName}", null, callback, false)
+                            } else {
+                                reportFail('init', 'No cloud or Agent defined in project file')
                             }
-                            runAgent(image, config, "Preparing image ${imgName}", null, callback, false)
-                        } else {
-                            reportFail('init', 'No cloud or Agent defined in project file')
+
                         }
                     }
                     branches += getMatrixTasks(image, config)
