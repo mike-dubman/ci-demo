@@ -1159,11 +1159,12 @@ def main() {
                             }
                         }
                     }
-                    parallelBuildDockers[branchName] = {
 
-                        def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
-                        def needPrepDocker = false
-                        if (needPrepDocker) {
+                    def needSetupContainers = false
+                    if (needSetupContainers) {
+                        parallelBuildDockers[branchName] = {
+
+                            def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
                             if (cloudName) {
                                 build_docker_on_k8(image, config)
                             } else if (image.nodeLabel) {
@@ -1174,7 +1175,6 @@ def main() {
                             } else {
                                 reportFail('init', 'No cloud or Agent defined in project file')
                             }
-
                         }
                     }
                     branches += getMatrixTasks(image, config)
