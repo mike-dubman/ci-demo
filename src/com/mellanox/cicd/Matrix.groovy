@@ -1161,6 +1161,13 @@ def main() {
                     }
 
                     def needSetupContainers = false
+                    // prepare containers only if thery have assotiated dockerfile
+                    for (int ii=0; ii<config.runs_on_dockers.size(); ii++) {
+                        if (config.runs_on_dockers[ii].file) {
+                            needSetupContainers = true
+                        }
+                    }
+
                     if (needSetupContainers) {
                         parallelBuildDockers[branchName] = {
 
