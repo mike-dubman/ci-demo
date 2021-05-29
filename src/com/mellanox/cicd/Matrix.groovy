@@ -896,6 +896,15 @@ def buildImage(img, filename, extra_args, config, image) {
     customImage.push()
 }
 
+Boolean isEnvVarSet(var) {
+    if (var != null) {
+        if (var.contains('null') {
+            return false
+        }
+        return true
+    }
+    return false
+}
 
 String getChangedFilesList(config) {
 
@@ -906,11 +915,11 @@ String getChangedFilesList(config) {
 
     try {
         def dcmd
-        if ((env.GIT_COMMIT != null) && (env.GIT_PREV_COMMIT != null)) {
+        if (isEnvVarSet(env.GIT_COMMIT) && isEnvVarSet(env.GIT_PREV_COMMIT)) {
             dcmd = "git diff --name-only ${env.GIT_PREV_COMMIT} ${env.GIT_COMMIT}"
         } else {
             def br
-            if (env.ghprbTargetBranch) {
+            if (isEnvVarSet(env.ghprbTargetBranch)) {
                 br = env.ghprbTargetBranch
             } else {
                 def ret = run_shell('git ls-remote -q | grep -q refs/heads/master', 'detecting branch name')
@@ -921,7 +930,10 @@ String getChangedFilesList(config) {
                     br = 'main'
                 }
             }
-            def sha = env.ghprbActualCommit? env.ghprbActualCommit : "HEAD"
+            def sha = "HEAD"
+            if (isEnvVarSet(env.ghprbActualCommit)) {
+                sha = env.ghprbActualCommit
+            }
             dcmd = "git diff --name-only origin/${br}..${sha}"
         }
         cFiles = run_shell(dcmd, 'Calculating changed files list', true).text.trim().tokenize()
