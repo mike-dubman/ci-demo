@@ -898,7 +898,11 @@ def buildImage(img, filename, extra_args, config, image) {
 
 Boolean isEnvVarSet(var) {
     if (var != null) {
-        if (var.contains('null') {
+        if (var.contains('null')) {
+            return false
+        }
+
+        if (var == "") {
             return false
         }
         return true
