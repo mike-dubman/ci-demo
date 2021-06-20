@@ -446,8 +446,8 @@ def check_skip_stage(image, config, title, oneStep, axis) {
     for (int i=0; i<selectors.size(); i++) {
         selector = selectors[i]
         if (selector && selector.size() > 0) {
-            config.logger.trace(2, "xxx Selector=" + selector)
             def customSel = stringToList(selector)
+            config.logger.trace(2, "xxx Selector=" + selector + " custom=" + customSel)
             if (matchMapEntry(customSel, axis)) {
                 config.logger.trace(2, "Step '" + oneStep.name + " matched with axis=" + axis + " selector=" + selector)
                 skip = false
