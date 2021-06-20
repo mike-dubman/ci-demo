@@ -448,8 +448,8 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         selector = selectors[i]
         if (selector && selector.size() > 0) {
             def customSel = stringToList(selector)
-            config.logger.trace(2, "xxx Selector=" + selector + " custom=" + customSel + " gSel=" + gSelectors[i])
-            if (matchMapEntry(customSel, gSelectors[i]) && matchMapEntry(customSel, axis)) {
+            config.logger.trace(2, "xxx Selector=" + selector + " custom=" + customSel + " gSel=" + stringToList(gSelectors[i]))
+            if (matchMapEntry(customSel, stringToList(gSelectors[i])) && matchMapEntry(customSel, axis)) {
                 config.logger.trace(2, "Step '" + oneStep.name + " matched with axis=" + axis + " selector=" + selector)
                 skip = false
                 break
