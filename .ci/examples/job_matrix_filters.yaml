@@ -32,6 +32,8 @@ runs_on_dockers:
   - {name: 'sles15-sp1'}
   - {name: 'sles15-sp2'}
 
+runs_on_agents:
+  - nodeLabel: 'UFM-POC'
 
 matrix:
   axes:
@@ -54,5 +56,10 @@ matrix:
 steps:
 
 - name: step1
+  run: |
+    env
+
+- name: step_never
+  agentSelector: "{nodeLabel: 'UFM-CI'}"
   run: |
     env
