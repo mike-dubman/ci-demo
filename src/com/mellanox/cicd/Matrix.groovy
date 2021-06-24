@@ -463,9 +463,9 @@ def check_skip_stage(image, config, title, oneStep, axis) {
     }
 
     if (!found) {
-        reportFail(oneStep.name("xxx Non existent selector specified for image=" + image.name)
+        reportFail(oneStep.name, "xxx Non existent selector specified for image=" + image.name)
     }
-    
+
     config.logger.trace(2, "$title - Step '" + oneStep.name + "' skip=" + skip)
     return skip
 }
