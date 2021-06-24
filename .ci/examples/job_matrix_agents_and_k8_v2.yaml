@@ -40,6 +40,7 @@ matrix:
 steps:
 
 - name: step1
+  containerSelector: "{name:'rhel7.6'}"
   run: |
       echo step1 is here
 
