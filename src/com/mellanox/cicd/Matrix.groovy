@@ -445,6 +445,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
     }
 
     found = true
+    activeSelector = "NA"
     for (int i=0; i<selectors.size(); i++) {
         selector = selectors[i]
         if (selector && selector.size() > 0) {
@@ -458,12 +459,13 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             } else {
                 skip = true
                 found = false
+                activeSelector = customSel
             }
         }
     }
 
     if (!found) {
-        reportFail(oneStep.name, "xxx Non existent selector specified for image=" + image.name)
+        reportFail(oneStep.name, "Non existent selector=${activeSelector} found in ${oneStep.name}")
     }
 
     config.logger.trace(2, "$title - Step '" + oneStep.name + "' skip=" + skip)
