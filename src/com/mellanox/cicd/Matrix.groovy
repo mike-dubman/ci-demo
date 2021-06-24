@@ -450,7 +450,18 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             def customSel = stringToList(selector)
             config.logger.trace(2, "xxx Selector=" + selector + " customSel=" + customSel + " name=" + image.name + " axis=" + axis)
 
-            if (!matchMapEntry(customSel, config.runs_on_dockers + config.runs_on_agents)) {
+            allItems = []
+            allItems += config.runs_on_dockers + config.runs_on_agents
+            found = false
+            for (x=0; x<allItems.size(); x++) {
+                oneItem = allItems[x]
+                if (matchMapEntry(customSel, oneItem)) {
+                    found = true
+                    break
+                }
+            }
+
+            if (!found) {
                 reportFail(oneStep.name, "Non existent selector=${activeSelector} found in step=`${oneStep.name}`")
             }
 
