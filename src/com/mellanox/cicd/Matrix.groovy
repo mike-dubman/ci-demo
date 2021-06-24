@@ -444,6 +444,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         skip = true
     }
 
+    found = true
     for (int i=0; i<selectors.size(); i++) {
         selector = selectors[i]
         if (selector && selector.size() > 0) {
@@ -452,13 +453,19 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             if (matchMapEntry(customSel, axis)) {
                 config.logger.trace(2, "Step '" + oneStep.name + " matched with axis=" + axis + " selector=" + selector)
                 skip = false
+                found = true
                 break
             } else {
                 skip = true
+                found = false
             }
         }
     }
 
+    if (!found) {
+        reportFail(oneStep.name("xxx Non existent selector specified for image=" + image.name)
+    }
+    
     config.logger.trace(2, "$title - Step '" + oneStep.name + "' skip=" + skip)
     return skip
 }
