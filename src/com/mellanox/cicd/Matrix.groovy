@@ -444,29 +444,24 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         skip = true
     }
 
-    found = true
-    activeSelector = "NA"
     for (int i=0; i<selectors.size(); i++) {
         selector = selectors[i]
         if (selector && selector.size() > 0) {
             def customSel = stringToList(selector)
             config.logger.trace(2, "xxx Selector=" + selector + " customSel=" + customSel + " name=" + image.name + " axis=" + axis)
+
+            if (!matchMapEntry(customSel, config.runs_on_dockers + config.runs_on_agents)) {
+                reportFail(oneStep.name, "Non existent selector=${activeSelector} found in step=`${oneStep.name}`")
+            }
+
             if (matchMapEntry(customSel, axis)) {
                 config.logger.trace(2, "Step '${oneStep.name}' matched with axis=" + axis + " selector=" + selector)
                 skip = false
-                found = true
                 break
             } else {
                 skip = true
-                found = false
-                activeSelector = customSel
             }
         }
-    }
-
-    if (!found) {
-        reportFail(oneStep.name, "Non existent selector=${activeSelector} found in step=`${oneStep.name}`")
-        //config.logger.trace(2, "Non existent selector=${activeSelector} found in step=`${oneStep.name}`")
     }
 
     config.logger.trace(2, "$title - Step '" + oneStep.name + "' skip=" + skip)
