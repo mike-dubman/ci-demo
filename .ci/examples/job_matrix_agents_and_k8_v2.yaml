@@ -25,7 +25,7 @@ runs_on_dockers:
 
 runs_on_agents:
   - nodeLabel: '(dockerserver || docker) && x86_64'
-#  - nodeLabel: 'hpc-test-node-inbox'
+  - nodeLabel: 'hpc-test-node-inbox'
   - nodeLabel: 'r-aa-zorro014'
   
 nomatrix:
@@ -42,21 +42,21 @@ steps:
 - name: step1
   containerSelector: "{name:'rhel7.6'}"
   run: |
-      echo step1 is here
+      step1 is here
 
 - name: step2
   run: |
-      echo step2 is here
+      step2 is here
 
 - name: run once
   agentSelector: "{nodeLabel: 'hpc-test-node-inbox'}"
   run: |
-      echo run once is here
+      run once is here
 
 - name: run never
   agentSelector: "{nodeLabel: 'non-existing-agent-label'}"
   run: |
-      echo run never is here
+      run never is here
 
 pipeline_start:
   run: |

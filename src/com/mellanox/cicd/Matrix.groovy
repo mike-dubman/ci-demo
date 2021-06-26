@@ -455,7 +455,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             found = false
             for (x=0; x<allItems.size(); x++) {
                 oneItem = allItems[x]
-                config.logger.trace(2, "xxx checking ${oneItem}")
+                config.logger.trace(2, "xxx checking ${oneItem} with customSel=${customSel}")
 
                 if (matchMapEntry(customSel, oneItem)) {
                     found = true
