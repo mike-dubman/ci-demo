@@ -446,7 +446,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
 
     for (int i=0; i<selectors.size(); i++) {
         selector = selectors[i]
-        if (selector && selector.size() > 0) {
+        if (selector != null && selector.size() > 0) {
             def customSel = stringToList(selector)
             config.logger.trace(2, "xxx Selector=" + selector + " customSel=" + customSel + " name=" + image.name + " axis=" + axis)
 
