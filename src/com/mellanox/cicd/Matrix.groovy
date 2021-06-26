@@ -455,6 +455,8 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             found = false
             for (x=0; x<allItems.size(); x++) {
                 oneItem = allItems[x]
+                config.logger.trace(2, "xxx checking ${oneItem}")
+
                 if (matchMapEntry(customSel, oneItem)) {
                     found = true
                     break
@@ -464,6 +466,8 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             if (!found) {
                 reportFail(oneStep.name, "Non existent selector=${selector} specified in step=`${oneStep.name}`")
             }
+
+            config.logger.trace(2, "xxx found ${found}")
 
             if (matchMapEntry(customSel, axis)) {
                 config.logger.trace(2, "Step '${oneStep.name}' matched with axis=" + axis + " selector=" + selector)
