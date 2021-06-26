@@ -462,7 +462,7 @@ def check_skip_stage(image, config, title, oneStep, axis) {
             }
 
             if (!found) {
-                reportFail(oneStep.name, "Non existent selector=${activeSelector} found in step=`${oneStep.name}`")
+                reportFail(oneStep.name, "Non existent selector=${selector} specified in step=`${oneStep.name}`")
             }
 
             if (matchMapEntry(customSel, axis)) {
