@@ -496,6 +496,10 @@ def toEnvVars(config, vars) {
 
 def run_step(image, config, title, oneStep, axis) {
 
+    if (config.dryrun) {
+        return
+    }
+    
     if ((image != null) && (axis != null) && check_skip_stage(image, config, title, oneStep, axis)) {
         return
     }
