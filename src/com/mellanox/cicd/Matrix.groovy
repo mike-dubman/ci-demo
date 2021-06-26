@@ -496,14 +496,10 @@ def toEnvVars(config, vars) {
 
 def run_step(image, config, title, oneStep, axis) {
 
-    if (config.dryrun) {
-        return
-    }
-    
+
     if ((image != null) && (axis != null) && check_skip_stage(image, config, title, oneStep, axis)) {
         return
     }
-
 
 
     stage("${title}") {
@@ -519,6 +515,10 @@ def run_step(image, config, title, oneStep, axis) {
             sh(script: "mkdir -p $dirname", label: "Create action dir $dirname", returnStatus: true)
             writeFile(file: toFile, text: actionScript)
             sh(script: "chmod +x " + toFile, label: "Set script $toFile permissions", returnStatus: true)
+        }
+
+        if (config.dryrun) {
+            return
         }
 
         if (shell == "action") {
