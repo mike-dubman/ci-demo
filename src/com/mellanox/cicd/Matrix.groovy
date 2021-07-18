@@ -498,10 +498,10 @@ def toEnvVars(config, vars) {
 
 def run_step(image, config, title, oneStep, axis) {
 
-
     if ((image != null) && (axis != null) && check_skip_stage(image, config, title, oneStep, axis)) {
         return
     }
+
 
 
     stage("${title}") {
@@ -563,7 +563,7 @@ def run_step(image, config, title, oneStep, axis) {
 def runSteps(image, config, branchName, axis, steps=config.steps) {
     forceCleanupWS()
     // fetch .git from server and unpack
-    unstash "${env.JOB_NAME}"
+    unstash getStashName()
     onUnstash()
 
     def parallelNestedSteps = [:]
@@ -633,6 +633,17 @@ def parseListV(volumes) {
     return listV
 }
 
+def parseListA(annotations) {
+    def listA = []
+    annotations.each { an ->
+        key = an.get("key")
+        value = an.get("value")
+        pan = podAnnotation(key: key, value: value)
+        listA.add(pan)
+    }
+    return listA
+}
+
 def runK8(image, branchName, config, axis, steps=config.steps) {
 
     def cloudName = image.cloud ?: getConfigVal(config, ['kubernetes', 'cloud'], null)
@@ -669,6 +680,7 @@ def runK8(image, branchName, config, axis, steps=config.steps) {
     def privileged = image.privileged ?: getConfigVal(config, ['kubernetes', 'privileged'], false)
     def limits = image.yaml ?: getConfigVal(config, ['kubernetes', 'limits'], "")
     def requests = image.yaml ?: getConfigVal(config, ['kubernetes', 'requests'], "")
+    def annotations = image.yaml ?: getConfigVal(config, ['kubernetes', 'annotations'], [], false)
     def yaml = """
 spec:
   containers:
@@ -677,13 +689,13 @@ spec:
         limits: ${limits}
         requests: ${requests}
 """
-
     podTemplate(
         cloud: cloudName,
         runAsUser: runAsUser,
         runAsGroup: runAsGroup,
         nodeSelector: nodeSelector,
         hostNetwork: hostNetwork,
+        annotations: parseListA(annotations),
         yamlMergeStrategy: merge(),
         yaml: yaml,
         containers: [
@@ -763,7 +775,7 @@ def runAgent(image, config, branchName=null, axis=null, Closure func, runInDocke
 
     node(nodeName) {
         forceCleanupWS()
-        unstash "${env.JOB_NAME}"
+        unstash getStashName()
         onUnstash()
         stage(branchName) {
             if (runInDocker) {
@@ -1129,6 +1141,10 @@ def loadConfigFile(filepath, logger) {
     return config
 }
 
+def String getStashName() {
+	return "${env.BUILD_NUMBER}"
+}
+
 def main() {
     node("master") {
 
@@ -1144,7 +1160,7 @@ def main() {
             logger.debug("Git commit: ${env.GIT_COMMIT} prev commit: ${env.GIT_PREV_COMMIT}")
             // create git tarball on server, agents will copy it and unpack
             run_shell("tar -c --exclude scm-repo.tar -f scm-repo.tar .", 'Creating workspace copy')
-            stash includes: "scm-repo.tar", name: "${env.JOB_NAME}"
+            stash includes: "scm-repo.tar", name: getStashName()
             run_shell("[ -x .ci/cidemo-init.sh ] && .ci/cidemo-init.sh", 'Run cidemo init hook')
         }
 
