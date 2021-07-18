@@ -437,8 +437,6 @@ def check_skip_stage(image, config, title, oneStep, axis) {
     }
 
 
-    def allItems = []
-    allItems += config.runs_on_dockers + config.runs_on_agents
     def selectors = [oneStep.containerSelector, oneStep.agentSelector]
     def skip = false
 
@@ -446,29 +444,15 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         skip = true
     }
 
+    found = true
+    activeSelector = "NA"
     for (int i=0; i<selectors.size(); i++) {
         selector = selectors[i]
-        if (selector != null && selector.size() > 0) {
+        if (selector && selector.size() > 0) {
             def customSel = stringToList(selector)
-            config.logger.trace(2, "xxx Selector=" + selector + " customSel=" + customSel + " name=" + image.name + " axis=" + axis)
-
-            found = false
-            for (x=0; x<allItems.size(); x++) {
-                oneItem = allItems[x]
-                config.logger.trace(2, "xxx checking ${oneItem} with customSel=${customSel}")
-
-                if (matchMapEntry(customSel, oneItem)) {
-                    found = true
-                    break
-                }
-            }
-
-            if (!found) {
-                reportFail(oneStep.name, "Non existent selector=${selector} specified in step=`${oneStep.name}`")
-            }
-
+            config.logger.trace(2, "xxx Selector=" + selector + " custom=" + customSel + " name=" + image.name)
             if (matchMapEntry(customSel, axis)) {
-                config.logger.trace(2, "Step '${oneStep.name}' matched with axis=" + axis + " selector=" + selector)
+                config.logger.trace(2, "Step '" + oneStep.name + " matched with axis=" + axis + " selector=" + selector)
                 skip = false
                 break
             } else {
