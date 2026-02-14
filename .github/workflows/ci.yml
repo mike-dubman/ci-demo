@@ -8,6 +8,14 @@ on:
     branches: ['*']
 
 jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Smoke test buildImage optimization
+        run: bash tests/smoke_buildimage.sh
+
   jenkins-ci:
     runs-on: ubuntu-latest
     steps:
